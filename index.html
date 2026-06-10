@@ -11,13 +11,16 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <style>
 :root{
-  --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f;
+  --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f; --gold:#eab308;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation;}
 .wrap{max-width:480px; margin:0 auto; padding:16px 16px 40px;}
 h1{font-size:19px; font-weight:600; margin:8px 0 2px;}
-.sub{font-size:13px; color:var(--muted); margin:0 0 16px;}
+.sub{font-size:13px; color:var(--muted); margin:0 0 14px;}
+.tabs{display:flex; gap:6px; background:var(--surface); border-radius:12px; padding:4px; margin-bottom:16px;}
+.tab{flex:1; border:none; background:transparent; color:var(--muted); font-size:14px; font-weight:600; padding:9px 0; border-radius:9px; cursor:pointer;}
+.tab.on{background:var(--surface2); color:var(--text);}
 .controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
 select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-size:14px; appearance:none;}
 button.btn{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
@@ -29,6 +32,7 @@ button.btn.primary{background:#3d4250; border-color:#4a5060;}
 .stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
 .stat .val{font-size:24px; font-weight:600;}
 #status{font-size:15px; font-weight:600; min-height:42px; margin:4px 0 8px;}
+#ctxlabel{font-size:13px; color:var(--muted); margin:0 0 10px;}
 #wheelbox{display:flex; justify-content:center;}
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
@@ -45,6 +49,21 @@ button.btn.primary{background:#3d4250; border-color:#4a5060;}
 .chip{display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:999px; background:var(--surface); font-size:13px;}
 .chip .sw{width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff;}
 .chip.err{outline:2px solid #e24b4a;}
+#mapbox{display:flex; justify-content:center; margin:6px 0 18px;}
+#map{position:relative;}
+.mapdot{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
+.world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
+.world.locked{opacity:.55;}
+.whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
+.wname{font-size:15px; font-weight:600;}
+.wints{display:flex; gap:4px;}
+.wint{width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.wreq{font-size:12px; color:var(--muted); margin:4px 0 0;}
+.mrow{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface2); border:none; border-radius:10px; padding:10px 12px; margin-top:8px; width:100%; color:var(--text); font-size:14px; cursor:pointer; text-align:left;}
+.mrow:disabled{cursor:default; color:var(--muted);}
+.mrow .stars{font-size:14px; letter-spacing:2px; color:var(--gold); white-space:nowrap;}
+.mrow .stars .e{color:#4a4e59;}
 .leg-title{font-size:12px; color:var(--muted); margin:20px 0 8px;}
 #legend{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px;}
 .leg{display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:10px; background:var(--surface);}
@@ -59,28 +78,42 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
   <h1>Interval Trainer</h1>
   <p class="sub">Simon cromatico: ascolta la melodia, ripetila. Stesso colore = stesso intervallo dalla tonica, sempre.</p>
 
-  <div class="controls">
-    <select id="scsel" aria-label="Scala">
-      <option value="maj" selected>Maggiore</option>
-      <option value="min">Minore naturale</option>
-      <option value="pmaj">Pentatonica magg.</option>
-      <option value="pmin">Pentatonica min.</option>
-      <option value="chrom">Cromatica (12)</option>
-    </select>
-    <select id="rootsel" aria-label="Tonica"></select>
-    <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i>Gioca</button>
-    <button class="btn" id="rehear"><i class="ti ti-refresh"></i>Riascolta</button>
+  <div class="tabs">
+    <button class="tab on" id="tab-levels">Livelli</button>
+    <button class="tab" id="tab-free">Libero</button>
   </div>
 
-  <div class="stats">
-    <div class="stat"><p class="lbl">Round</p><p class="val" id="round">–</p></div>
-    <div class="stat"><p class="lbl">Record (scala)</p><p class="val" id="best">0</p></div>
+  <div id="view-levels">
+    <div id="mapbox"><div id="map"></div></div>
+    <div id="worlds"></div>
   </div>
 
-  <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;">Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.</p>
-  <p id="status">premi "Gioca"</p>
-  <div id="wheelbox"><div id="wheel"></div></div>
-  <div id="reveal"></div>
+  <div id="view-game" hidden>
+    <p id="ctxlabel" hidden></p>
+    <div class="controls">
+      <button class="btn" id="backbtn" hidden><i class="ti ti-arrow-left"></i>Livelli</button>
+      <select id="scsel" aria-label="Scala">
+        <option value="maj" selected>Maggiore</option>
+        <option value="min">Minore naturale</option>
+        <option value="pmaj">Pentatonica magg.</option>
+        <option value="pmin">Pentatonica min.</option>
+        <option value="chrom">Cromatica (12)</option>
+      </select>
+      <select id="rootsel" aria-label="Tonica"></select>
+      <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i>Gioca</button>
+      <button class="btn" id="rehear"><i class="ti ti-refresh"></i>Riascolta</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><p class="lbl">Round</p><p class="val" id="round">–</p></div>
+      <div class="stat"><p class="lbl" id="bestlbl">Record (scala)</p><p class="val" id="best">0</p></div>
+    </div>
+
+    <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;">Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.</p>
+    <p id="status">premi "Gioca"</p>
+    <div id="wheelbox"><div id="wheel"></div></div>
+    <div id="reveal"></div>
+  </div>
 
   <p class="leg-title">Il viaggio cromatico (intervalli dalla tonica)</p>
   <div id="legend"></div>
@@ -113,19 +146,122 @@ const C=[
  {h:'hsl(285,55%,49%)',ic:'flower',nm:'fiore'},
  {h:'hsl(320,70%,48%)',ic:'bolt',nm:'fulmine'}];
 
+const WORLDS=[
+ {name:'Le fondamenta', add:[0,5,7]},
+ {name:'Le terze', add:[3,4]},
+ {name:'I passi', add:[1,2]},
+ {name:'Le seste', add:[8,9]},
+ {name:'Le settime', add:[10,11]},
+ {name:'Il tritono', add:[6]}];
+const MODES=['Vedi e senti','Solo orecchio','Tonica vagabonda'];
+const STAR1=5, STAR2=8;
+
 let scale='maj', root=0, seq=[], step=0, state='idle', timers=[];
+let game={kind:'free'};
+let usedRehear=false;
 const $=id=>document.getElementById(id);
 
+function prog(){try{return JSON.parse(localStorage.getItem('it_prog')||'{}')}catch(e){return{}}}
+function saveProg(key,entry){const p=prog(); const old=p[key]||{stars:0,bestRound:0};
+ p[key]={stars:Math.max(old.stars,entry.stars), bestRound:Math.max(old.bestRound,entry.bestRound)};
+ localStorage.setItem('it_prog',JSON.stringify(p));}
+function starsOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.stars:0;}
+function bestOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.bestRound:0;}
+function worldUnlocked(i){return i===0||starsOf(i-1,1)>=2;}
+function modeUnlocked(w,m){return m===0?worldUnlocked(w):starsOf(w,m-1)>=1;}
+function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WORLDS[i].add); return s.sort((a,b)=>a-b);}
+function maxUnlockedWorld(){let m=0; for(let i=0;i<WORLDS.length;i++){if(worldUnlocked(i))m=i;} return m;}
+function activeSet(){return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
+function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
+
 const rs=$('rootsel');
-NOTE.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;rs.appendChild(o);});
+NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
 
 const lg=$('legend');
-C.forEach((c,k)=>{const d=document.createElement('div');d.className='leg';
+C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
  d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+c.nm+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
  lg.appendChild(d);});
 
+function renderMap(){
+ const MS=210, MC=MS/2, MR=MS/2-18;
+ const map=$('map'); map.style.width=MS+'px'; map.style.height=MS+'px'; map.innerHTML='';
+ const unlocked=cumSet(maxUnlockedWorld());
+ for(let k=0;k<12;k++){
+  const a=(-90+k*30)*Math.PI/180, x=MC+MR*Math.cos(a), y=MC+MR*Math.sin(a);
+  const d=document.createElement('div'); d.className='mapdot'+(unlocked.includes(k)?'':' off');
+  d.style.cssText='left:'+(x-15)+'px;top:'+(y-15)+'px;width:30px;height:30px;background:'+C[k].h;
+  d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:15px"></i>';
+  map.appendChild(d);
+ }
+}
+
+function renderWorlds(){
+ const box=$('worlds'); box.innerHTML='';
+ WORLDS.forEach((w,i)=>{
+  const unlocked=worldUnlocked(i);
+  const card=document.createElement('div'); card.className='world'+(unlocked?'':' locked');
+  let ints='';
+  w.add.forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+  let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
+  if(!unlocked){
+   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Sblocca con 2★ in "Solo orecchio" del mondo '+i+'</p>';
+   card.innerHTML=h;
+  } else {
+   card.innerHTML=h;
+   MODES.forEach((mn,m)=>{
+    const mu=modeUnlocked(i,m);
+    const b=document.createElement('button'); b.className='mrow'; b.disabled=!mu;
+    b.innerHTML='<span>'+(mu?'<i class="ti ti-player-play" style="font-size:13px;vertical-align:-2px"></i> ':'<i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> ')+mn+
+     (mu&&bestOf(i,m)?' <span style="color:var(--muted);font-size:12px">· best '+bestOf(i,m)+'</span>':'')+
+     (!mu?' <span style="color:var(--muted);font-size:12px">· 1★ nella precedente</span>':'')+'</span>'+
+     '<span class="stars">'+starsStr(starsOf(i,m))+'</span>';
+    if(mu) b.addEventListener('click',()=>startLevel(i,m));
+    card.appendChild(b);
+   });
+  }
+  box.appendChild(card);
+ });
+}
+
+function showLevels(){
+ clearTimers(); state='idle'; seq=[];
+ $('view-game').hidden=true; $('view-levels').hidden=false;
+ $('tab-levels').classList.add('on'); $('tab-free').classList.remove('on');
+ renderMap(); renderWorlds();
+}
+function showFree(){
+ clearTimers(); state='idle'; seq=[]; game={kind:'free'};
+ root=+$('rootsel').value;
+ $('view-levels').hidden=true; $('view-game').hidden=false;
+ $('ctxlabel').hidden=true; $('backbtn').hidden=true;
+ $('scsel').style.display=''; $('rootsel').style.display='';
+ $('tab-free').classList.add('on'); $('tab-levels').classList.remove('on');
+ $('bestlbl').textContent='Record (scala)';
+ $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML='';
+ render(); loadBest();
+}
+function startLevel(w,m){
+ clearTimers(); game={kind:'level',w:w,m:m}; root=0;
+ $('view-levels').hidden=true; $('view-game').hidden=false;
+ $('tab-levels').classList.add('on'); $('tab-free').classList.remove('on');
+ $('ctxlabel').hidden=false;
+ $('ctxlabel').innerHTML='Mondo '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'');
+ $('backbtn').hidden=false;
+ $('scsel').style.display='none'; $('rootsel').style.display='none';
+ $('bestlbl').textContent='Record (livello)';
+ $('round').textContent='–'; $('reveal').innerHTML='';
+ render(); loadBest();
+ newGame();
+}
+$('tab-levels').addEventListener('click',showLevels);
+$('tab-free').addEventListener('click',showFree);
+$('backbtn').addEventListener('click',showLevels);
+
 function bestKey(){return 'it_best_'+scale;}
-function loadBest(){$('best').textContent=localStorage.getItem(bestKey())||0;}
+function loadBest(){
+ if(game.kind==='free') $('best').textContent=localStorage.getItem(bestKey())||0;
+ else $('best').textContent=bestOf(game.w,game.m);
+}
 
 let S=0, CXY=0, R=0, KEY=52;
 function layout(){
@@ -141,7 +277,7 @@ function render(){
  const ctr=document.createElement('div'); ctr.id='ctr';
  ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
  w.appendChild(ctr);
- const sc=SCALES[scale];
+ const sc=activeSet();
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=CXY+R*Math.cos(a), y=CXY+R*Math.sin(a);
   if(sc.includes(k)){
@@ -159,7 +295,7 @@ function render(){
  }
 }
 let rsz;
-function maybeRender(){clearTimeout(rsz); rsz=setTimeout(()=>{const bw=$('wheelbox').clientWidth; if(!bw) return; const ns=Math.max(260,Math.min(bw,380)); if(ns!==S) render();},120);}
+function maybeRender(){clearTimeout(rsz); rsz=setTimeout(()=>{if($('view-game').hidden)return; const bw=$('wheelbox').clientWidth; if(!bw) return; const ns=Math.max(260,Math.min(bw,380)); if(ns!==S) render();},120);}
 window.addEventListener('resize',maybeRender);
 new ResizeObserver(maybeRender).observe(document.getElementById('wheelbox'));
 window.addEventListener('load',maybeRender);
@@ -182,6 +318,9 @@ function buzz(){
  g.gain.setValueAtTime(0.15,t0); g.gain.linearRampToValueAtTime(0,t0+0.45);
  o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+0.45);
 }
+function chime(){
+ [0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});
+}
 function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
@@ -189,17 +328,28 @@ function flash(k,ms){
   ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.14)+'px"></i><span style="font-size:12px;font-weight:600">'+DEG[k]+'</span></div>';
   ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
 }
+function pulse(ms){
+ const ct=$('ctr'); if(!ct) return;
+ ct.style.background='var(--surface2)'; ct.innerHTML='<i class="ti ti-ear" style="font-size:'+Math.round(S*0.12)+'px;color:var(--muted)"></i>';
+ ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);
+}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 function playSeq(){
  state='play'; clearTimers(); $('status').textContent='ascolta…'; $('reveal').innerHTML='';
+ if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12);}
+ const silent=game.kind==='level'&&game.m===1;
  const gap=Math.max(420,660-seq.length*18);
- seq.forEach((k,i)=>{timers.push(setTimeout(()=>{flash(k,gap-100); tone(60+root+k,0.38);},250+i*gap));});
+ seq.forEach((k,i)=>{timers.push(setTimeout(()=>{if(silent)pulse(gap-100); else flash(k,gap-100); tone(60+root+k,0.38);},250+i*gap));});
  timers.push(setTimeout(()=>{state='input'; step=0; $('status').textContent='tocca a te (0/'+seq.length+')';},250+seq.length*gap));
 }
 function addNote(){
- const sc=SCALES[scale]; let k;
+ const sc=activeSet(); let k;
  do{k=sc[Math.floor(Math.random()*sc.length)];}while(seq.length&&k===seq[seq.length-1]&&Math.random()<0.6);
  seq.push(k);
+}
+function newGame(){
+ ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; addNote();
+ $('round').textContent=seq.length; playSeq();
 }
 function press(k){
  if(state==='input'){hit(k); return;}
@@ -212,14 +362,29 @@ function hit(k){
   step++;
   if(step===seq.length){
    $('status').textContent='giusto!';
-   const b=+(localStorage.getItem(bestKey())||0);
-   if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
+   if(game.kind==='free'){
+    const b=+(localStorage.getItem(bestKey())||0);
+    if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
+   }
    timers.push(setTimeout(()=>{addNote(); $('round').textContent=seq.length; playSeq();},900));
    state='wait';
   } else $('status').textContent='tocca a te ('+step+'/'+seq.length+')';
  } else {
   state='over'; buzz();
-  $('status').textContent='sbagliato al passo '+(step+1)+': era '+C[seq[step]].nm+' ('+IV[seq[step]]+', '+DEG[seq[step]]+')';
+  const wrong=seq[step];
+  let msg='sbagliato al passo '+(step+1)+': era '+C[wrong].nm+' ('+IV[wrong]+', '+DEG[wrong]+')';
+  if(game.kind==='level'){
+   const completed=seq.length-1;
+   let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
+   const before=starsOf(game.w,game.m);
+   saveProg('w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
+   loadBest();
+   msg+=' · round '+completed;
+   if(st>before){msg+=' · nuova stella!'; chime();}
+   $('status').innerHTML=msg+' <span style="color:var(--gold);letter-spacing:2px">'+starsStr(Math.max(st,before))+'</span>';
+  } else {
+   $('status').textContent=msg;
+  }
   const rv=$('reveal'); rv.innerHTML='';
   seq.forEach((q,i)=>{
    const d=document.createElement('div'); d.className='chip'+(i===step?' err':'');
@@ -227,20 +392,21 @@ function hit(k){
    rv.appendChild(d);});
  }
 }
-$('newgame').addEventListener('click',function(){this.blur(); ensureCtx(); clearTimers(); seq=[0]; addNote(); $('round').textContent=seq.length; playSeq();});
-$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){ensureCtx(); playSeq();}});
+$('newgame').addEventListener('click',function(){this.blur(); newGame();});
+$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
+$('rootsel').addEventListener('change',e=>{root=+e.target.value;});
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
+ if($('view-game').hidden) return;
  const tag=(e.target.tagName||'').toLowerCase();
  if(tag==='select'||tag==='input'||tag==='textarea') return;
  const key=e.key.toLowerCase();
  if(key==='enter'){if(document.activeElement===document.body){e.preventDefault(); $('newgame').click();} return;}
  if(key==='r'){$('rehear').click(); return;}
- if(key in KEYMAP){const k=KEYMAP[key]; if(SCALES[scale].includes(k)) press(k);}
+ if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
-$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
-$('rootsel').addEventListener('change',e=>{root=+e.target.value;});
-render(); loadBest();
+renderMap(); renderWorlds();
 </script>
 </body>
 </html>
