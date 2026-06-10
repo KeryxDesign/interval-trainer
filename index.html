@@ -87,7 +87,8 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
 
   <div id="view-levels">
     <div id="mapbox"><div id="map"></div></div>
-    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 14px;"><span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta</p>
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 10px;"><span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta</p>
+    <label style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin:0 0 14px; cursor:pointer;"><input type="checkbox" id="unlockall" style="accent-color:#eab308; width:16px; height:16px;"> Sblocca tutti i livelli</label>
     <div id="worlds"></div>
   </div>
 
@@ -182,12 +183,12 @@ const C=[
  {h:'hsl(320,70%,48%)',ic:'bolt',nm:'fulmine'}];
 
 const WORLDS=[
- {name:'Le fondamenta', add:[0,5,7]},
- {name:'Le terze', add:[3,4]},
- {name:'I passi', add:[1,2]},
- {name:'Le seste', add:[8,9]},
- {name:'Le settime', add:[10,11]},
- {name:'Il tritono', add:[6]}];
+ {name:'Le fondamenta', add:[0,5,7], th:'Le consonanze perfette: tonica, quarta e quinta. Sono i pilastri su cui si regge quasi tutta la musica (il giro I–IV–V). La quinta è la distanza più stabile dopo l\'ottava; la quarta è la sua immagine allo specchio. Imparale come sensazioni: fermo, partenza, ritorno.'},
+ {name:'Le terze', add:[3,4], th:'La nota che decide il modo. Un solo semitono di differenza (1 tono e mezzo contro 2 toni) separa ombra e luce: terza minore e terza maggiore. Con tonica e quinta formano gli accordi. Se distingui queste due, distingui maggiore da minore per sempre.'},
+ {name:'I passi', add:[1,2], th:'I gradini con cui camminano le melodie. La 2ª maggiore (1 tono) è il passo normale; la 2ª minore (mezzo tono) è il passo stretto, cromatico, che preme contro la nota vicina. Quasi ogni melodia è fatta soprattutto di questi due movimenti.'},
+ {name:'Le seste', add:[8,9], th:'Le terze capovolte: una terza maggiore rovesciata diventa una sesta minore, e viceversa (insieme fanno sempre un\'ottava). Sono gli intervalli ampi e cantabili, il salto espressivo delle melodie romantiche.'},
+ {name:'Le settime', add:[10,11], th:'A un passo da casa, da due lati diversi. La 7ª minore (sottotonica) pesa verso il basso: colore blues e accordo di dominante. La 7ª maggiore (sensibile) spinge verso l\'alto e rende inevitabile il ritorno alla tonica. Sono le note che creano il bisogno di risolvere.'},
+ {name:'Il tritono', add:[6], th:'Tre toni esatti: l\'ottava divisa a metà. Nessuna gerarchia, nessun riposo: è l\'intervallo più instabile, il motore dell\'accordo di settima di dominante, e risolve per semitoni in entrambe le direzioni. Nel Medioevo lo chiamavano diabolus in musica.'}];
 const MODES=['Vedi e senti','Solo orecchio','Tonica vagabonda'];
 const TH=[
  'Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.',
@@ -215,8 +216,9 @@ function saveProg(key,entry){const p=prog(); const old=p[key]||{stars:0,bestRoun
  localStorage.setItem('it_prog',JSON.stringify(p));}
 function starsOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.stars:0;}
 function bestOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.bestRound:0;}
-function worldUnlocked(i){return i===0||starsOf(i-1,1)>=2;}
-function modeUnlocked(w,m){return m===0?worldUnlocked(w):starsOf(w,m-1)>=1;}
+function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
+function worldUnlocked(i){return unlockAll()||i===0||starsOf(i-1,1)>=2;}
+function modeUnlocked(w,m){return unlockAll()||(m===0?worldUnlocked(w):starsOf(w,m-1)>=1);}
 function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WORLDS[i].add); return s.sort((a,b)=>a-b);}
 function maxUnlockedWorld(){let m=0; for(let i=0;i<WORLDS.length;i++){if(worldUnlocked(i))m=i;} return m;}
 function activeSet(){return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
@@ -251,6 +253,7 @@ function renderWorlds(){
   let ints='';
   w.add.forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
+  h+='<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin:6px 0 4px">'+w.th+'</p>';
   if(!unlocked){
    h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Sblocca con 2★ in "Solo orecchio" del mondo '+i+'</p>';
    card.innerHTML=h;
@@ -283,6 +286,7 @@ function setTab(name){
 function showLevels(){
  clearTimers(); state='idle'; seq=[];
  setTab('levels');
+ $('unlockall').checked=unlockAll();
  renderMap(); renderWorlds();
 }
 function showFree(){
@@ -482,6 +486,12 @@ document.addEventListener('keydown',e=>{
  if(key==='r'){$('rehear').click(); return;}
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
+$('unlockall').addEventListener('change',e=>{
+ if(e.target.checked) localStorage.setItem('it_unlockall','1');
+ else localStorage.removeItem('it_unlockall');
+ renderMap(); renderWorlds();
+});
+$('unlockall').checked=unlockAll();
 renderMap(); renderWorlds();
 </script>
 </body>
