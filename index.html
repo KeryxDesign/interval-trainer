@@ -373,7 +373,7 @@ function render(){
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
    b.setAttribute('aria-label',(k===0?'tonica':IV[k])+', '+C[k].nm);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.34)+'px"></i><span style="font-size:'+(KEY*0.22)+'px">'+IV[k]+'</span><span class="kb">'+KB[k]+'</span>';
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.28)+'px"></i><span style="font-size:'+(KEY*0.2)+'px;line-height:1.15">'+IV[k]+'</span><span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span><span class="kb">'+KB[k]+'</span>';
    b.addEventListener('click',()=>press(k));
    w.appendChild(b);
   } else {
@@ -382,6 +382,9 @@ function render(){
    w.appendChild(d);
   }
  }
+}
+function updateNotes(){
+ document.querySelectorAll('#wheel .nt').forEach(s=>{s.textContent=NOTE[(root+ +s.dataset.k)%12];});
 }
 let rsz;
 function maybeRender(){clearTimeout(rsz); rsz=setTimeout(()=>{if($('view-game').hidden)return; const bw=$('wheelbox').clientWidth; if(!bw) return; const ns=Math.max(260,Math.min(bw,380)); if(ns!==S) render();},120);}
@@ -414,7 +417,7 @@ function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
  if(ct){ct.style.background=C[k].h;
-  ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.14)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
+  ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
   ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
 }
 function pulse(ms){
@@ -425,7 +428,7 @@ function pulse(ms){
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 function playSeq(){
  state='play'; clearTimers(); $('status').textContent='ascolta…'; $('reveal').innerHTML='';
- if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12);}
+ if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12); updateNotes();}
  const silent=game.kind==='level'&&game.m===1;
  const base=Math.max(420,660-seq.length*18)/speed;
  let t=250;
@@ -495,7 +498,7 @@ function hit(k){
 $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
-$('rootsel').addEventListener('change',e=>{root=+e.target.value;});
+$('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
 $('rhythmcb').addEventListener('change',e=>{rhythm=e.target.checked; if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
 $('spdsel').value=String(speed);
