@@ -2,36 +2,58 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#14151a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Huermony · ear training cromatico</title>
+<title>Huermony</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <style>
 :root{
   --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f; --gold:#eab308;
 }
+[hidden]{display:none !important;}
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation;}
 .wrap{max-width:480px; margin:0 auto; padding:16px 16px 40px;}
-h1{font-size:19px; font-weight:600; margin:8px 0 2px;}
-.sub{font-size:13px; color:var(--muted); margin:0 0 14px;}
+header{display:flex; align-items:center; justify-content:space-between; margin:4px 0 14px;}
+h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:pointer;}
+.lang{display:flex; gap:2px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px; font-size:12px; font-weight:600;}
+.lang button{border:none; background:transparent; color:var(--muted); padding:4px 10px; border-radius:999px; cursor:pointer; font-weight:600;}
+.lang button.on{background:var(--surface2); color:var(--text);}
 .tabs{display:flex; gap:6px; background:var(--surface); border-radius:12px; padding:4px; margin-bottom:16px;}
-.tab{flex:1; border:none; background:transparent; color:var(--muted); font-size:14px; font-weight:600; padding:9px 0; border-radius:9px; cursor:pointer;}
+.tab{flex:1; border:none; background:transparent; color:var(--muted); font-size:13px; font-weight:600; padding:9px 0; border-radius:9px; cursor:pointer;}
 .tab.on{background:var(--surface2); color:var(--text);}
-.controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+#view-home{display:flex; flex-direction:column; align-items:center; min-height:78vh; text-align:center;}
+#hlang{position:absolute; top:16px; right:16px;}
+#emblem{position:relative; width:140px; height:140px; margin:9vh 0 18px;}
+.edot{position:absolute; width:12px; height:12px; border-radius:50%;}
+#hname{font-size:34px; font-weight:700; letter-spacing:-0.02em; margin:0 0 8px;}
+#htag{font-size:16px; line-height:1.5; color:var(--muted); margin:0 auto; max-width:300px;}
+#hspacer{flex:1; min-height:24px;}
+#hplay{width:100%; max-width:340px; min-height:56px; border:none; border-radius:14px; background:var(--text); color:var(--bg); font-size:17px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;}
+#hplay:active{transform:scale(0.98);}
+#hprog{font-size:13px; color:var(--muted); margin:10px 0 0; min-height:18px;}
+#hguide{font-size:15px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:12px; cursor:pointer; margin-top:4px;}
+.controls{display:flex; flex-direction:column; gap:8px; margin-bottom:12px;}
+.crow{display:flex; gap:8px; align-items:center;}
+.crow.actions .btn{flex:1; justify-content:center; padding:12px 14px;}
+.crow.actions .btn.primary{flex:1.6;}
 select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-size:14px; appearance:none;}
 button.btn{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
 button.btn:active{transform:scale(0.97);}
-button.btn.primary{background:#3d4250; border-color:#4a5060;}
-.stats{display:flex; gap:8px; margin:12px 0;}
-.stat{flex:1; background:var(--surface); border-radius:12px; padding:10px 14px;}
+button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--text); font-size:15px;}
+.pill{background:var(--surface); color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px;}
+.pill[aria-pressed="true"]{color:var(--text); border-color:var(--gold); box-shadow:inset 0 0 0 1px var(--gold);}
+.stats{display:flex; gap:8px; margin:10px 0 4px;}
+.stat{flex:1; background:var(--surface); border-radius:12px; display:flex; align-items:baseline; gap:8px; padding:7px 12px;}
 .stat p{margin:0;}
 .stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
-.stat .val{font-size:24px; font-weight:600;}
-#status{font-size:15px; font-weight:600; min-height:42px; margin:4px 0 8px;}
+.stat .val{font-size:17px; font-weight:600;}
+#status{font-size:16px; font-weight:600; text-align:center; min-height:46px; display:flex; align-items:center; justify-content:center; background:var(--surface); border-radius:12px; padding:8px 14px; margin:8px 0 12px;}
+#status.err{border:1px solid #e24b4a;}
+#status.ok{border:1px solid #2e9e5b;}
 #ctxlabel{font-size:13px; color:var(--muted); margin:0 0 10px;}
 #wheelbox{display:flex; justify-content:center;}
 #wheel{position:relative;}
@@ -54,76 +76,62 @@ button.btn.primary{background:#3d4250; border-color:#4a5060;}
 .mapdot{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
 .mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
 .world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
-.world.locked{opacity:.55;}
+.world.locked .wint{opacity:.4; filter:saturate(.4);}
+.world.locked .wname{color:var(--muted);}
 .whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
 .wname{font-size:15px; font-weight:600;}
 .wints{display:flex; gap:4px;}
 .wint{width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
-.wreq{font-size:12px; color:var(--muted); margin:4px 0 0;}
+.wreq{font-size:13px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface2); border:none; border-radius:10px; padding:10px 12px; margin-top:8px; width:100%; color:var(--text); font-size:14px; cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; color:var(--muted);}
 .mrow .stars{font-size:14px; letter-spacing:2px; color:var(--gold); white-space:nowrap;}
 .mrow .stars .e{color:#4a4e59;}
-.leg-title{font-size:12px; color:var(--muted); margin:20px 0 8px;}
+.legbox{margin-top:18px;}
+.legbox summary{font-size:13px; color:var(--muted); cursor:pointer; padding:10px 0; list-style-position:inside;}
 #legend{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px;}
 .leg{display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:10px; background:var(--surface);}
 .leg .sw{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff;}
 .leg small{font-size:11px; line-height:1.3; color:var(--text);}
 .leg small b{font-weight:600;}
-footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
+#unlockrow{display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; color:var(--muted); margin:6px 0 0; cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Huermony</h1>
-  <p class="sub">Ascolta la melodia, ripetila. Stesso colore = stesso intervallo dalla tonica, sempre.</p>
+  <header id="hdr" hidden>
+    <h1 id="brand">Huermony</h1>
+    <div class="lang" id="langsw"><button data-l="it">IT</button><button data-l="en">EN</button></div>
+  </header>
 
-  <div class="tabs">
-    <button class="tab on" id="tab-levels">Livelli</button>
-    <button class="tab" id="tab-free">Libero</button>
-    <button class="tab" id="tab-theory">Teoria</button>
-    <button class="tab" id="tab-guide">Guida</button>
+  <div id="view-home">
+    <div id="hlang" class="lang"><button data-l="it">IT</button><button data-l="en">EN</button></div>
+    <div id="emblem" aria-hidden="true"></div>
+    <p id="hname">Huermony</p>
+    <p id="htag"></p>
+    <div id="hspacer"></div>
+    <button id="hplay"><i class="ti ti-player-play"></i><span id="hplaytxt"></span></button>
+    <p id="hprog"></p>
+    <button id="hguide"></button>
   </div>
 
-  <div id="view-levels">
-    <p style="font-size:14px; font-weight:600; text-align:center; margin:0 0 2px;">Corso: la scala maggiore</p>
-    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 8px;">Un grado alla volta, in ordine di importanza melodica.</p>
+  <div class="tabs" id="tabs" hidden>
+    <button class="tab" id="tab-levels"></button>
+    <button class="tab" id="tab-free"></button>
+    <button class="tab" id="tab-theory"></button>
+    <button class="tab" id="tab-guide"></button>
+  </div>
+
+  <div id="view-levels" hidden>
+    <p id="coursetitle" style="font-size:14px; font-weight:600; text-align:center; margin:0 0 2px;"></p>
+    <p id="coursesub" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 8px;"></p>
     <div id="mapbox"><div id="map"></div></div>
-    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 10px;"><span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta</p>
-    <label style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin:0 0 14px; cursor:pointer;"><input type="checkbox" id="unlockall" style="accent-color:#eab308; width:16px; height:16px;"> Sblocca tutti i livelli</label>
+    <p id="starsline" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 14px;"></p>
     <div id="worlds"></div>
+    <label id="unlockrow"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
   </div>
 
-  <div id="view-guide" hidden>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Cos'è</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Come si gioca</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.<br><br>Con <b>Velocità</b> regoli il tempo di riproduzione. Con <b>Ritmo</b> le note assumono durate diverse e la sequenza diventa una frase musicale: il ritmo è solo da ascoltare, rispondi nell'ordine giusto senza dover rispettare le durate.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Livelli e stelle</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style="color:var(--gold)">★</span> arrivi al round 5 · <span style="color:var(--gold)">★★</span> al round 8 · <span style="color:var(--gold)">★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Libero e Teoria</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)"><b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Canta</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Attiva la spunta <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando: è il momento in cui suono, colore e voce diventano la stessa cosa.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Da computer</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori.</p>
-    </div>
-    <div class="world" style="padding:14px 16px">
-      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Un consiglio</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Meglio 5 minuti al giorno che un'ora la domenica. La sinestesia si costruisce con la ripetizione frequente, non con lo sforzo. Quando ti accorgi di "vedere" il colore di un intervallo prima di pensarci, sta funzionando.</p>
-    </div>
-  </div>
+  <div id="view-guide" hidden><div id="guide"></div></div>
 
   <div id="view-game" hidden>
     <p id="ctxlabel" hidden></p>
@@ -131,91 +139,186 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
       <p style="font-size:13px; line-height:1.6; margin:0; color:var(--text);"></p>
     </div>
     <div class="controls">
-      <button class="btn" id="backbtn" hidden><i class="ti ti-arrow-left"></i>Livelli</button>
-      <select id="scsel" aria-label="Scala">
-        <option value="maj" selected>Maggiore</option>
-        <option value="min">Minore naturale</option>
-        <option value="pmaj">Pentatonica magg.</option>
-        <option value="pmin">Pentatonica min.</option>
-        <option value="chrom">Cromatica (12)</option>
-      </select>
-      <select id="rootsel" aria-label="Tonica"></select>
-      <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i>Gioca</button>
-      <button class="btn" id="rehear"><i class="ti ti-refresh"></i>Riascolta</button>
-      <select id="spdsel" aria-label="Velocità">
-        <option value="0.75">Lento</option>
-        <option value="1" selected>Normale</option>
-        <option value="1.3">Veloce</option>
-        <option value="1.6">Turbo</option>
-      </select>
-      <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer;"><input type="checkbox" id="rhythmcb" style="accent-color:#eab308; width:15px; height:15px;"> Ritmo</label>
-      <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer;"><input type="checkbox" id="miccb" style="accent-color:#eab308; width:15px; height:15px;"> <i class="ti ti-microphone" style="font-size:14px"></i> Canta</label>
+      <div class="crow" id="rowsetup">
+        <button class="btn" id="backbtn" hidden><i class="ti ti-arrow-left"></i><span id="backtxt"></span></button>
+        <select id="scsel" aria-label="Scale"></select>
+        <select id="rootsel" aria-label="Tonic"></select>
+      </div>
+      <div class="crow actions">
+        <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i><span id="playtxt"></span></button>
+        <button class="btn" id="rehear"><i class="ti ti-refresh"></i><span id="reheartxt"></span></button>
+      </div>
+      <div class="crow options">
+        <select id="spdsel" aria-label="Speed"></select>
+        <button class="pill" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool" style="font-size:14px"></i><span id="rhythmtxt"></span></button>
+        <button class="pill" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
+      </div>
     </div>
 
     <div class="stats">
-      <div class="stat"><p class="lbl">Round</p><p class="val" id="round">–</p></div>
-      <div class="stat"><p class="lbl" id="bestlbl">Record (scala)</p><p class="val" id="best">0</p></div>
+      <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
+      <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
     </div>
 
-    <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;">Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.</p>
-    <p id="status">premi "Gioca"</p>
+    <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;"></p>
+    <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
     <div id="reveal"></div>
+    <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
 
   <div id="view-theory" hidden>
-    <p style="font-size:13px; color:var(--muted); margin:0 0 12px;">La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha.</p>
+    <p id="thintro" style="font-size:13px; color:var(--muted); margin:0 0 12px;"></p>
     <div id="theory"></div>
   </div>
-
-  <p class="leg-title">Il viaggio cromatico (intervalli dalla tonica)</p>
-  <div id="legend"></div>
-
 </div>
 
 <script>
+const lang=(function(){
+ const s=localStorage.getItem('hm_lang');
+ if(s==='it'||s==='en') return s;
+ return (navigator.language||'en').toLowerCase().startsWith('it')?'it':'en';
+})();
+document.documentElement.lang=lang;
+
+const STR={
+it:{
+ tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
+ playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
+ tabs:["Livelli","Libero","Teoria","Guida"],
+ course:"Corso: la scala maggiore", coursesub:"Un grado alla volta, in ordine di importanza melodica.",
+ stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
+ starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
+ unlock:"Sblocca tutti i livelli",
+ lockReq:n=>'Sblocca con 2★ in "Solo orecchio" del livello '+n,
+ lockMode:"1★ nella precedente", bestShort:"best",
+ level:"Livello", back:"Livelli",
+ modeSuffix:["",' (la sequenza non si illumina)',' (la tonica cambia ogni round)'],
+ modes:["Vedi e senti","Solo orecchio","Tonica vagabonda"],
+ play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo", mic:"Canta",
+ speeds:["Lento","Normale","Veloce","Turbo"],
+ scales:["Maggiore","Minore naturale","Pentatonica magg.","Pentatonica min.","Cromatica (12)"],
+ round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)",
+ pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
+ correct:"giusto!", newStar:" · nuova stella!",
+ wrong:(s,n,d)=>"sbagliato al passo "+s+": era "+n+" ("+d+")", roundW:"round",
+ micListen:"in ascolto…", micErr:"microfono non disponibile o permesso negato",
+ keyhint:"Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.",
+ legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha.",
+ semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
+ tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
+ NOTE:['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'],
+ IV:['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'],
+ DEG:['tonica','sopratonica','sopratonica','mediante','mediante','sottodominante','tritono','dominante','sopradominante','sopradominante','sottotonica','sensibile'],
+ NM:['casa','fiamma','sole','stella','foglia','albero','onda','cielo','ancora','luna','fiore','fulmine'],
+ WORLDS:[
+  {name:"I due poli", th:"Tonica e dominante: casa e il suo pilastro. È l'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G)."},
+  {name:"L'arpeggio maggiore", th:"Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l'identità del modo. È la nota che illumina. Le melodie \"abitano\" queste tre note: quasi tutti i temi memorabili partono o atterrano sull'arpeggio."},
+  {name:"Il passo", th:"La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare."},
+  {name:"La pentatonica", th:"La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala \"a prova di errore\" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela."},
+  {name:"La sensibile", th:"Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa."},
+  {name:"La scala completa", th:"La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica."}],
+ TH:[
+  "Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.",
+  "Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.",
+  "Il passo naturale della melodia. Non è riposo e non è dramma: è movimento, il gradino con cui le frasi camminano.",
+  "La nota che scurisce: con lei il modo diventa minore. Malinconia, interiorità. Cuore dell'accordo minore.",
+  "La nota che illumina: con lei il modo diventa maggiore. Apertura, affermazione. Cuore dell'accordo maggiore.",
+  "Il primo passo del viaggio armonico (I→IV). Sospende senza drammatizzare: è la quarta del sus4, che chiede di posarsi sulla terza.",
+  "Divide l'ottava esattamente a metà: massima instabilità, nessuna gerarchia. È il motore dell'accordo di dominante: vuole risolvere per semitoni, in entrambe le direzioni.",
+  "Il pilastro. L'intervallo più stabile dopo l'ottava, e insieme la tensione strutturale dell'armonia: la dominante esiste per tirare verso casa.",
+  "La malinconia dolce del modo minore. Pesa verso il basso: tende a scendere di semitono sulla dominante.",
+  "Calda e aperta, il colore del maggiore che sorride. Da qui la relativa minore è a un passo.",
+  "Il colore del blues e del mixolidio, la settima dell'accordo di dominante. Tensione morbida che scende verso la mediante.",
+  "Il fulmine: a un semitono da casa, carica massima verso l'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
+ GUIDE:[
+  {h:"Cos'è", p:"Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze."},
+  {h:"Come si gioca", p:"Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.<br><br>Con <b>Velocità</b> regoli il tempo di riproduzione. Con <b>Ritmo</b> le note assumono durate diverse e la sequenza diventa una frase musicale: il ritmo è solo da ascoltare, rispondi nell'ordine giusto senza dover rispettare le durate."},
+  {h:"Livelli e stelle", p:"Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 8 · <span style='color:var(--gold)'>★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo."},
+  {h:"Libero e Teoria", p:"<b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni."},
+  {h:"Canta", p:"Attiva <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando."},
+  {h:"Da computer", p:"A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori."},
+  {h:"Un consiglio", p:"Meglio 5 minuti al giorno che un'ora la domenica. La sinestesia si costruisce con la ripetizione frequente, non con lo sforzo. Quando ti accorgi di \"vedere\" il colore di un intervallo prima di pensarci, sta funzionando."}]
+},
+en:{
+ tag:"Train your ear: every interval always has the same color.",
+ playCta:"Play", guideCta:"First time? See how it works",
+ tabs:["Levels","Free play","Theory","Guide"],
+ course:"Course: the major scale", coursesub:"One degree at a time, in order of melodic importance.",
+ stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
+ starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
+ unlock:"Unlock all levels",
+ lockReq:n=>'Unlock with 2★ in "Ear only" of level '+n,
+ lockMode:"1★ in the previous one", bestShort:"best",
+ level:"Level", back:"Levels",
+ modeSuffix:["",' (the sequence does not light up)',' (the tonic changes every round)'],
+ modes:["See & hear","Ear only","Wandering tonic"],
+ play:"Play", rehear:"Replay", rhythm:"Rhythm", mic:"Sing",
+ speeds:["Slow","Normal","Fast","Turbo"],
+ scales:["Major","Natural minor","Major pentatonic","Minor pentatonic","Chromatic (12)"],
+ round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)",
+ pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
+ correct:"correct!", newStar:" · new star!",
+ wrong:(s,n,d)=>"wrong at step "+s+": it was "+n+" ("+d+")", roundW:"round",
+ micListen:"listening…", micErr:"microphone unavailable or permission denied",
+ keyhint:"Keyboard: A = tonic, then W S E D F T G Y H U J up by semitones (piano layout). R = replay, Enter = play. Outside a game the keys play freely.",
+ legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has.",
+ semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
+ tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
+ NOTE:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
+ IV:['R','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
+ DEG:['tonic','supertonic','supertonic','mediant','mediant','subdominant','tritone','dominant','submediant','submediant','subtonic','leading tone'],
+ NM:['home','flame','sun','star','leaf','tree','wave','sky','anchor','moon','flower','lightning'],
+ WORLDS:[
+  {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (R) and when you are on the springboard (P5)."},
+  {name:"The major arpeggio", th:"Enter the mediant: with tonic and dominant it forms the major triad, C-E-G, the identity of the mode. It is the note that brightens. Melodies live inside these three notes: most memorable themes start or land on the arpeggio."},
+  {name:"The step", th:"The supertonic is the passing note par excellence: it connects tonic and mediant by stepwise motion. On its own it is neither rest nor tension: it is movement. With it, melodies stop leaping and start walking."},
+  {name:"The pentatonic", th:"The submediant completes the major pentatonic: five notes with no semitones, hence no tension. It is the fail-safe scale of half the world's music, from blues to folk songs. In here any sequence sounds good: enjoy it."},
+  {name:"The leading tone", th:"Here comes the first real tension: the leading tone, a half step from home. It is the lightning that begs to discharge onto the tonic, the note that makes closure inevitable. In melody it has a precise role: announcing the return home."},
+  {name:"The full scale", th:"The subdominant closes the circle: all seven degrees. In melody it tends to fall gently onto the mediant, and with the leading tone it forms the tritone hidden inside the major scale (fa-ti), the secret engine of every cadence. Now you have the whole scale: from here on, it is music."}],
+ TH:[
+  "The resting point. Everything is measured from here and everything, sooner or later, returns here. When the melody lands on the tonic, the phrase closes.",
+  "A semitone above home: it creeps, it presses, it will not sit still. Pure chromatic tension, the dark color of the Phrygian mode.",
+  "The natural step of melody. Neither rest nor drama: it is motion, the stair-step that phrases walk on.",
+  "The note that darkens: with it the mode turns minor. Melancholy, interiority. The heart of the minor chord.",
+  "The note that brightens: with it the mode turns major. Openness, affirmation. The heart of the major chord.",
+  "The first step of the harmonic journey (I→IV). It suspends without drama: it is the fourth of the sus4 chord, asking to settle onto the third.",
+  "It splits the octave exactly in half: maximum instability, no hierarchy. The engine of the dominant seventh chord: it wants to resolve by semitones, in both directions.",
+  "The pillar. The most stable interval after the octave, and at the same time the structural tension of harmony: the dominant exists to pull toward home.",
+  "The sweet melancholy of the minor mode. It leans downward: it tends to fall by semitone onto the dominant.",
+  "Warm and open, the color of the major mode smiling. From here, the relative minor is one step away.",
+  "The color of blues and Mixolydian, the seventh of the dominant chord. Soft tension drifting down toward the mediant.",
+  "The lightning: a semitone from home, maximum upward charge. It is the leading tone, the note that makes the return to the tonic inevitable."],
+ GUIDE:[
+  {h:"What it is", p:"Huermony trains your relative ear by building a synesthesia: every interval from the tonic always has the same color, the same symbol and the same place on the wheel, whatever the starting note. The tonic always sits at the top. You do not learn notes: you learn distances."},
+  {h:"How to play", p:"Press Play: you hear a melody that always starts from the tonic. Repeat it by tapping the keys in the same order. Each round the sequence grows by one note. If you make a mistake the game ends and you see the right sequence: look at it, that is when you learn the most.<br><br><b>Speed</b> controls playback tempo. With <b>Rhythm</b> the notes take on different durations and the sequence becomes a musical phrase: rhythm is listen-only, answer in the right order without matching durations."},
+  {h:"Levels and stars", p:"A course on the major scale: you start from two notes (tonic and dominant) and add one degree at a time, in order of melodic importance, up to the full scale. Each level explains the role of the new degree. Each level has three modes: <b>See & hear</b> (the sequence lights up), <b>Ear only</b> (it plays in the dark: answer with the color in your head), <b>Wandering tonic</b> (the tonic changes every round).<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 8 · <span style='color:var(--gold)'>★★★</span> round 8 without ever using Replay.<br><br>Each mode unlocks with 1★ in the previous one. The next level opens with 2★ in Ear only: the game asks you to have the association in your head, not on the screen."},
+  {h:"Free play and Theory", p:"<b>Free play</b>: the same game on a scale and tonic of your choice, with a separate best score per scale. <b>Theory</b>: the musical function of every interval, with its distance in semitones and tones."},
+  {h:"Sing", p:"Turn on <b>Sing</b> and answer with your voice (or whistling, or a monophonic instrument) instead of tapping. Any octave works: the note matters, not the register. A note registers when you hold it in tune for about 150 ms; to repeat the same note twice, separate the two with a short pause. Notes outside the level are ignored. While you sing, the wheel lights up on what you are producing."},
+  {h:"On a computer", p:"A = tonic, then W S E D F T G Y H U J going up by semitones, like a piano keyboard (the major scale is the home row: A S D F G H J). R = replay, Enter = play. Outside a game the keys play freely: use them to explore the colors."},
+  {h:"One piece of advice", p:"Five minutes a day beats an hour on Sunday. Synesthesia is built by frequent repetition, not by effort. When you catch yourself \"seeing\" the color of an interval before thinking about it, it is working."}]
+}};
+const S9=STR[lang];
+const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
+
 const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11]};
-const NOTE=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
-const IV=['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'];
-const DEG=['tonica','sopratonica','sopratonica','mediante','mediante','sottodominante','tritono','dominante','sopradominante','sopradominante','sottotonica','sensibile'];
 const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
- {h:'hsl(0,75%,48%)',ic:'home',nm:'casa'},
- {h:'hsl(22,85%,49%)',ic:'flame',nm:'fiamma'},
- {h:'hsl(40,90%,43%)',ic:'sun',nm:'sole'},
- {h:'hsl(55,75%,41%)',ic:'star',nm:'stella'},
- {h:'hsl(78,60%,42%)',ic:'leaf',nm:'foglia'},
- {h:'hsl(135,55%,36%)',ic:'tree',nm:'albero'},
- {h:'hsl(172,80%,32%)',ic:'ripple',nm:'onda'},
- {h:'hsl(196,85%,42%)',ic:'cloud',nm:'cielo'},
- {h:'hsl(222,70%,50%)',ic:'anchor',nm:'ancora'},
- {h:'hsl(252,58%,56%)',ic:'moon',nm:'luna'},
- {h:'hsl(285,55%,49%)',ic:'flower',nm:'fiore'},
- {h:'hsl(320,70%,48%)',ic:'bolt',nm:'fulmine'}];
-
-const WORLDS=[
- {name:'I due poli', add:[0,7], th:'Tonica e dominante: casa e il suo pilastro. È l\'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G).'},
- {name:'L\'arpeggio maggiore', add:[4], th:'Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l\'identità del modo. È la nota che illumina. Le melodie "abitano" queste tre note: quasi tutti i temi memorabili partono o atterrano sull\'arpeggio.'},
- {name:'Il passo', add:[2], th:'La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare.'},
- {name:'La pentatonica', add:[9], th:'La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala "a prova di errore" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela.'},
- {name:'La sensibile', add:[11], th:'Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa.'},
- {name:'La scala completa', add:[5], th:'La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica.'}];
-const MODES=['Vedi e senti','Solo orecchio','Tonica vagabonda'];
-const TH=[
- 'Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.',
- 'Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.',
- 'Il passo naturale della melodia. Non è riposo e non è dramma: è movimento, il gradino con cui le frasi camminano.',
- 'La nota che scurisce: con lei il modo diventa minore. Malinconia, interiorità. Cuore dell\'accordo minore.',
- 'La nota che illumina: con lei il modo diventa maggiore. Apertura, affermazione. Cuore dell\'accordo maggiore.',
- 'Il primo passo del viaggio armonico (I→IV). Sospende senza drammatizzare: è la quarta del sus4, che chiede di posarsi sulla terza.',
- 'Divide l\'ottava esattamente a metà: massima instabilità, nessuna gerarchia. È il motore dell\'accordo di dominante: vuole risolvere per semitoni, in entrambe le direzioni.',
- 'Il pilastro. L\'intervallo più stabile dopo l\'ottava, e insieme la tensione strutturale dell\'armonia: la dominante esiste per tirare verso casa.',
- 'La malinconia dolce del modo minore. Pesa verso il basso: tende a scendere di semitono sulla dominante.',
- 'Calda e aperta, il colore del maggiore che sorride. Da qui la relativa minore è a un passo.',
- 'Il colore del blues e del mixolidio, la settima dell\'accordo di dominante. Tensione morbida che scende verso la mediante.',
- 'Il fulmine: a un semitono da casa, carica massima verso l\'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica.'];
+ {h:'hsl(0,75%,48%)',ic:'home'},
+ {h:'hsl(22,85%,49%)',ic:'flame'},
+ {h:'hsl(40,90%,43%)',ic:'sun'},
+ {h:'hsl(55,75%,41%)',ic:'star'},
+ {h:'hsl(78,60%,42%)',ic:'leaf'},
+ {h:'hsl(135,55%,36%)',ic:'tree'},
+ {h:'hsl(172,80%,32%)',ic:'ripple'},
+ {h:'hsl(196,85%,42%)',ic:'cloud'},
+ {h:'hsl(222,70%,50%)',ic:'anchor'},
+ {h:'hsl(252,58%,56%)',ic:'moon'},
+ {h:'hsl(285,55%,49%)',ic:'flower'},
+ {h:'hsl(320,70%,48%)',ic:'bolt'}];
+const WADD=[[0,7],[4],[2],[9],[11],[5]];
 const STAR1=5, STAR2=8;
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
@@ -234,18 +337,130 @@ function bestOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
 function worldUnlocked(i){return unlockAll()||i===0||starsOf(i-1,1)>=2;}
 function modeUnlocked(w,m){return unlockAll()||(m===0?worldUnlocked(w):starsOf(w,m-1)>=1);}
-function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WORLDS[i].add); return s.sort((a,b)=>a-b);}
-function maxUnlockedWorld(){let m=0; for(let i=0;i<WORLDS.length;i++){if(worldUnlocked(i))m=i;} return m;}
+function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WADD[i]); return s.sort((a,b)=>a-b);}
+function maxUnlockedWorld(){let m=0; for(let i=0;i<WADD.length;i++){if(worldUnlocked(i))m=i;} return m;}
 function activeSet(){return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
+function totalStars(){const p=prog(); let t=0; for(const k in p)t+=p[k].stars; return t;}
 
-const rs=$('rootsel');
-NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
+function applyStatic(){
+ $('htag').textContent=S9.tag;
+ $('hplaytxt').textContent=S9.playCta.toUpperCase();
+ $('hguide').textContent=S9.guideCta;
+ ['levels','free','theory','guide'].forEach((t,i)=>{$('tab-'+t).textContent=S9.tabs[i];});
+ $('coursetitle').textContent=S9.course;
+ $('coursesub').textContent=S9.coursesub;
+ $('starsline').innerHTML=S9.stars;
+ $('unlocktxt').textContent=S9.unlock;
+ $('backtxt').textContent=S9.back;
+ $('playtxt').textContent=S9.play;
+ $('reheartxt').textContent=S9.rehear;
+ $('rhythmtxt').textContent=S9.rhythm;
+ $('mictxt').textContent=S9.mic;
+ $('roundlbl').textContent=S9.round;
+ $('bestlbl').textContent=S9.bestScale;
+ $('keyhint').textContent=S9.keyhint;
+ $('status').textContent=S9.pressPlay;
+ $('legsum').textContent=S9.legsum;
+ $('thintro').textContent=S9.thintro;
+ const sc=$('scsel'); sc.innerHTML='';
+ [['maj',0],['min',1],['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; sc.appendChild(o);});
+ sc.value=scale;
+ const rs=$('rootsel'); rs.innerHTML='';
+ NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
+ const sp=$('spdsel'); sp.innerHTML='';
+ [['0.75',0],['1',1],['1.3',2],['1.6',3]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.speeds[i]; sp.appendChild(o);});
+ sp.value=String(speed);
+ const lg=$('legend'); lg.innerHTML='';
+ C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
+  d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
+  lg.appendChild(d);});
+ const thBox=$('theory'); thBox.innerHTML='';
+ C.forEach((c,k)=>{const d=document.createElement('div'); d.className='world'; d.style.padding='12px 14px';
+  d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">'+
+   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
+   '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.NM[k]+'</span></span></div>'+
+   '<p style="margin:0 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
+   '<p style="margin:0;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
+  thBox.appendChild(d);});
+ const gd=$('guide'); gd.innerHTML='';
+ S9.GUIDE.forEach(s=>{const d=document.createElement('div'); d.className='world'; d.style.padding='14px 16px';
+  d.innerHTML='<p style="font-size:15px;font-weight:600;margin:0 0 6px">'+s.h+'</p><p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">'+s.p+'</p>';
+  gd.appendChild(d);});
+ document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
+  b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
+ const em=$('emblem'); em.innerHTML='';
+ for(let k=0;k<12;k++){
+  const a=(-90+k*30)*Math.PI/180, x=70+58*Math.cos(a), y=70+58*Math.sin(a);
+  const d=document.createElement('div'); d.className='edot';
+  d.style.cssText='left:'+(x-6)+'px;top:'+(y-6)+'px;background:'+C[k].h;
+  em.appendChild(d);}
+ const ts=totalStars(), mw=maxUnlockedWorld();
+ $('hprog').textContent=(ts>0||mw>0)?(S9.level+' '+(mw+1)+' · '+ts+'★'):'';
+}
 
-const lg=$('legend');
-C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
- d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+c.nm+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
- lg.appendChild(d);});
+function setView(name){
+ $('view-home').hidden=name!=='home';
+ $('hdr').hidden=name==='home';
+ $('tabs').hidden=name==='home';
+ ['levels','theory','guide'].forEach(v=>{$('view-'+v).hidden=name!==v;});
+ $('view-game').hidden=name!=='free';
+ ['levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===name);});
+}
+function showHome(){clearTimers(); state='idle'; seq=[]; stopMic(); applyStaticHomeProg(); setView('home');}
+function applyStaticHomeProg(){const ts=totalStars(), mw=maxUnlockedWorld(); $('hprog').textContent=(ts>0||mw>0)?(S9.level+' '+(mw+1)+' · '+ts+'★'):'';}
+function showLevels(){
+ clearTimers(); state='idle'; seq=[]; stopMic();
+ setView('levels');
+ $('unlockall').checked=unlockAll();
+ renderMap(); renderWorlds();
+}
+function showFree(){
+ clearTimers(); state='idle'; seq=[]; game={kind:'free'};
+ root=+$('rootsel').value;
+ setView('free');
+ $('ctxlabel').hidden=true; $('lvltheory').hidden=true; $('backbtn').hidden=true;
+ $('scsel').hidden=false; $('rootsel').hidden=false;
+ $('bestlbl').textContent=S9.bestScale;
+ $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
+ render(); loadBest();
+}
+function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
+function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
+function startLevel(w,m){
+ clearTimers(); game={kind:'level',w:w,m:m}; root=0;
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
+ $('ctxlabel').hidden=false;
+ $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+S9.WORLDS[w].name+'</b> · '+MODES[m]+S9.modeSuffix[m]+'<br>'+S9.starsCtx;
+ $('lvltheory').hidden=false;
+ $('lvltheory').querySelector('p').textContent=S9.WORLDS[w].th;
+ $('backbtn').hidden=false;
+ $('scsel').hidden=true; $('rootsel').hidden=true;
+ $('bestlbl').textContent=S9.bestLevel;
+ $('round').textContent='–'; $('reveal').innerHTML='';
+ render(); loadBest();
+ newGame();
+}
+function setStatus(txt,cls){
+ const st=$('status');
+ st.className=cls||'';
+ if(typeof txt==='string'&&txt.indexOf('<')<0) st.textContent=txt; else st.innerHTML=txt;
+}
+$('tab-levels').addEventListener('click',showLevels);
+$('tab-free').addEventListener('click',showFree);
+$('tab-theory').addEventListener('click',showTheory);
+$('tab-guide').addEventListener('click',showGuide);
+$('backbtn').addEventListener('click',showLevels);
+$('brand').addEventListener('click',showHome);
+$('hplay').addEventListener('click',showLevels);
+$('hguide').addEventListener('click',showGuide);
+
+function bestKey(){return 'it_best_'+scale;}
+function loadBest(){
+ if(game.kind==='free') $('best').textContent=localStorage.getItem(bestKey())||0;
+ else $('best').textContent=bestOf(game.w,game.m);
+}
 
 function renderMap(){
  const MS=210, MC=MS/2, MR=MS/2-18;
@@ -259,17 +474,16 @@ function renderMap(){
   map.appendChild(d);
  }
 }
-
 function renderWorlds(){
  const box=$('worlds'); box.innerHTML='';
- WORLDS.forEach((w,i)=>{
+ S9.WORLDS.forEach((w,i)=>{
   const unlocked=worldUnlocked(i);
   const card=document.createElement('div'); card.className='world'+(unlocked?'':' locked');
   let ints='';
-  w.add.forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+  WADD[i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
   if(!unlocked){
-   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Sblocca con 2★ in "Solo orecchio" del livello '+i+'</p>';
+   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
    card.innerHTML=h;
   } else {
    card.innerHTML=h;
@@ -277,8 +491,8 @@ function renderWorlds(){
     const mu=modeUnlocked(i,m);
     const b=document.createElement('button'); b.className='mrow'; b.disabled=!mu;
     b.innerHTML='<span>'+(mu?'<i class="ti ti-player-play" style="font-size:13px;vertical-align:-2px"></i> ':'<i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> ')+mn+
-     (mu&&bestOf(i,m)?' <span style="color:var(--muted);font-size:12px">· best '+bestOf(i,m)+'</span>':'')+
-     (!mu?' <span style="color:var(--muted);font-size:12px">· 1★ nella precedente</span>':'')+'</span>'+
+     (mu&&bestOf(i,m)?' <span style="color:var(--muted);font-size:12px">· '+S9.bestShort+' '+bestOf(i,m)+'</span>':'')+
+     (!mu?' <span style="color:var(--muted);font-size:12px">· '+S9.lockMode+'</span>':'')+'</span>'+
      '<span class="stars">'+starsStr(starsOf(i,m))+'</span>';
     if(mu) b.addEventListener('click',()=>startLevel(i,m));
     card.appendChild(b);
@@ -286,77 +500,6 @@ function renderWorlds(){
   }
   box.appendChild(card);
  });
-}
-
-function setTab(name){
- ['levels','free','theory','guide'].forEach(t=>{
-  $('tab-'+t).classList.toggle('on',t===name);
- });
- $('view-levels').hidden=name!=='levels';
- $('view-theory').hidden=name!=='theory';
- $('view-guide').hidden=name!=='guide';
- $('view-game').hidden=name!=='free';
-}
-function showLevels(){
- clearTimers(); state='idle'; seq=[]; stopMic();
- setTab('levels');
- $('unlockall').checked=unlockAll();
- renderMap(); renderWorlds();
-}
-function showFree(){
- clearTimers(); state='idle'; seq=[]; game={kind:'free'};
- root=+$('rootsel').value;
- setTab('free');
- $('ctxlabel').hidden=true; $('lvltheory').hidden=true; $('backbtn').hidden=true;
- $('scsel').style.display=''; $('rootsel').style.display='';
- $('bestlbl').textContent='Record (scala)';
- $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML='';
- render(); loadBest();
-}
-function showTheory(){
- clearTimers(); state='idle'; seq=[]; stopMic();
- setTab('theory');
-}
-function startLevel(w,m){
- clearTimers(); game={kind:'level',w:w,m:m}; root=0;
- setTab('free');
- $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
- $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML='Livello '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'')+'<br><span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta';
- $('lvltheory').hidden=false;
- $('lvltheory').querySelector('p').textContent=WORLDS[w].th;
- $('backbtn').hidden=false;
- $('scsel').style.display='none'; $('rootsel').style.display='none';
- $('bestlbl').textContent='Record (livello)';
- $('round').textContent='–'; $('reveal').innerHTML='';
- render(); loadBest();
- newGame();
-}
-$('tab-levels').addEventListener('click',showLevels);
-$('tab-free').addEventListener('click',showFree);
-$('tab-theory').addEventListener('click',showTheory);
-$('tab-guide').addEventListener('click',()=>{clearTimers(); state='idle'; seq=[]; stopMic(); setTab('guide');});
-$('backbtn').addEventListener('click',showLevels);
-
-function toniStr(k){
- if(k===0) return 'unisono';
- const t=Math.floor(k/2), mezzo=k%2===1;
- if(t===0) return 'mezzo tono';
- return t+(t===1?' tono':' toni')+(mezzo?' e mezzo':'');
-}
-const thBox=$('theory');
-C.forEach((c,k)=>{const d=document.createElement('div'); d.className='world'; d.style.padding='12px 14px';
- d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">'+
-  '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
-  '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+c.nm+'</span></span></div>'+
-  '<p style="margin:0 0 6px 44px;font-size:12px;color:var(--muted)">'+(k===0?'0 semitoni · unisono':k+(k===1?' semitono':' semitoni')+' · '+toniStr(k))+'</p>'+
-  '<p style="margin:0;font-size:13px;line-height:1.55;color:var(--text)">'+TH[k]+'</p>';
- thBox.appendChild(d);});
-
-function bestKey(){return 'it_best_'+scale;}
-function loadBest(){
- if(game.kind==='free') $('best').textContent=localStorage.getItem(bestKey())||0;
- else $('best').textContent=bestOf(game.w,game.m);
 }
 
 let S=0, CXY=0, R=0, KEY=52;
@@ -368,7 +511,7 @@ function layout(){
 }
 function render(){
  layout();
- const w=$('wheel'); w.innerHTML='';
+ const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
  const cs=Math.round(S*0.36);
  const ctr=document.createElement('div'); ctr.id='ctr';
  ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
@@ -379,7 +522,7 @@ function render(){
   if(sc.includes(k)){
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
-   b.setAttribute('aria-label',(k===0?'tonica':IV[k])+', '+C[k].nm);
+   b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]);
    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.28)+'px"></i><span style="font-size:'+(KEY*0.2)+'px;line-height:1.15">'+IV[k]+'</span><span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span><span class="kb">'+KB[k]+'</span>';
    b.addEventListener('click',()=>press(k));
    w.appendChild(b);
@@ -404,12 +547,12 @@ function ensureCtx(){
  if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
  if(ctx.state==='suspended') ctx.resume();
 }
-function tone(midi,dur){
+function tone(midi,durS){
  const o=ctx.createOscillator(), g=ctx.createGain(), t0=ctx.currentTime+0.02;
  o.type='triangle'; o.frequency.value=440*Math.pow(2,(midi-69)/12);
  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.25,t0+0.02);
- g.gain.setValueAtTime(0.25,t0+dur-0.08); g.gain.linearRampToValueAtTime(0,t0+dur);
- o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+dur);
+ g.gain.setValueAtTime(0.25,t0+durS-0.08); g.gain.linearRampToValueAtTime(0,t0+durS);
+ o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+durS);
 }
 function buzz(){
  const o=ctx.createOscillator(), g=ctx.createGain(), t0=ctx.currentTime+0.02;
@@ -417,9 +560,7 @@ function buzz(){
  g.gain.setValueAtTime(0.15,t0); g.gain.linearRampToValueAtTime(0,t0+0.45);
  o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+0.45);
 }
-function chime(){
- [0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});
-}
+function chime(){[0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});}
 function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
@@ -434,7 +575,7 @@ function pulse(ms){
 }
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 function playSeq(){
- state='play'; clearTimers(); $('status').textContent='ascolta…'; $('reveal').innerHTML='';
+ state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML='';
  if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12); updateNotes();}
  const silent=game.kind==='level'&&game.m===1;
  const base=Math.max(420,660-seq.length*18)/speed;
@@ -448,7 +589,7 @@ function playSeq(){
   },t));
   t+=ms;
  });
- timers.push(setTimeout(()=>{state='input'; step=0; $('status').textContent='tocca a te (0/'+seq.length+')';},t));
+ timers.push(setTimeout(()=>{state='input'; step=0; setStatus(S9.yourTurn(0,seq.length));},t));
 }
 const DURS=[0.5,1,1,1,1.5,2];
 function addNote(){
@@ -461,6 +602,7 @@ function newGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  $('round').textContent=seq.length; playSeq();
 }
+
 let micOn=false, micStream=null, micAn=null, micBuf=null, micTimer=null, micGlowed=-1;
 let det={pc:-1,count:0,locked:false,lockedPc:-1,silence:0};
 function autoCorrelate(buf,sr){
@@ -472,15 +614,21 @@ function autoCorrelate(buf,sr){
  for(let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<0.2){r1=i;break;}
  for(let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<0.2){r2=SIZE-i;break;}
  buf=buf.slice(r1,r2); SIZE=buf.length;
- if(SIZE<64) return -1;
+ if(SIZE<128) return -1;
  const c=new Float32Array(SIZE);
  for(let i=0;i<SIZE;i++) for(let j=0;j<SIZE-i;j++) c[i]+=buf[j]*buf[j+i];
  let d=0; while(d<SIZE-1&&c[d]>c[d+1]) d++;
  let maxval=-1,maxpos=-1;
  for(let i=d;i<SIZE;i++){if(c[i]>maxval){maxval=c[i];maxpos=i;}}
  if(maxpos<1) return -1;
- let T0=maxpos;
- const x1=c[T0-1],x2=c[T0],x3=c[T0+1]||x2;
+ if(c[0]>0&&maxval/c[0]<0.5) return -1;
+ let best=maxpos;
+ for(const m of [2,3]){
+  const i2=Math.round(maxpos*m);
+  if(i2<SIZE-1&&c[i2]>=0.8*maxval) best=i2;
+ }
+ let T0=best;
+ const x1=c[T0-1],x2=c[T0],x3=(T0+1<SIZE)?c[T0+1]:x2;
  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
  if(a) T0=T0-b/(2*a);
  const f=sr/T0;
@@ -498,7 +646,7 @@ function micLoop(){
  const f=autoCorrelate(micBuf,ctx.sampleRate);
  if(f<0){
   det.count=0; det.silence++;
-  if(det.silence>=2){det.locked=false; det.pc=-1; micGlow(-1); $('micline').textContent='in ascolto…';}
+  if(det.silence>=2){det.locked=false; det.pc=-1; micGlow(-1); $('micline').textContent=S9.micListen;}
   return;
  }
  det.silence=0;
@@ -520,15 +668,16 @@ async function startMic(){
   ensureCtx();
   micStream=await navigator.mediaDevices.getUserMedia({audio:true});
   const src=ctx.createMediaStreamSource(micStream);
-  micAn=ctx.createAnalyser(); micAn.fftSize=2048;
+  micAn=ctx.createAnalyser(); micAn.fftSize=4096;
   micBuf=new Float32Array(micAn.fftSize);
   src.connect(micAn);
   micTimer=setInterval(micLoop,50);
   micOn=true;
-  $('micline').hidden=false; $('micline').textContent='in ascolto…';
+  $('miccb').setAttribute('aria-pressed','true');
+  $('micline').hidden=false; $('micline').textContent=S9.micListen;
  }catch(e){
-  micOn=false; $('miccb').checked=false;
-  $('micline').hidden=false; $('micline').textContent='microfono non disponibile o permesso negato';
+  micOn=false; $('miccb').setAttribute('aria-pressed','false');
+  $('micline').hidden=false; $('micline').textContent=S9.micErr;
   setTimeout(()=>{if(!micOn)$('micline').hidden=true;},3000);
  }
 }
@@ -536,8 +685,9 @@ function stopMic(){
  if(micTimer){clearInterval(micTimer); micTimer=null;}
  if(micStream){micStream.getTracks().forEach(t=>t.stop()); micStream=null;}
  micAn=null; micOn=false; micGlow(-1);
- $('micline').hidden=true; $('miccb').checked=false;
+ $('micline').hidden=true; $('miccb').setAttribute('aria-pressed','false');
 }
+
 function press(k){
  if(state==='input'){hit(k); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k); tone(60+root+k,0.38);}
@@ -548,29 +698,29 @@ function hit(k,fromMic){
  if(k===seq[step]){
   step++;
   if(step===seq.length){
-   $('status').textContent='giusto!';
+   setStatus(S9.correct,'ok');
    if(game.kind==='free'){
     const b=+(localStorage.getItem(bestKey())||0);
     if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
    }
    timers.push(setTimeout(()=>{addNote(); $('round').textContent=seq.length; playSeq();},900));
    state='wait';
-  } else $('status').textContent='tocca a te ('+step+'/'+seq.length+')';
+  } else setStatus(S9.yourTurn(step,seq.length));
  } else {
   state='over'; buzz();
   const wrong=seq[step];
-  let msg='sbagliato al passo '+(step+1)+': era '+IV[wrong]+' ('+DEG[wrong]+')';
+  let msg=S9.wrong(step+1,IV[wrong],DEG[wrong]);
   if(game.kind==='level'){
    const completed=seq.length-1;
    let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
    const before=starsOf(game.w,game.m);
    saveProg('w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
    loadBest();
-   msg+=' · round '+completed;
-   if(st>before){msg+=' · nuova stella!'; chime();}
-   $('status').innerHTML=msg+' <span style="color:var(--gold);letter-spacing:2px">'+starsStr(Math.max(st,before))+'</span>';
+   msg+=' · '+S9.roundW+' '+completed;
+   if(st>before){msg+=S9.newStar; chime();}
+   setStatus(msg+' <span style="color:var(--gold);letter-spacing:2px">'+starsStr(Math.max(st,before))+'</span>','err');
   } else {
-   $('status').textContent=msg;
+   setStatus(msg,'err');
   }
   const rv=$('reveal'); rv.innerHTML='';
   seq.forEach((q,i)=>{
@@ -581,13 +731,17 @@ function hit(k,fromMic){
 }
 $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
-$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
-$('rhythmcb').addEventListener('change',e=>{rhythm=e.target.checked; if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
-$('spdsel').value=String(speed);
-$('rhythmcb').checked=rhythm;
-$('miccb').addEventListener('change',e=>{if(e.target.checked) startMic(); else stopMic();});
+$('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
+$('miccb').addEventListener('click',function(){if(micOn) stopMic(); else startMic();});
+$('rhythmcb').setAttribute('aria-pressed',String(rhythm));
+$('unlockall').addEventListener('change',e=>{
+ if(e.target.checked) localStorage.setItem('it_unlockall','1');
+ else localStorage.removeItem('it_unlockall');
+ renderMap(); renderWorlds();
+});
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
@@ -598,13 +752,8 @@ document.addEventListener('keydown',e=>{
  if(key==='r'){$('rehear').click(); return;}
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
-$('unlockall').addEventListener('change',e=>{
- if(e.target.checked) localStorage.setItem('it_unlockall','1');
- else localStorage.removeItem('it_unlockall');
- renderMap(); renderWorlds();
-});
-$('unlockall').checked=unlockAll();
-renderMap(); renderWorlds();
+applyStatic();
+setView('home');
 </script>
 </body>
 </html>
