@@ -112,6 +112,10 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
       <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)"><b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni.</p>
     </div>
     <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Canta</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Attiva la spunta <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando: è il momento in cui suono, colore e voce diventano la stessa cosa.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
       <p style="font-size:15px;font-weight:600;margin:0 0 6px">Da computer</p>
       <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori.</p>
     </div>
@@ -145,6 +149,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
         <option value="1.6">Turbo</option>
       </select>
       <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer;"><input type="checkbox" id="rhythmcb" style="accent-color:#eab308; width:15px; height:15px;"> Ritmo</label>
+      <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer;"><input type="checkbox" id="miccb" style="accent-color:#eab308; width:15px; height:15px;"> <i class="ti ti-microphone" style="font-size:14px"></i> Canta</label>
     </div>
 
     <div class="stats">
@@ -154,6 +159,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
 
     <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;">Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.</p>
     <p id="status">premi "Gioca"</p>
+    <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
     <div id="reveal"></div>
   </div>
@@ -292,7 +298,7 @@ function setTab(name){
  $('view-game').hidden=name!=='free';
 }
 function showLevels(){
- clearTimers(); state='idle'; seq=[];
+ clearTimers(); state='idle'; seq=[]; stopMic();
  setTab('levels');
  $('unlockall').checked=unlockAll();
  renderMap(); renderWorlds();
@@ -308,7 +314,7 @@ function showFree(){
  render(); loadBest();
 }
 function showTheory(){
- clearTimers(); state='idle'; seq=[];
+ clearTimers(); state='idle'; seq=[]; stopMic();
  setTab('theory');
 }
 function startLevel(w,m){
@@ -329,7 +335,7 @@ function startLevel(w,m){
 $('tab-levels').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
-$('tab-guide').addEventListener('click',()=>{clearTimers(); state='idle'; seq=[]; setTab('guide');});
+$('tab-guide').addEventListener('click',()=>{clearTimers(); state='idle'; seq=[]; stopMic(); setTab('guide');});
 $('backbtn').addEventListener('click',showLevels);
 
 function toniStr(k){
@@ -455,13 +461,90 @@ function newGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  $('round').textContent=seq.length; playSeq();
 }
+let micOn=false, micStream=null, micAn=null, micBuf=null, micTimer=null, micGlowed=-1;
+let det={pc:-1,count:0,locked:false,lockedPc:-1,silence:0};
+function autoCorrelate(buf,sr){
+ let SIZE=buf.length, rms=0;
+ for(let i=0;i<SIZE;i++){const v=buf[i]; rms+=v*v;}
+ rms=Math.sqrt(rms/SIZE);
+ if(rms<0.015) return -1;
+ let r1=0,r2=SIZE-1;
+ for(let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<0.2){r1=i;break;}
+ for(let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<0.2){r2=SIZE-i;break;}
+ buf=buf.slice(r1,r2); SIZE=buf.length;
+ if(SIZE<64) return -1;
+ const c=new Float32Array(SIZE);
+ for(let i=0;i<SIZE;i++) for(let j=0;j<SIZE-i;j++) c[i]+=buf[j]*buf[j+i];
+ let d=0; while(d<SIZE-1&&c[d]>c[d+1]) d++;
+ let maxval=-1,maxpos=-1;
+ for(let i=d;i<SIZE;i++){if(c[i]>maxval){maxval=c[i];maxpos=i;}}
+ if(maxpos<1) return -1;
+ let T0=maxpos;
+ const x1=c[T0-1],x2=c[T0],x3=c[T0+1]||x2;
+ const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
+ if(a) T0=T0-b/(2*a);
+ const f=sr/T0;
+ return (f>60&&f<1600)?f:-1;
+}
+function micGlow(k){
+ if(micGlowed===k) return;
+ if(micGlowed>=0){const o=$('b'+micGlowed); if(o) o.style.outline='';}
+ if(k>=0){const b=$('b'+k); if(b) b.style.outline='3px solid rgba(255,255,255,0.65)';}
+ micGlowed=k;
+}
+function micLoop(){
+ if(!micAn) return;
+ micAn.getFloatTimeDomainData(micBuf);
+ const f=autoCorrelate(micBuf,ctx.sampleRate);
+ if(f<0){
+  det.count=0; det.silence++;
+  if(det.silence>=2){det.locked=false; det.pc=-1; micGlow(-1); $('micline').textContent='in ascolto…';}
+  return;
+ }
+ det.silence=0;
+ const midi=69+12*Math.log2(f/440);
+ const pcAbs=((Math.round(midi))%12+12)%12;
+ const k=(pcAbs-(root%12)+12)%12;
+ micGlow(k);
+ $('micline').innerHTML='♪ '+NOTE[pcAbs]+' · <b>'+IV[k]+'</b> ('+DEG[k]+')';
+ if(state!=='input') return;
+ if(det.pc===k) det.count++; else {det.pc=k; det.count=1;}
+ if(det.locked&&k!==det.lockedPc) det.locked=false;
+ if(!det.locked&&det.count>=3){
+  if(activeSet().includes(k)){hit(k,true);}
+  det.locked=true; det.lockedPc=k;
+ }
+}
+async function startMic(){
+ try{
+  ensureCtx();
+  micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const src=ctx.createMediaStreamSource(micStream);
+  micAn=ctx.createAnalyser(); micAn.fftSize=2048;
+  micBuf=new Float32Array(micAn.fftSize);
+  src.connect(micAn);
+  micTimer=setInterval(micLoop,50);
+  micOn=true;
+  $('micline').hidden=false; $('micline').textContent='in ascolto…';
+ }catch(e){
+  micOn=false; $('miccb').checked=false;
+  $('micline').hidden=false; $('micline').textContent='microfono non disponibile o permesso negato';
+  setTimeout(()=>{if(!micOn)$('micline').hidden=true;},3000);
+ }
+}
+function stopMic(){
+ if(micTimer){clearInterval(micTimer); micTimer=null;}
+ if(micStream){micStream.getTracks().forEach(t=>t.stop()); micStream=null;}
+ micAn=null; micOn=false; micGlow(-1);
+ $('micline').hidden=true; $('miccb').checked=false;
+}
 function press(k){
  if(state==='input'){hit(k); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k); tone(60+root+k,0.38);}
 }
-function hit(k){
+function hit(k,fromMic){
  if(state!=='input') return; ensureCtx();
- flash(k); tone(60+root+k,0.38);
+ flash(k); if(!fromMic) tone(60+root+k,0.38);
  if(k===seq[step]){
   step++;
   if(step===seq.length){
@@ -504,6 +587,7 @@ $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); loca
 $('rhythmcb').addEventListener('change',e=>{rhythm=e.target.checked; if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
 $('spdsel').value=String(speed);
 $('rhythmcb').checked=rhythm;
+$('miccb').addEventListener('change',e=>{if(e.target.checked) startMic(); else stopMic();});
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
