@@ -34,6 +34,11 @@ button.btn.primary{background:#3d4250; border-color:#4a5060;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
 .key span{font-weight:600; line-height:1.3;}
+.kb{display:none;}
+@media (pointer:fine){
+ .kb{display:block; position:absolute; bottom:-9px; left:50%; transform:translateX(-50%); background:var(--surface2); border:1px solid var(--line); border-radius:5px; font-size:10px; font-weight:600; padding:1px 5px; color:var(--muted);}
+ #keyhint{display:block !important;}
+}
 .dot{position:absolute; border-radius:50%; background:var(--line);}
 #ctr{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .2s; pointer-events:none; color:#fff;}
 #reveal{display:flex; flex-wrap:wrap; gap:6px; min-height:30px; margin:8px 0;}
@@ -72,6 +77,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
     <div class="stat"><p class="lbl">Record (scala)</p><p class="val" id="best">0</p></div>
   </div>
 
+  <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;">Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.</p>
   <p id="status">premi "Gioca"</p>
   <div id="wheelbox"><div id="wheel"></div></div>
   <div id="reveal"></div>
@@ -91,6 +97,8 @@ const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0
 const NOTE=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
 const IV=['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'];
 const DEG=['tonica','sopratonica','sopratonica','mediante','mediante','sottodominante','tritono','dominante','sopradominante','sopradominante','sottotonica','sensibile'];
+const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
+const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
  {h:'hsl(0,75%,48%)',ic:'home',nm:'casa'},
  {h:'hsl(22,85%,49%)',ic:'flame',nm:'fiamma'},
@@ -121,7 +129,8 @@ function loadBest(){$('best').textContent=localStorage.getItem(bestKey())||0;}
 
 let S=0, CXY=0, R=0, KEY=52;
 function layout(){
- S=Math.min(window.innerWidth-32, 380);
+ const bw=$('wheelbox').clientWidth||window.innerWidth-32;
+ S=Math.max(260, Math.min(bw, 380));
  CXY=S/2; KEY=S<330?46:52; R=S/2-KEY/2-4;
  const w=$('wheel'); w.style.width=S+'px'; w.style.height=S+'px';
 }
@@ -139,8 +148,8 @@ function render(){
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
    b.setAttribute('aria-label',(k===0?'tonica':IV[k])+', '+C[k].nm);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.34)+'px"></i><span style="font-size:'+(KEY*0.22)+'px">'+IV[k]+'</span>';
-   b.addEventListener('click',()=>hit(k));
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.34)+'px"></i><span style="font-size:'+(KEY*0.22)+'px">'+IV[k]+'</span><span class="kb">'+KB[k]+'</span>';
+   b.addEventListener('click',()=>press(k));
    w.appendChild(b);
   } else {
    const d=document.createElement('div'); d.className='dot';
@@ -149,7 +158,11 @@ function render(){
   }
  }
 }
-let rsz; window.addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(render,150);});
+let rsz;
+function maybeRender(){clearTimeout(rsz); rsz=setTimeout(()=>{const bw=$('wheelbox').clientWidth; if(!bw) return; const ns=Math.max(260,Math.min(bw,380)); if(ns!==S) render();},120);}
+window.addEventListener('resize',maybeRender);
+new ResizeObserver(maybeRender).observe(document.getElementById('wheelbox'));
+window.addEventListener('load',maybeRender);
 
 let ctx=null;
 function ensureCtx(){
@@ -188,6 +201,10 @@ function addNote(){
  do{k=sc[Math.floor(Math.random()*sc.length)];}while(seq.length&&k===seq[seq.length-1]&&Math.random()<0.6);
  seq.push(k);
 }
+function press(k){
+ if(state==='input'){hit(k); return;}
+ if(state==='idle'||state==='over'){ensureCtx(); flash(k); tone(60+root+k,0.38);}
+}
 function hit(k){
  if(state!=='input') return; ensureCtx();
  flash(k); tone(60+root+k,0.38);
@@ -210,8 +227,17 @@ function hit(k){
    rv.appendChild(d);});
  }
 }
-$('newgame').addEventListener('click',()=>{ensureCtx(); clearTimers(); seq=[0]; addNote(); $('round').textContent=seq.length; playSeq();});
-$('rehear').addEventListener('click',()=>{if(seq.length&&(state==='input'||state==='over')){ensureCtx(); playSeq();}});
+$('newgame').addEventListener('click',function(){this.blur(); ensureCtx(); clearTimers(); seq=[0]; addNote(); $('round').textContent=seq.length; playSeq();});
+$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){ensureCtx(); playSeq();}});
+document.addEventListener('keydown',e=>{
+ if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
+ const tag=(e.target.tagName||'').toLowerCase();
+ if(tag==='select'||tag==='input'||tag==='textarea') return;
+ const key=e.key.toLowerCase();
+ if(key==='enter'){if(document.activeElement===document.body){e.preventDefault(); $('newgame').click();} return;}
+ if(key==='r'){$('rehear').click(); return;}
+ if(key in KEYMAP){const k=KEYMAP[key]; if(SCALES[scale].includes(k)) press(k);}
+});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value;});
 render(); loadBest();
