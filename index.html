@@ -76,7 +76,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
   <div id="wheelbox"><div id="wheel"></div></div>
   <div id="reveal"></div>
 
-  <p class="leg-title">Il viaggio cromatico (semitoni dalla tonica)</p>
+  <p class="leg-title">Il viaggio cromatico (intervalli dalla tonica)</p>
   <div id="legend"></div>
 
   <footer>
@@ -89,6 +89,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
 <script>
 const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11]};
 const NOTE=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+const IV=['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'];
 const C=[
  {h:'hsl(0,75%,48%)',ic:'home',nm:'casa'},
  {h:'hsl(22,85%,49%)',ic:'flame',nm:'fiamma'},
@@ -111,7 +112,7 @@ NOTE.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textCo
 
 const lg=$('legend');
 C.forEach((c,k)=>{const d=document.createElement('div');d.className='leg';
- d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+k+'</b><br>'+c.nm+'</small>';
+ d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+'</b><br>'+c.nm+'</small>';
  lg.appendChild(d);});
 
 function bestKey(){return 'it_best_'+scale;}
@@ -134,11 +135,10 @@ function render(){
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=CXY+R*Math.cos(a), y=CXY+R*Math.sin(a);
   if(sc.includes(k)){
-   const deg=sc.indexOf(k)+1;
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
-   b.setAttribute('aria-label','grado '+deg+', '+C[k].nm);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.36)+'px"></i><span style="font-size:'+(KEY*0.2)+'px">'+deg+'</span>';
+   b.setAttribute('aria-label',(k===0?'tonica':IV[k])+', '+C[k].nm);
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.34)+'px"></i><span style="font-size:'+(KEY*0.22)+'px">'+IV[k]+'</span>';
    b.addEventListener('click',()=>hit(k));
    w.appendChild(b);
   } else {
@@ -201,12 +201,11 @@ function hit(k){
   } else $('status').textContent='tocca a te ('+step+'/'+seq.length+')';
  } else {
   state='over'; buzz();
-  const sc=SCALES[scale];
-  $('status').textContent='sbagliato al passo '+(step+1)+': era '+C[seq[step]].nm+' (grado '+(sc.indexOf(seq[step])+1)+')';
+  $('status').textContent='sbagliato al passo '+(step+1)+': era '+C[seq[step]].nm+' ('+IV[seq[step]]+')';
   const rv=$('reveal'); rv.innerHTML='';
   seq.forEach((q,i)=>{
    const d=document.createElement('div'); d.className='chip'+(i===step?' err':'');
-   d.innerHTML='<span class="sw" style="background:'+C[q].h+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+(sc.indexOf(q)+1)+'</b>';
+   d.innerHTML='<span class="sw" style="background:'+C[q].h+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+IV[q]+'</b>';
    rv.appendChild(d);});
  }
 }
