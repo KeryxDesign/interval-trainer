@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#14151a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Interval Trainer · Simon cromatico</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation;}
+.wrap{max-width:480px; margin:0 auto; padding:16px 16px 40px;}
+h1{font-size:19px; font-weight:600; margin:8px 0 2px;}
+.sub{font-size:13px; color:var(--muted); margin:0 0 16px;}
+.controls{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-size:14px; appearance:none;}
+button.btn{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:10px 14px; font-size:14px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+button.btn:active{transform:scale(0.97);}
+button.btn.primary{background:#3d4250; border-color:#4a5060;}
+.stats{display:flex; gap:8px; margin:12px 0;}
+.stat{flex:1; background:var(--surface); border-radius:12px; padding:10px 14px;}
+.stat p{margin:0;}
+.stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+.stat .val{font-size:24px; font-weight:600;}
+#status{font-size:15px; font-weight:600; min-height:42px; margin:4px 0 8px;}
+#wheelbox{display:flex; justify-content:center;}
+#wheel{position:relative;}
+.key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
+.key i{line-height:1;}
+.key span{font-weight:600; line-height:1.3;}
+.dot{position:absolute; border-radius:50%; background:var(--line);}
+#ctr{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .2s; pointer-events:none; color:#fff;}
+#reveal{display:flex; flex-wrap:wrap; gap:6px; min-height:30px; margin:8px 0;}
+.chip{display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:999px; background:var(--surface); font-size:13px;}
+.chip .sw{width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff;}
+.chip.err{outline:2px solid #e24b4a;}
+.leg-title{font-size:12px; color:var(--muted); margin:20px 0 8px;}
+#legend{display:grid; grid-template-columns:repeat(4,1fr); gap:6px;}
+.leg{display:flex; align-items:center; gap:7px; padding:6px 8px; border-radius:10px; background:var(--surface);}
+.leg .sw{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff;}
+.leg small{font-size:11px; line-height:1.3; color:var(--text);}
+.leg small b{font-weight:600;}
+footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Interval Trainer</h1>
+  <p class="sub">Simon cromatico: ascolta la melodia, ripetila. Stesso colore = stesso intervallo dalla tonica, sempre.</p>
+
+  <div class="controls">
+    <select id="scsel" aria-label="Scala">
+      <option value="maj" selected>Maggiore</option>
+      <option value="min">Minore naturale</option>
+      <option value="pmaj">Pentatonica magg.</option>
+      <option value="pmin">Pentatonica min.</option>
+      <option value="chrom">Cromatica (12)</option>
+    </select>
+    <select id="rootsel" aria-label="Tonica"></select>
+    <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i>Gioca</button>
+    <button class="btn" id="rehear"><i class="ti ti-refresh"></i>Riascolta</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><p class="lbl">Round</p><p class="val" id="round">–</p></div>
+    <div class="stat"><p class="lbl">Record (scala)</p><p class="val" id="best">0</p></div>
+  </div>
+
+  <p id="status">premi "Gioca"</p>
+  <div id="wheelbox"><div id="wheel"></div></div>
+  <div id="reveal"></div>
+
+  <p class="leg-title">Il viaggio cromatico (semitoni dalla tonica)</p>
+  <div id="legend"></div>
+
+  <footer>
+    Esci dalla casa rossa, accendi la fiamma, sorge il sole, brilla una stella, spunta una foglia,
+    cresce l'albero, attraversi l'onda, si apre il cielo, getti l'ancora, sale la luna,
+    sboccia il fiore, scocca il fulmine… e sei di nuovo a casa, un'ottava più su.
+  </footer>
+</div>
+
+<script>
+const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11]};
+const NOTE=['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'];
+const C=[
+ {h:'hsl(0,75%,48%)',ic:'home',nm:'casa'},
+ {h:'hsl(22,85%,49%)',ic:'flame',nm:'fiamma'},
+ {h:'hsl(40,90%,43%)',ic:'sun',nm:'sole'},
+ {h:'hsl(55,75%,41%)',ic:'star',nm:'stella'},
+ {h:'hsl(78,60%,42%)',ic:'leaf',nm:'foglia'},
+ {h:'hsl(135,55%,36%)',ic:'tree',nm:'albero'},
+ {h:'hsl(172,80%,32%)',ic:'ripple',nm:'onda'},
+ {h:'hsl(196,85%,42%)',ic:'cloud',nm:'cielo'},
+ {h:'hsl(222,70%,50%)',ic:'anchor',nm:'ancora'},
+ {h:'hsl(252,58%,56%)',ic:'moon',nm:'luna'},
+ {h:'hsl(285,55%,49%)',ic:'flower',nm:'fiore'},
+ {h:'hsl(320,70%,48%)',ic:'bolt',nm:'fulmine'}];
+
+let scale='maj', root=0, seq=[], step=0, state='idle', timers=[];
+const $=id=>document.getElementById(id);
+
+const rs=$('rootsel');
+NOTE.forEach((n,i)=>{const o=document.createElement('option');o.value=i;o.textContent=n;rs.appendChild(o);});
+
+const lg=$('legend');
+C.forEach((c,k)=>{const d=document.createElement('div');d.className='leg';
+ d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+k+'</b><br>'+c.nm+'</small>';
+ lg.appendChild(d);});
+
+function bestKey(){return 'it_best_'+scale;}
+function loadBest(){$('best').textContent=localStorage.getItem(bestKey())||0;}
+
+let S=0, CXY=0, R=0, KEY=52;
+function layout(){
+ S=Math.min(window.innerWidth-32, 380);
+ CXY=S/2; KEY=S<330?46:52; R=S/2-KEY/2-4;
+ const w=$('wheel'); w.style.width=S+'px'; w.style.height=S+'px';
+}
+function render(){
+ layout();
+ const w=$('wheel'); w.innerHTML='';
+ const cs=Math.round(S*0.36);
+ const ctr=document.createElement('div'); ctr.id='ctr';
+ ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
+ w.appendChild(ctr);
+ const sc=SCALES[scale];
+ for(let k=0;k<12;k++){
+  const a=(-90+k*30)*Math.PI/180, x=CXY+R*Math.cos(a), y=CXY+R*Math.sin(a);
+  if(sc.includes(k)){
+   const deg=sc.indexOf(k)+1;
+   const b=document.createElement('button'); b.className='key'; b.id='b'+k;
+   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
+   b.setAttribute('aria-label','grado '+deg+', '+C[k].nm);
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.36)+'px"></i><span style="font-size:'+(KEY*0.2)+'px">'+deg+'</span>';
+   b.addEventListener('click',()=>hit(k));
+   w.appendChild(b);
+  } else {
+   const d=document.createElement('div'); d.className='dot';
+   d.style.cssText='left:'+(x-4)+'px;top:'+(y-4)+'px;width:8px;height:8px;';
+   w.appendChild(d);
+  }
+ }
+}
+let rsz; window.addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(render,150);});
+
+let ctx=null;
+function ensureCtx(){
+ if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
+ if(ctx.state==='suspended') ctx.resume();
+}
+function tone(midi,dur){
+ const o=ctx.createOscillator(), g=ctx.createGain(), t0=ctx.currentTime+0.02;
+ o.type='triangle'; o.frequency.value=440*Math.pow(2,(midi-69)/12);
+ g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.25,t0+0.02);
+ g.gain.setValueAtTime(0.25,t0+dur-0.08); g.gain.linearRampToValueAtTime(0,t0+dur);
+ o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+dur);
+}
+function buzz(){
+ const o=ctx.createOscillator(), g=ctx.createGain(), t0=ctx.currentTime+0.02;
+ o.type='sawtooth'; o.frequency.value=98;
+ g.gain.setValueAtTime(0.15,t0); g.gain.linearRampToValueAtTime(0,t0+0.45);
+ o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+0.45);
+}
+function flash(k,ms){
+ const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
+ const ct=$('ctr');
+ if(ct){ct.style.background=C[k].h;
+  ct.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.16)+'px"></i>';
+  ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
+}
+function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
+function playSeq(){
+ state='play'; clearTimers(); $('status').textContent='ascolta…'; $('reveal').innerHTML='';
+ const gap=Math.max(420,660-seq.length*18);
+ seq.forEach((k,i)=>{timers.push(setTimeout(()=>{flash(k,gap-100); tone(60+root+k,0.38);},250+i*gap));});
+ timers.push(setTimeout(()=>{state='input'; step=0; $('status').textContent='tocca a te (0/'+seq.length+')';},250+seq.length*gap));
+}
+function addNote(){
+ const sc=SCALES[scale]; let k;
+ do{k=sc[Math.floor(Math.random()*sc.length)];}while(seq.length&&k===seq[seq.length-1]&&Math.random()<0.6);
+ seq.push(k);
+}
+function hit(k){
+ if(state!=='input') return; ensureCtx();
+ flash(k); tone(60+root+k,0.38);
+ if(k===seq[step]){
+  step++;
+  if(step===seq.length){
+   $('status').textContent='giusto!';
+   const b=+(localStorage.getItem(bestKey())||0);
+   if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
+   timers.push(setTimeout(()=>{addNote(); $('round').textContent=seq.length; playSeq();},900));
+   state='wait';
+  } else $('status').textContent='tocca a te ('+step+'/'+seq.length+')';
+ } else {
+  state='over'; buzz();
+  const sc=SCALES[scale];
+  $('status').textContent='sbagliato al passo '+(step+1)+': era '+C[seq[step]].nm+' (grado '+(sc.indexOf(seq[step])+1)+')';
+  const rv=$('reveal'); rv.innerHTML='';
+  seq.forEach((q,i)=>{
+   const d=document.createElement('div'); d.className='chip'+(i===step?' err':'');
+   d.innerHTML='<span class="sw" style="background:'+C[q].h+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+(sc.indexOf(q)+1)+'</b>';
+   rv.appendChild(d);});
+ }
+}
+$('newgame').addEventListener('click',()=>{ensureCtx(); clearTimers(); seq=[0]; addNote(); $('round').textContent=seq.length; playSeq();});
+$('rehear').addEventListener('click',()=>{if(seq.length&&(state==='input'||state==='over')){ensureCtx(); playSeq();}});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
+$('rootsel').addEventListener('change',e=>{root=+e.target.value;});
+render(); loadBest();
+</script>
+</body>
+</html>
