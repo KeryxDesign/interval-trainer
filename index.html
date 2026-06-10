@@ -86,6 +86,8 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
   </div>
 
   <div id="view-levels">
+    <p style="font-size:14px; font-weight:600; text-align:center; margin:0 0 2px;">Corso: la scala maggiore</p>
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 8px;">Un grado alla volta, in ordine di importanza melodica.</p>
     <div id="mapbox"><div id="map"></div></div>
     <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 10px;"><span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta</p>
     <label style="display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin:0 0 14px; cursor:pointer;"><input type="checkbox" id="unlockall" style="accent-color:#eab308; width:16px; height:16px;"> Sblocca tutti i livelli</label>
@@ -103,7 +105,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
     </div>
     <div class="world" style="padding:14px 16px">
       <p style="font-size:15px;font-weight:600;margin:0 0 6px">Livelli e stelle</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Sei mondi, ognuno aggiunge nuovi intervalli a quelli che già conosci. Ogni mondo ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style="color:var(--gold)">★</span> arrivi al round 5 · <span style="color:var(--gold)">★★</span> al round 8 · <span style="color:var(--gold)">★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il mondo successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo.</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style="color:var(--gold)">★</span> arrivi al round 5 · <span style="color:var(--gold)">★★</span> al round 8 · <span style="color:var(--gold)">★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo.</p>
     </div>
     <div class="world" style="padding:14px 16px">
       <p style="font-size:15px;font-weight:600;margin:0 0 6px">Libero e Teoria</p>
@@ -190,12 +192,12 @@ const C=[
  {h:'hsl(320,70%,48%)',ic:'bolt',nm:'fulmine'}];
 
 const WORLDS=[
- {name:'Le fondamenta', add:[0,5,7], th:'Le consonanze perfette: tonica, quarta e quinta. Sono i pilastri su cui si regge quasi tutta la musica (il giro I–IV–V). La quinta è la distanza più stabile dopo l\'ottava; la quarta è la sua immagine allo specchio. Imparale come sensazioni: fermo, partenza, ritorno.'},
- {name:'Le terze', add:[3,4], th:'La nota che decide il modo. Un solo semitono di differenza (1 tono e mezzo contro 2 toni) separa ombra e luce: terza minore e terza maggiore. Con tonica e quinta formano gli accordi. Se distingui queste due, distingui maggiore da minore per sempre.'},
- {name:'I passi', add:[1,2], th:'I gradini con cui camminano le melodie. La 2ª maggiore (1 tono) è il passo normale; la 2ª minore (mezzo tono) è il passo stretto, cromatico, che preme contro la nota vicina. Quasi ogni melodia è fatta soprattutto di questi due movimenti.'},
- {name:'Le seste', add:[8,9], th:'Le terze capovolte: una terza maggiore rovesciata diventa una sesta minore, e viceversa (insieme fanno sempre un\'ottava). Sono gli intervalli ampi e cantabili, il salto espressivo delle melodie romantiche.'},
- {name:'Le settime', add:[10,11], th:'A un passo da casa, da due lati diversi. La 7ª minore (sottotonica) pesa verso il basso: colore blues e accordo di dominante. La 7ª maggiore (sensibile) spinge verso l\'alto e rende inevitabile il ritorno alla tonica. Sono le note che creano il bisogno di risolvere.'},
- {name:'Il tritono', add:[6], th:'Tre toni esatti: l\'ottava divisa a metà. Nessuna gerarchia, nessun riposo: è l\'intervallo più instabile, il motore dell\'accordo di settima di dominante, e risolve per semitoni in entrambe le direzioni. Nel Medioevo lo chiamavano diabolus in musica.'}];
+ {name:'I due poli', add:[0,7], th:'Tonica e dominante: casa e il suo pilastro. È l\'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G).'},
+ {name:'L\'arpeggio maggiore', add:[4], th:'Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l\'identità del modo. È la nota che illumina. Le melodie "abitano" queste tre note: quasi tutti i temi memorabili partono o atterrano sull\'arpeggio.'},
+ {name:'Il passo', add:[2], th:'La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare.'},
+ {name:'La pentatonica', add:[9], th:'La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala "a prova di errore" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela.'},
+ {name:'La sensibile', add:[11], th:'Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa.'},
+ {name:'La scala completa', add:[5], th:'La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica.'}];
 const MODES=['Vedi e senti','Solo orecchio','Tonica vagabonda'];
 const TH=[
  'Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.',
@@ -219,10 +221,10 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 let rhythm=localStorage.getItem('it_rhythm')==='1';
 const $=id=>document.getElementById(id);
 
-function prog(){try{return JSON.parse(localStorage.getItem('it_prog')||'{}')}catch(e){return{}}}
+function prog(){try{return JSON.parse(localStorage.getItem('it_prog_maj')||'{}')}catch(e){return{}}}
 function saveProg(key,entry){const p=prog(); const old=p[key]||{stars:0,bestRound:0};
  p[key]={stars:Math.max(old.stars,entry.stars), bestRound:Math.max(old.bestRound,entry.bestRound)};
- localStorage.setItem('it_prog',JSON.stringify(p));}
+ localStorage.setItem('it_prog_maj',JSON.stringify(p));}
 function starsOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.stars:0;}
 function bestOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
@@ -264,7 +266,7 @@ function renderWorlds(){
   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
   h+='<p style="font-size:12.5px;color:var(--muted);line-height:1.55;margin:6px 0 4px">'+w.th+'</p>';
   if(!unlocked){
-   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Sblocca con 2★ in "Solo orecchio" del mondo '+i+'</p>';
+   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> Sblocca con 2★ in "Solo orecchio" del livello '+i+'</p>';
    card.innerHTML=h;
   } else {
    card.innerHTML=h;
@@ -317,7 +319,7 @@ function startLevel(w,m){
  setTab('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML='Mondo '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'')+'<br><span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta';
+ $('ctxlabel').innerHTML='Livello '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'')+'<br><span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta';
  $('backbtn').hidden=false;
  $('scsel').style.display='none'; $('rootsel').style.display='none';
  $('bestlbl').textContent='Record (livello)';
