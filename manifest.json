@@ -1,7 +1,7 @@
 {
-  "name": "Interval Trainer",
-  "short_name": "Intervalli",
-  "description": "Simon cromatico: ear training a intervalli con colori e simboli",
+  "name": "Huermony",
+  "short_name": "Huermony",
+  "description": "Ear training cromatico: intervalli con colori e simboli",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#14151a",

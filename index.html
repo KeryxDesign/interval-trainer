@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#14151a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Interval Trainer · Simon cromatico</title>
+<title>Huermony · ear training cromatico</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <style>
@@ -75,18 +75,47 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
 </head>
 <body>
 <div class="wrap">
-  <h1>Interval Trainer</h1>
-  <p class="sub">Simon cromatico: ascolta la melodia, ripetila. Stesso colore = stesso intervallo dalla tonica, sempre.</p>
+  <h1>Huermony</h1>
+  <p class="sub">Ascolta la melodia, ripetila. Stesso colore = stesso intervallo dalla tonica, sempre.</p>
 
   <div class="tabs">
     <button class="tab on" id="tab-levels">Livelli</button>
     <button class="tab" id="tab-free">Libero</button>
     <button class="tab" id="tab-theory">Teoria</button>
+    <button class="tab" id="tab-guide">Guida</button>
   </div>
 
   <div id="view-levels">
     <div id="mapbox"><div id="map"></div></div>
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 14px;"><span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta</p>
     <div id="worlds"></div>
+  </div>
+
+  <div id="view-guide" hidden>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Cos'è</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Come si gioca</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Livelli e stelle</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Sei mondi, ognuno aggiunge nuovi intervalli a quelli che già conosci. Ogni mondo ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style="color:var(--gold)">★</span> arrivi al round 5 · <span style="color:var(--gold)">★★</span> al round 8 · <span style="color:var(--gold)">★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il mondo successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Libero e Teoria</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)"><b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Da computer</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori.</p>
+    </div>
+    <div class="world" style="padding:14px 16px">
+      <p style="font-size:15px;font-weight:600;margin:0 0 6px">Un consiglio</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Meglio 5 minuti al giorno che un'ora la domenica. La sinestesia si costruisce con la ripetizione frequente, non con lo sforzo. Quando ti accorgi di "vedere" il colore di un intervallo prima di pensarci, sta funzionando.</p>
+    </div>
   </div>
 
   <div id="view-game" hidden>
@@ -243,11 +272,12 @@ function renderWorlds(){
 }
 
 function setTab(name){
- ['levels','free','theory'].forEach(t=>{
+ ['levels','free','theory','guide'].forEach(t=>{
   $('tab-'+t).classList.toggle('on',t===name);
  });
  $('view-levels').hidden=name!=='levels';
  $('view-theory').hidden=name!=='theory';
+ $('view-guide').hidden=name!=='guide';
  $('view-game').hidden=name!=='free';
 }
 function showLevels(){
@@ -274,7 +304,7 @@ function startLevel(w,m){
  setTab('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML='Mondo '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'');
+ $('ctxlabel').innerHTML='Mondo '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'')+'<br><span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta';
  $('backbtn').hidden=false;
  $('scsel').style.display='none'; $('rootsel').style.display='none';
  $('bestlbl').textContent='Record (livello)';
@@ -285,13 +315,21 @@ function startLevel(w,m){
 $('tab-levels').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
+$('tab-guide').addEventListener('click',()=>{clearTimers(); state='idle'; seq=[]; setTab('guide');});
 $('backbtn').addEventListener('click',showLevels);
 
+function toniStr(k){
+ if(k===0) return 'unisono';
+ const t=Math.floor(k/2), mezzo=k%2===1;
+ if(t===0) return 'mezzo tono';
+ return t+(t===1?' tono':' toni')+(mezzo?' e mezzo':'');
+}
 const thBox=$('theory');
 C.forEach((c,k)=>{const d=document.createElement('div'); d.className='world'; d.style.padding='12px 14px';
- d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'+
+ d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">'+
   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
   '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+c.nm+'</span></span></div>'+
+  '<p style="margin:0 0 6px 44px;font-size:12px;color:var(--muted)">'+(k===0?'0 semitoni · unisono':k+(k===1?' semitono':' semitoni')+' · '+toniStr(k))+'</p>'+
   '<p style="margin:0;font-size:13px;line-height:1.55;color:var(--text)">'+TH[k]+'</p>';
  thBox.appendChild(d);});
 
