@@ -99,7 +99,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
     </div>
     <div class="world" style="padding:14px 16px">
       <p style="font-size:15px;font-weight:600;margin:0 0 6px">Come si gioca</p>
-      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.</p>
+      <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.<br><br>Con <b>Velocità</b> regoli il tempo di riproduzione. Con <b>Ritmo</b> le note assumono durate diverse e la sequenza diventa una frase musicale: il ritmo è solo da ascoltare, rispondi nell'ordine giusto senza dover rispettare le durate.</p>
     </div>
     <div class="world" style="padding:14px 16px">
       <p style="font-size:15px;font-weight:600;margin:0 0 6px">Livelli e stelle</p>
@@ -133,6 +133,13 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
       <select id="rootsel" aria-label="Tonica"></select>
       <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i>Gioca</button>
       <button class="btn" id="rehear"><i class="ti ti-refresh"></i>Riascolta</button>
+      <select id="spdsel" aria-label="Velocità">
+        <option value="0.75">Lento</option>
+        <option value="1" selected>Normale</option>
+        <option value="1.3">Veloce</option>
+        <option value="1.6">Turbo</option>
+      </select>
+      <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer;"><input type="checkbox" id="rhythmcb" style="accent-color:#eab308; width:15px; height:15px;"> Ritmo</label>
     </div>
 
     <div class="stats">
@@ -205,9 +212,11 @@ const TH=[
  'Il fulmine: a un semitono da casa, carica massima verso l\'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica.'];
 const STAR1=5, STAR2=8;
 
-let scale='maj', root=0, seq=[], step=0, state='idle', timers=[];
+let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
 let game={kind:'free'};
 let usedRehear=false;
+let speed=parseFloat(localStorage.getItem('it_speed')||'1');
+let rhythm=localStorage.getItem('it_rhythm')==='1';
 const $=id=>document.getElementById(id);
 
 function prog(){try{return JSON.parse(localStorage.getItem('it_prog')||'{}')}catch(e){return{}}}
@@ -418,17 +427,28 @@ function playSeq(){
  state='play'; clearTimers(); $('status').textContent='ascolta…'; $('reveal').innerHTML='';
  if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12);}
  const silent=game.kind==='level'&&game.m===1;
- const gap=Math.max(420,660-seq.length*18);
- seq.forEach((k,i)=>{timers.push(setTimeout(()=>{if(silent)pulse(gap-100); else flash(k,gap-100); tone(60+root+k,0.38);},250+i*gap));});
- timers.push(setTimeout(()=>{state='input'; step=0; $('status').textContent='tocca a te (0/'+seq.length+')';},250+seq.length*gap));
+ const base=Math.max(420,660-seq.length*18)/speed;
+ let t=250;
+ seq.forEach((k,i)=>{
+  const ms=base*(dur[i]||1);
+  timers.push(setTimeout(()=>{
+   const td=Math.max(0.18, ms*0.8/1000);
+   if(silent)pulse(ms-100); else flash(k,ms-100);
+   tone(60+root+k,td);
+  },t));
+  t+=ms;
+ });
+ timers.push(setTimeout(()=>{state='input'; step=0; $('status').textContent='tocca a te (0/'+seq.length+')';},t));
 }
+const DURS=[0.5,1,1,1,1.5,2];
 function addNote(){
  const sc=activeSet(); let k;
  do{k=sc[Math.floor(Math.random()*sc.length)];}while(seq.length&&k===seq[seq.length-1]&&Math.random()<0.6);
  seq.push(k);
+ dur.push(rhythm?DURS[Math.floor(Math.random()*DURS.length)]:1);
 }
 function newGame(){
- ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; addNote();
+ ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  $('round').textContent=seq.length; playSeq();
 }
 function press(k){
@@ -476,6 +496,10 @@ $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML=''; render(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value;});
+$('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
+$('rhythmcb').addEventListener('change',e=>{rhythm=e.target.checked; if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
+$('spdsel').value=String(speed);
+$('rhythmcb').checked=rhythm;
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
