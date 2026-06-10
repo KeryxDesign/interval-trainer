@@ -81,6 +81,7 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
   <div class="tabs">
     <button class="tab on" id="tab-levels">Livelli</button>
     <button class="tab" id="tab-free">Libero</button>
+    <button class="tab" id="tab-theory">Teoria</button>
   </div>
 
   <div id="view-levels">
@@ -113,6 +114,11 @@ footer{margin-top:28px; font-size:12px; color:var(--muted); line-height:1.6;}
     <p id="status">premi "Gioca"</p>
     <div id="wheelbox"><div id="wheel"></div></div>
     <div id="reveal"></div>
+  </div>
+
+  <div id="view-theory" hidden>
+    <p style="font-size:13px; color:var(--muted); margin:0 0 12px;">La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha.</p>
+    <div id="theory"></div>
   </div>
 
   <p class="leg-title">Il viaggio cromatico (intervalli dalla tonica)</p>
@@ -154,6 +160,19 @@ const WORLDS=[
  {name:'Le settime', add:[10,11]},
  {name:'Il tritono', add:[6]}];
 const MODES=['Vedi e senti','Solo orecchio','Tonica vagabonda'];
+const TH=[
+ 'Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.',
+ 'Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.',
+ 'Il passo naturale della melodia. Non è riposo e non è dramma: è movimento, il gradino con cui le frasi camminano.',
+ 'La nota che scurisce: con lei il modo diventa minore. Malinconia, interiorità. Cuore dell\'accordo minore.',
+ 'La nota che illumina: con lei il modo diventa maggiore. Apertura, affermazione. Cuore dell\'accordo maggiore.',
+ 'Il primo passo del viaggio armonico (I→IV). Sospende senza drammatizzare: è la quarta del sus4, che chiede di posarsi sulla terza.',
+ 'Divide l\'ottava esattamente a metà: massima instabilità, nessuna gerarchia. È il motore dell\'accordo di dominante: vuole risolvere per semitoni, in entrambe le direzioni.',
+ 'Il pilastro. L\'intervallo più stabile dopo l\'ottava, e insieme la tensione strutturale dell\'armonia: la dominante esiste per tirare verso casa.',
+ 'La malinconia dolce del modo minore. Pesa verso il basso: tende a scendere di semitono sulla dominante.',
+ 'Calda e aperta, il colore del maggiore che sorride. Da qui la relativa minore è a un passo.',
+ 'Il colore del blues e del mixolidio, la settima dell\'accordo di dominante. Tensione morbida che scende verso la mediante.',
+ 'Il fulmine: a un semitono da casa, carica massima verso l\'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica.'];
 const STAR1=5, STAR2=8;
 
 let scale='maj', root=0, seq=[], step=0, state='idle', timers=[];
@@ -223,27 +242,37 @@ function renderWorlds(){
  });
 }
 
+function setTab(name){
+ ['levels','free','theory'].forEach(t=>{
+  $('tab-'+t).classList.toggle('on',t===name);
+ });
+ $('view-levels').hidden=name!=='levels';
+ $('view-theory').hidden=name!=='theory';
+ $('view-game').hidden=name!=='free';
+}
 function showLevels(){
  clearTimers(); state='idle'; seq=[];
- $('view-game').hidden=true; $('view-levels').hidden=false;
- $('tab-levels').classList.add('on'); $('tab-free').classList.remove('on');
+ setTab('levels');
  renderMap(); renderWorlds();
 }
 function showFree(){
  clearTimers(); state='idle'; seq=[]; game={kind:'free'};
  root=+$('rootsel').value;
- $('view-levels').hidden=true; $('view-game').hidden=false;
+ setTab('free');
  $('ctxlabel').hidden=true; $('backbtn').hidden=true;
  $('scsel').style.display=''; $('rootsel').style.display='';
- $('tab-free').classList.add('on'); $('tab-levels').classList.remove('on');
  $('bestlbl').textContent='Record (scala)';
  $('round').textContent='–'; $('status').textContent='premi "Gioca"'; $('reveal').innerHTML='';
  render(); loadBest();
 }
+function showTheory(){
+ clearTimers(); state='idle'; seq=[];
+ setTab('theory');
+}
 function startLevel(w,m){
  clearTimers(); game={kind:'level',w:w,m:m}; root=0;
- $('view-levels').hidden=true; $('view-game').hidden=false;
- $('tab-levels').classList.add('on'); $('tab-free').classList.remove('on');
+ setTab('free');
+ $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('ctxlabel').hidden=false;
  $('ctxlabel').innerHTML='Mondo '+(w+1)+' · <b>'+WORLDS[w].name+'</b> · '+MODES[m]+(m===1?' (la sequenza non si illumina)':'')+(m===2?' (la tonica cambia ogni round)':'');
  $('backbtn').hidden=false;
@@ -255,7 +284,16 @@ function startLevel(w,m){
 }
 $('tab-levels').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
+$('tab-theory').addEventListener('click',showTheory);
 $('backbtn').addEventListener('click',showLevels);
+
+const thBox=$('theory');
+C.forEach((c,k)=>{const d=document.createElement('div'); d.className='world'; d.style.padding='12px 14px';
+ d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'+
+  '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
+  '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+c.nm+'</span></span></div>'+
+  '<p style="margin:0;font-size:13px;line-height:1.55;color:var(--text)">'+TH[k]+'</p>';
+ thBox.appendChild(d);});
 
 function bestKey(){return 'it_best_'+scale;}
 function loadBest(){
@@ -325,7 +363,7 @@ function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
  if(ct){ct.style.background=C[k].h;
-  ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.14)+'px"></i><span style="font-size:12px;font-weight:600">'+DEG[k]+'</span></div>';
+  ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.14)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
   ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
 }
 function pulse(ms){
@@ -372,7 +410,7 @@ function hit(k){
  } else {
   state='over'; buzz();
   const wrong=seq[step];
-  let msg='sbagliato al passo '+(step+1)+': era '+C[wrong].nm+' ('+IV[wrong]+', '+DEG[wrong]+')';
+  let msg='sbagliato al passo '+(step+1)+': era '+IV[wrong]+' ('+DEG[wrong]+')';
   if(game.kind==='level'){
    const completed=seq.length-1;
    let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
