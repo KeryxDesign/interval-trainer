@@ -142,11 +142,10 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
   </div>
 
   <div id="view-game" hidden>
-    <p id="ctxlabel" hidden></p>
-    <details id="lvltheory" hidden style="background:var(--surface); border-radius:12px; padding:10px 14px; margin:0 0 12px;">
-      <summary id="lvlsum" style="font-size:13px; font-weight:600; cursor:pointer; list-style-position:inside;"></summary>
-      <p style="font-size:13px; line-height:1.6; margin:8px 0 0; color:var(--text);"></p>
-    </details>
+    <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 10px;">
+      <button class="btn" id="backbtn" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
+      <span id="gametitle" style="font-size:13px; color:var(--muted); font-weight:600;"></span>
+    </div>
     <div class="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
@@ -154,7 +153,6 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
         <button class="btn" id="tastebtn"><i class="ti ti-music"></i><span id="tastetxt"></span></button>
       </div>
       <div class="crow actions">
-        <button class="btn" id="backbtn" hidden style="flex:0 0 auto;"><i class="ti ti-arrow-left"></i><span id="backtxt"></span></button>
         <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i><span id="playtxt"></span></button>
         <button class="btn" id="rehear"><i class="ti ti-refresh"></i><span id="reheartxt"></span></button>
       </div>
@@ -166,7 +164,6 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     </div>
     <div id="sigstrip" hidden></div>
 
-    <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;"></p>
     <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
@@ -462,14 +459,12 @@ function applyStatic(){
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
- $('backtxt').textContent=S9.back;
  $('playtxt').textContent=S9.play;
  $('reheartxt').textContent=S9.rehear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('roundlbl').textContent=S9.round;
  $('bestlbl').textContent=S9.bestScale;
- $('keyhint').textContent=S9.keyhint;
  $('status').textContent=S9.pressPlay;
  $('tutbtntxt').textContent=S9.tutBtn;
  $('tastetxt').textContent=S9.tasteBtn;
@@ -539,7 +534,7 @@ function applyStatic(){
 function setView(name){
  $('preroll').hidden=true;
  $('view-home').hidden=name!=='home';
- $('hdr').hidden=name==='home';
+ $('hdr').hidden=(name==='home'||name==='free');
  $('tabs').hidden=name==='home';
  ['levels','theory','guide'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
@@ -570,7 +565,7 @@ function showFree(){
  clearTimers(); state='idle'; seq=[]; game={kind:'free'};
  root=+$('rootsel').value;
  setView('free');
- $('ctxlabel').hidden=true; $('lvltheory').hidden=true; $('backbtn').hidden=true;
+ $('gametop').hidden=true;
  $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
@@ -583,15 +578,9 @@ function startLevel(c,w,m){
  const lv=S9.courses[c].levels[w];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
- $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+lv.name+'</b> · '+MODES[m]+S9.modeSuffix[m];
- $('lvltheory').hidden=false;
- $('lvlsum').textContent=S9.level+' '+(w+1)+' · '+lv.name;
- $('lvltheory').querySelector('p').textContent=lv.th;
- const seen='hm_seen_'+c+w;
- $('lvltheory').open=!localStorage.getItem(seen);
- localStorage.setItem(seen,'1');
- $('backbtn').hidden=false; $('rowsetup').hidden=true;
+ $('gametop').hidden=false;
+ $('gametitle').textContent=S9.level+' '+(w+1)+' · '+lv.name+' · '+MODES[m];
+ $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML='';
@@ -626,9 +615,8 @@ function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on');
- $('ctxlabel').hidden=false; $('ctxlabel').textContent=S9.tutLabel;
- $('lvltheory').hidden=true;
- $('backbtn').hidden=false; $('rowsetup').hidden=true;
+ $('gametop').hidden=false; $('gametitle').textContent=S9.tutLabel;
+ $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
  $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
@@ -888,7 +876,6 @@ function showPreroll(cb){
 function newGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  if(game.kind==='level'){
-  $('lvltheory').open=false;            // chiude la teoria: la ruota sale sopra la piega
   showPreroll(()=>{ $('round').textContent=seq.length; playSeq(); });
  } else {
   $('round').textContent=seq.length; playSeq();
@@ -1140,7 +1127,6 @@ document.addEventListener('keydown',e=>{
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
 applyStatic();
-if(window.matchMedia&&matchMedia('(pointer:fine)').matches&&window.innerWidth>=700){$('keyhint').style.display='block';}
 setView('home');
 if('serviceWorker' in navigator){
  let reloaded=false;
