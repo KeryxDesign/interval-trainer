@@ -228,7 +228,7 @@ it:{
  tutDone:"Perfetto, hai capito tutto: a ogni round la melodia cresce di una nota. Si parte!",
  unlockTitle:"Nuovo livello sbloccato!",
  unlockTap:"tocca per continuare",
- legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha.",
+ legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha. La sensazione vale ovunque; il ruolo descritto è quello nel contesto maggiore/minore: dentro ogni modo lo stesso intervallo può cambiare mestiere (la 2m nel frigio non è una tensione da risolvere, è il colore di casa).",
  semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
  NOTE:['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'],
@@ -298,7 +298,7 @@ en:{
  tutDone:"Perfect, you got it: each round the melody grows by one note. Here we go!",
  unlockTitle:"New level unlocked!",
  unlockTap:"tap to continue",
- legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has.",
+ legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has. The sensation holds everywhere; the role described is its job in a major/minor context: inside each mode the same interval can change jobs (the m2 in Phrygian is not a tension to resolve, it is the color of home).",
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
  NOTE:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
@@ -340,7 +340,9 @@ const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
 const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11],
  lyd:[0,2,4,6,7,9,11],mixo:[0,2,4,5,7,9,10],dor:[0,2,3,5,7,9,10],phr:[0,1,3,5,7,8,10],loc:[0,1,3,5,6,8,10]};
 const CHARS={lyd:[6],mixo:[10],dor:[9],min:[8],phr:[1],loc:[1,6]};
-const SCENE={lyd:'#272318',maj:'#23211a',mixo:'#201e1a',pmaj:'#23211a',dor:'#1b1d22',min:'#181a21',pmin:'#181a21',phr:'#14161f',loc:'#100f17',chrom:'#1a1b20'};
+const SCENE={lyd:'#352e18',maj:'#2c2818',mixo:'#262217',pmaj:'#2c2818',dor:'#212432',min:'#1b1f30',pmin:'#1b1f30',phr:'#141830',loc:'#0c0b12',chrom:'#1a1b20'};
+const LIGHTORDER=['lyd','maj','mixo','dor','min','phr','loc'];
+const LIGHTSW=['#e8dfc0','#cfc5a4','#b0a98c','#7e8298','#5c6280','#3d4366','#1f2030'];
 const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
@@ -644,6 +646,12 @@ function renderSig(){
  let h='';
  sc.forEach(k=>{h+='<span style="width:22px;height:22px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+(ch.includes(k)?';outline:2px solid #fff':'')+'"><i class="ti ti-'+C[k].ic+'" style="font-size:11px"></i></span>';});
  h+='<span style="font-size:12px;color:var(--muted);margin-left:4px">'+S9.SIG[scale]+'</span>';
+ const li=LIGHTORDER.indexOf(scale);
+ if(li>=0){
+  h+='<span style="flex-basis:100%;height:0"></span><span style="display:inline-flex;gap:3px;align-items:center">';
+  LIGHTSW.forEach((c2,i)=>{h+='<span style="width:'+(i===li?14:10)+'px;height:'+(i===li?14:10)+'px;border-radius:50%;background:'+c2+(i===li?';outline:2px solid #fff':'')+'"></span>';});
+  h+='</span>';
+ }
  el.innerHTML=h; el.hidden=false;
 }
 function render(){
