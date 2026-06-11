@@ -66,7 +66,6 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .kb{display:none;}
 @media (pointer:fine){
  .kb{display:block; position:absolute; bottom:-9px; left:50%; transform:translateX(-50%); background:var(--surface2); border:1px solid var(--line); border-radius:5px; font-size:10px; font-weight:600; padding:1px 5px; color:var(--muted);}
- #keyhint{display:block !important;}
 }
 .dot{position:absolute; border-radius:50%; background:var(--line);}
 #ctr{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .2s; pointer-events:none; color:#fff;}
@@ -586,7 +585,7 @@ function startLevel(c,w,m){
  $('round').textContent='–'; $('reveal').innerHTML='';
  $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
- newGame();
+ setStatus(S9.pressPlay);
 }
 function setStatus(txt,cls){
  const st=$('status');
@@ -860,6 +859,7 @@ function addNote(){
 }
 function newGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
+ if(game.kind==='level') $('lvltheory').open=false;  // chiude la teoria: la ruota sale sopra la piega
  $('round').textContent=seq.length; playSeq();
 }
 let chordSeq=[];
@@ -1108,6 +1108,7 @@ document.addEventListener('keydown',e=>{
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
 applyStatic();
+if(window.matchMedia&&matchMedia('(pointer:fine)').matches&&window.innerWidth>=700){$('keyhint').style.display='block';}
 setView('home');
 if('serviceWorker' in navigator){
  let reloaded=false;
