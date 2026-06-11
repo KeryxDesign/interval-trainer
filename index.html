@@ -55,7 +55,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #status.err{border:1px solid #e24b4a;}
 #status.ok{border:1px solid #2e9e5b;}
 #ctxlabel{font-size:13px; color:var(--muted); margin:0 0 10px;}
-#wheelbox{display:flex; justify-content:center;}
+#wheelbox{display:flex; justify-content:center; border-radius:20px; transition:background .5s; padding:6px 0;}
+#sigstrip{display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:-4px 0 10px;}
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
@@ -158,6 +159,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
         <button class="pill" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
       </div>
     </div>
+    <div id="sigstrip" hidden></div>
 
     <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;"></p>
     <p id="status"></p>
@@ -207,7 +209,9 @@ it:{
  modes:["Vedi e senti","Solo orecchio","Tonica vagabonda"],
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo", mic:"Canta",
  speeds:["Lento","Normale","Veloce","Turbo"],
- scales:["Maggiore","Minore naturale","Pentatonica magg.","Pentatonica min.","Cromatica (12)"],
+ scales:["Maggiore","Minore naturale","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio"],
+ grpScales:"Scale", grpModes:"Modi",
+ SIG:{lyd:"mezzogiorno · l'albero diventa onda",maj:"mattina · la scala di riferimento",mixo:"pomeriggio · il fulmine diventa fiore",dor:"tramonto · l'ancora diventa luna",min:"sera · il minore naturale (eolio)",phr:"notte · il sole diventa fiamma",loc:"eclissi · fiamma e onda insieme",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore"},
  round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)",
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
@@ -275,7 +279,9 @@ en:{
  modes:["See & hear","Ear only","Wandering tonic"],
  play:"Play", rehear:"Replay", rhythm:"Rhythm", mic:"Sing",
  speeds:["Slow","Normal","Fast","Turbo"],
- scales:["Major","Natural minor","Major pentatonic","Minor pentatonic","Chromatic (12)"],
+ scales:["Major","Natural minor","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian"],
+ grpScales:"Scales", grpModes:"Modes",
+ SIG:{lyd:"noon · the tree becomes the wave",maj:"morning · the reference scale",mixo:"afternoon · the lightning becomes the flower",dor:"sunset · the anchor becomes the moon",min:"evening · the natural minor (Aeolian)",phr:"night · the sun becomes the flame",loc:"eclipse · flame and wave together",pmaj:"five notes, no semitones",pmin:"five notes, minor side"},
  round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)",
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
@@ -331,7 +337,10 @@ en:{
 const S9=STR[lang];
 const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
 
-const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11]};
+const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11],
+ lyd:[0,2,4,6,7,9,11],mixo:[0,2,4,5,7,9,10],dor:[0,2,3,5,7,9,10],phr:[0,1,3,5,7,8,10],loc:[0,1,3,5,6,8,10]};
+const CHARS={lyd:[6],mixo:[10],dor:[9],min:[8],phr:[1],loc:[1,6]};
+const SCENE={lyd:'#272318',maj:'#23211a',mixo:'#201e1a',pmaj:'#23211a',dor:'#1b1d22',min:'#181a21',pmin:'#181a21',phr:'#14161f',loc:'#100f17',chrom:'#1a1b20'};
 const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
@@ -397,7 +406,11 @@ function applyStatic(){
  $('legsum').textContent=S9.legsum;
  $('thintro').textContent=S9.thintro;
  const sc=$('scsel'); sc.innerHTML='';
- [['maj',0],['min',1],['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; sc.appendChild(o);});
+ const g1=document.createElement('optgroup'); g1.label=S9.grpScales;
+ [['maj',0],['min',1],['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
+ const g2=document.createElement('optgroup'); g2.label=S9.grpModes;
+ [['lyd',5],['mixo',6],['dor',7],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
+ sc.appendChild(g1); sc.appendChild(g2);
  sc.value=scale;
  const rs=$('rootsel'); rs.innerHTML='';
  NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
@@ -457,7 +470,7 @@ function showFree(){
  $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
- render(); loadBest();
+ render(); renderSig(); loadBest();
 }
 function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
@@ -477,6 +490,7 @@ function startLevel(w,m){
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML='';
+ $('sigstrip').hidden=true;
  render(); loadBest();
  newGame();
 }
@@ -512,6 +526,7 @@ function startTutorial(){
  $('backbtn').hidden=false; $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
+ $('sigstrip').hidden=true;
  render();
  tut={step:1,allowed:[],expect:[],pos:0};
  tutAllow([0]);
@@ -622,8 +637,19 @@ function layout(){
  CXY=S/2; KEY=S<330?46:52; R=S/2-KEY/2-4;
  const w=$('wheel'); w.style.width=S+'px'; w.style.height=S+'px';
 }
+function renderSig(){
+ const el=$('sigstrip');
+ if(game.kind!=='free'||!S9.SIG[scale]){el.hidden=true; return;}
+ const sc=SCALES[scale], ch=CHARS[scale]||[];
+ let h='';
+ sc.forEach(k=>{h+='<span style="width:22px;height:22px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+(ch.includes(k)?';outline:2px solid #fff':'')+'"><i class="ti ti-'+C[k].ic+'" style="font-size:11px"></i></span>';});
+ h+='<span style="font-size:12px;color:var(--muted);margin-left:4px">'+S9.SIG[scale]+'</span>';
+ el.innerHTML=h; el.hidden=false;
+}
 function render(){
  layout();
+ const wb=$('wheelbox');
+ wb.style.background=(game.kind==='free'&&SCENE[scale])?SCENE[scale]:'transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
  const cs=Math.round(S*0.36);
  const ctr=document.createElement('div'); ctr.id='ctr';
@@ -849,7 +875,7 @@ function hit(k,fromMic){
 }
 $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
-$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); loadBest();});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); renderSig(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
 $('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
