@@ -39,7 +39,7 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #hplay:active{transform:scale(0.98);}
 #hprog{font-size:13px; color:var(--muted); margin:10px 0 0; min-height:18px;}
 #hguide{font-size:15px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:12px; cursor:pointer; margin-top:4px;}
-.controls{display:flex; flex-direction:column; gap:8px; margin-bottom:12px;}
+.controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 #scsel{flex:1 1 auto; min-width:0;}
 .crow.actions .btn{flex:1; justify-content:center; padding:12px 14px;}
@@ -59,7 +59,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #status.err{border:1px solid #e24b4a;}
 #status.ok{border:1px solid #2e9e5b;}
 #ctxlabel{font-size:13px; color:var(--muted); margin:0 0 10px;}
-#wheelbox{display:flex; justify-content:center; border-radius:20px; transition:background .5s; padding:6px 0;}
+#wheelbox{display:flex; justify-content:center; border-radius:20px; transition:background .5s; padding:6px 0; margin:6px 0;}
 .pbtn{flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--surface2); color:var(--text); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:15px;}
 .pbtn:active{transform:scale(0.94);}
 .swt{border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:999px; padding:8px 13px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
@@ -133,9 +133,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <div id="coursepick" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:0 0 12px;"></div>
     <p id="coursetitle" style="font-size:15px; font-weight:600; text-align:center; margin:0 0 4px;"></p>
     <p id="coursedesc" style="font-size:13px; line-height:1.55; color:var(--text); background:var(--surface); border-radius:12px; padding:11px 14px; margin:0 0 6px;"></p>
-    <p id="coursesub" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 8px;"></p>
-    <div id="mapbox"><div id="map"></div></div>
-    <p id="starsline" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 14px;"></p>
+    <p id="coursesub" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 10px;"></p>
+    <p id="starsline" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 16px;"></p>
     <div id="worlds"></div>
     <label id="unlockrow"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
   </div>
@@ -169,13 +168,13 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
-    <div id="chordbar" hidden style="margin:10px 0 4px;"></div>
-    <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
     <div class="stats">
       <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
       <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
     </div>
     <div id="reveal"></div>
+    <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
+    <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
     <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><p id="lvltheorytext" style="font-size:13px; line-height:1.6; color:var(--text); margin:8px 0 0;"></p></details>
     <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
@@ -577,7 +576,7 @@ function showLevels(){
  $('coursedesc').textContent=S9.courses[curCourse].desc;
  $('coursetitle').textContent=S9.courses[curCourse].title;
  $('unlockall').checked=unlockAll();
- renderCoursePick(); renderMap(); renderWorlds();
+ renderCoursePick(); renderWorlds();
 }
 function showFree(){
  clearTimers(); state='idle'; seq=[]; game={kind:'free'};
@@ -713,18 +712,6 @@ function loadBest(){
  else $('best').textContent=bestOf(game.c,game.w,game.m);
 }
 
-function renderMap(){
- const MS=210, MC=MS/2, MR=MS/2-18;
- const map=$('map'); map.style.width=MS+'px'; map.style.height=MS+'px'; map.innerHTML='';
- const unlocked=cumSet(curCourse,maxUnlockedWorld(curCourse));
- for(let k=0;k<12;k++){
-  const a=(-90+k*30)*Math.PI/180, x=MC+MR*Math.cos(a), y=MC+MR*Math.sin(a);
-  const d=document.createElement('div'); d.className='mapdot'+(unlocked.includes(k)?'':' off');
-  d.style.cssText='left:'+(x-15)+'px;top:'+(y-15)+'px;width:30px;height:30px;background:'+C[k].h+';color:'+ink(k);
-  d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:15px"></i>';
-  map.appendChild(d);
- }
-}
 function renderWorlds(){
  const box=$('worlds'); box.innerHTML='';
  S9.courses[curCourse].levels.forEach((w,i)=>{
@@ -897,10 +884,10 @@ function showPreroll(cb){
  $('pr-skip').textContent=S9.prTap;
  const pr=$('preroll'); pr.hidden=false;
  const bar=$('pr-bar'); bar.style.transition='none'; bar.style.width='0';
- requestAnimationFrame(()=>{bar.style.transition='width 2.1s linear'; bar.style.width='100%';});
+ requestAnimationFrame(()=>{bar.style.transition='width 5s linear'; bar.style.width='100%';});
  let done=false;
  const go=()=>{if(done)return; done=true; pr.hidden=true; pr.onclick=null; cb();};
- timers.push(setTimeout(go,2200));
+ timers.push(setTimeout(go,5000));
  pr.onclick=go;
 }
 function beginGame(){
@@ -1143,7 +1130,7 @@ $('rhythmcb').setAttribute('aria-pressed',String(rhythm));
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
- renderMap(); renderWorlds();
+ renderWorlds();
 });
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
