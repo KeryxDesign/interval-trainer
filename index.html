@@ -364,6 +364,7 @@ const SCENE={lyd:'#352e18',maj:'#2c2818',mixo:'#2a2218',pmaj:'#2c2818',dor:'#2b1
 const LIGHTORDER=['lyd','maj','mixo','dor','min','phr','loc'];
 const LIGHTSW=['#f1e8cf','#e8c558','#d29a45','#c26a4a','#5d6e9e','#34406e','#241b33'];
 const MODEIC={maj:'flag',lyd:'feather',mixo:'road',dor:'compass',min:'umbrella',phr:'wind',loc:'tornado'};
+const WMSW=['#f1e8cf','#e8c558','#d29a45','#d07a58','#90a5dd','#7286cc','#8b6cb8'];
 const inkSW=i=>i<4?'#14151a':'#edeef2';
 const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
@@ -710,7 +711,7 @@ function render(){
   const wm=document.createElement('i');
   wm.className='ti ti-'+MODEIC[scale];
   wm.setAttribute('aria-hidden','true');
-  wm.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:'+Math.round(S*0.44)+'px;color:'+LIGHTSW[mli2]+';opacity:0.13;pointer-events:none;';
+  wm.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:'+Math.round(S*0.48)+'px;color:'+WMSW[mli2]+';opacity:0.16;pointer-events:none;';
   w.appendChild(wm);
  }
  const cs=Math.round(S*0.36);
