@@ -8,6 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Huermony</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <style>
 :root{
@@ -277,6 +279,7 @@ it:{
   {h:"Libero e Teoria", p:"<b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni."},
   {h:"Canta", p:"Attiva <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando."},
   {h:"Da computer", p:"A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori."},
+  {h:"Come app sul telefono", p:"Huermony si installa senza store: aprila nel browser e poi <b>Condividi → \"Aggiungi alla schermata Home\"</b> su iPhone, oppure <b>menu → \"Installa app\"</b> su Android. Da lì in poi si apre a tutto schermo con la sua icona e funziona anche offline."},
   {h:"Un consiglio", p:"Meglio 5 minuti al giorno che un'ora la domenica. La sinestesia si costruisce con la ripetizione frequente, non con lo sforzo. Quando ti accorgi di \"vedere\" il colore di un intervallo prima di pensarci, sta funzionando."}]
 },
 en:{
@@ -359,6 +362,7 @@ en:{
   {h:"Free play and Theory", p:"<b>Free play</b>: the same game on a scale and tonic of your choice, with a separate best score per scale. <b>Theory</b>: the musical function of every interval, with its distance in semitones and tones."},
   {h:"Sing", p:"Turn on <b>Sing</b> and answer with your voice (or whistling, or a monophonic instrument) instead of tapping. Any octave works: the note matters, not the register. A note registers when you hold it in tune for about 150 ms; to repeat the same note twice, separate the two with a short pause. Notes outside the level are ignored. While you sing, the wheel lights up on what you are producing."},
   {h:"On a computer", p:"A = tonic, then W S E D F T G Y H U J going up by semitones, like a piano keyboard (the major scale is the home row: A S D F G H J). R = replay, Enter = play. Outside a game the keys play freely: use them to explore the colors."},
+  {h:"As an app on your phone", p:"Huermony installs without any store: open it in your browser, then <b>Share → \"Add to Home Screen\"</b> on iPhone, or <b>menu → \"Install app\"</b> on Android. From then on it opens full screen with its own icon and works offline too."},
   {h:"One piece of advice", p:"Five minutes a day beats an hour on Sunday. Synesthesia is built by frequent repetition, not by effort. When you catch yourself \"seeing\" the color of an interval before thinking about it, it is working."}]
 }};
 const S9=STR[lang];
@@ -1067,6 +1071,9 @@ document.addEventListener('keydown',e=>{
 });
 applyStatic();
 setView('home');
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+}
 </script>
 </body>
 </html>
