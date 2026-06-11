@@ -212,6 +212,16 @@ it:{
  scales:["Maggiore","Minore naturale","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio"],
  grpScales:"Scale", grpModes:"Modi",
  SIG:{lyd:"mezzogiorno · l'albero diventa onda",maj:"mattina · la scala di riferimento",mixo:"pomeriggio · il fulmine diventa fiore",dor:"tramonto · l'ancora diventa luna",min:"sera · il minore naturale (eolio)",phr:"notte · il sole diventa fiamma",loc:"eclissi · fiamma e onda insieme",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore"},
+ modesTitle:"I modi: la luce del viaggio",
+ modesIntro:"Stessi luoghi, luce diversa. Gli intervalli sono i posti del viaggio; il modo è che tempo fa.",
+ MODETH:{
+  lyd:{nick:"la piuma",desc:"Toglie l'unico peso del maggiore (la quarta che scende) e tutto galleggia: sognante, fiabesco, sospeso a mezz'aria. È il suono della meraviglia nelle colonne sonore. Sensazione: volare."},
+  maj:{nick:"la bandiera",desc:"Il maggiore pieno: affermativo, quadrato, ogni tensione sa dove risolvere. È la luce di default della musica occidentale: inni, pop, cori da stadio. Sensazione: arrivare."},
+  mixo:{nick:"la strada",desc:"Maggiore senza sensibile: niente fretta di tornare a casa. Terreno, caldo, un po' polveroso: blues, rock anni settanta, folk. Sensazione: camminare col sole addosso."},
+  dor:{nick:"la bussola",desc:"Minore con la schiena dritta: la sesta maggiore gli accende una speranza dentro la malinconia. Cool, elegante, mai disperato: jazz modale, Santana, ballate celtiche. Sensazione: tramonto con la rotta chiara."},
+  min:{nick:"l'ombrello",desc:"Il minore naturale, la malinconia di default: pioggia interiore, nostalgia, raccoglimento. Sensazione: sera, dentro casa, fuori piove."},
+  phr:{nick:"il vento",desc:"La seconda minore sopra la tonica preme come un vento caldo e scuro: spagnolo, mediterraneo, minaccioso. Flamenco e metal se lo contendono. Sensazione: notte di vento."},
+  loc:{nick:"il vortice",desc:"Non ha la quinta giusta: manca il pavimento. Tutto è sospeso, instabile, in caduta controllata. Quasi mai un centro tonale, quasi sempre un passaggio. Sensazione: vertigine."}},
  round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)",
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
@@ -282,6 +292,16 @@ en:{
  scales:["Major","Natural minor","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian"],
  grpScales:"Scales", grpModes:"Modes",
  SIG:{lyd:"noon · the tree becomes the wave",maj:"morning · the reference scale",mixo:"afternoon · the lightning becomes the flower",dor:"sunset · the anchor becomes the moon",min:"evening · the natural minor (Aeolian)",phr:"night · the sun becomes the flame",loc:"eclipse · flame and wave together",pmaj:"five notes, no semitones",pmin:"five notes, minor side"},
+ modesTitle:"The modes: the light of the journey",
+ modesIntro:"Same places, different light. The intervals are the places of the journey; the mode is the weather.",
+ MODETH:{
+  lyd:{nick:"the feather",desc:"It removes the major scale's only downward pull (the falling fourth) and everything floats: dreamy, fairy-tale, mid-air. The sound of wonder in film scores. Feels like: flying."},
+  maj:{nick:"the flag",desc:"Full major: affirmative, square, every tension knows where to resolve. The default light of Western music: anthems, pop, stadium choirs. Feels like: arriving."},
+  mixo:{nick:"the road",desc:"Major without the leading tone: no rush to get home. Earthy, warm, a little dusty: blues, seventies rock, folk. Feels like: walking in the sun."},
+  dor:{nick:"the compass",desc:"Minor with a straight back: the major sixth lights a hope inside the melancholy. Cool, elegant, never desperate: modal jazz, Santana, Celtic ballads. Feels like: sunset with a clear course."},
+  min:{nick:"the umbrella",desc:"Natural minor, the default melancholy: inner rain, nostalgia, gathering in. Feels like: evening indoors while it rains."},
+  phr:{nick:"the wind",desc:"The minor second above the tonic presses like a hot, dark wind: Spanish, Mediterranean, threatening. Flamenco and metal both claim it. Feels like: a windy night."},
+  loc:{nick:"the vortex",desc:"It has no perfect fifth: the floor is missing. Everything hangs, unstable, in controlled fall. Almost never a home key, almost always a passage. Feels like: vertigo."}},
  round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)",
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
@@ -343,6 +363,8 @@ const CHARS={lyd:[6],mixo:[10],dor:[9],min:[8],phr:[1],loc:[1,6]};
 const SCENE={lyd:'#352e18',maj:'#2c2818',mixo:'#262217',pmaj:'#2c2818',dor:'#212432',min:'#1b1f30',pmin:'#1b1f30',phr:'#141830',loc:'#0c0b12',chrom:'#1a1b20'};
 const LIGHTORDER=['lyd','maj','mixo','dor','min','phr','loc'];
 const LIGHTSW=['#e8dfc0','#cfc5a4','#b0a98c','#7e8298','#5c6280','#3d4366','#1f2030'];
+const MODEIC={maj:'flag',lyd:'feather',mixo:'road',dor:'compass',min:'umbrella',phr:'wind',loc:'tornado'};
+const inkSW=i=>i<3?'#14151a':'#edeef2';
 const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
@@ -431,6 +453,25 @@ function applyStatic(){
    '<i class="ti ti-chevron-down" style="margin-left:auto;color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
    '<p style="margin:0 0 0 44px;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
+  thBox.appendChild(d);});
+ const NAMEIDX={maj:0,min:1,lyd:5,mixo:6,dor:7,phr:8,loc:9};
+ const mt=document.createElement('p');
+ mt.style.cssText='font-size:14px;font-weight:600;margin:20px 0 2px';
+ mt.textContent=S9.modesTitle; thBox.appendChild(mt);
+ const mi=document.createElement('p');
+ mi.style.cssText='font-size:12px;color:var(--muted);margin:0 0 10px';
+ mi.textContent=S9.modesIntro; thBox.appendChild(mi);
+ LIGHTORDER.forEach((mk,idx)=>{
+  const m=S9.MODETH[mk];
+  const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
+  let cons='';
+  SCALES[mk].forEach(k=>{cons+='<span style="width:20px;height:20px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+((CHARS[mk]||[]).includes(k)?';outline:2px solid #fff':'')+'"><i class="ti ti-'+C[k].ic+'" style="font-size:10px"></i></span>';});
+  d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
+   '<span style="width:34px;height:34px;border-radius:50%;background:'+LIGHTSW[idx]+';display:flex;align-items:center;justify-content:center;color:'+inkSW(idx)+';flex-shrink:0"><i class="ti ti-'+MODEIC[mk]+'" style="font-size:17px"></i></span>'+
+   '<span style="font-size:15px;font-weight:600">'+S9.scales[NAMEIDX[mk]]+' <span style="color:var(--muted);font-weight:400">· '+m.nick+'</span></span>'+
+   '<i class="ti ti-chevron-down" style="margin-left:auto;color:var(--muted);font-size:15px"></i></summary>'+
+   '<p style="margin:8px 0 8px 44px;font-size:13px;line-height:1.55;color:var(--text)">'+m.desc+'</p>'+
+   '<div style="display:flex;gap:4px;margin:0 0 4px 44px;flex-wrap:wrap;align-items:center">'+cons+'<span style="font-size:11px;color:var(--muted);margin-left:4px">'+(S9.SIG[mk]||'')+'</span></div>';
   thBox.appendChild(d);});
  const gd=$('guide'); gd.innerHTML='';
  S9.GUIDE.forEach(s=>{const d=document.createElement('div'); d.className='world'; d.style.padding='14px 16px';
@@ -644,6 +685,10 @@ function renderSig(){
  if(game.kind!=='free'||!S9.SIG[scale]){el.hidden=true; return;}
  const sc=SCALES[scale], ch=CHARS[scale]||[];
  let h='';
+ const mli=LIGHTORDER.indexOf(scale);
+ if(MODEIC[scale]&&mli>=0){
+  h+='<span style="width:24px;height:24px;border-radius:50%;background:'+LIGHTSW[mli]+';color:'+inkSW(mli)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:3px"><i class="ti ti-'+MODEIC[scale]+'" style="font-size:13px"></i></span>';
+ }
  sc.forEach(k=>{h+='<span style="width:22px;height:22px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+(ch.includes(k)?';outline:2px solid #fff':'')+'"><i class="ti ti-'+C[k].ic+'" style="font-size:11px"></i></span>';});
  h+='<span style="font-size:12px;color:var(--muted);margin-left:4px">'+S9.SIG[scale]+'</span>';
  const li=LIGHTORDER.indexOf(scale);
