@@ -166,6 +166,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
+    <div id="chordbar" hidden style="margin:10px 0 4px;"></div>
+    <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
     <div class="stats">
       <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
       <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
@@ -210,9 +212,10 @@ it:{
  modes:["Vedi e senti","Solo orecchio","Tonica vagabonda"],
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo", mic:"Canta",
  speeds:["Lento","Normale","Veloce","Turbo"],
- scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio"],
+ scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
  grpScales:"Altre scale", grpModes:"La maggiore e i suoi modi",
- SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore"},
+ chordsTitle:"Accordi del modo · tocca per suonare e mettere in fila",
+ SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore",blM:"pentatonica maggiore più la stella",blm:"pentatonica minore più l'onda: la blue note"},
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  modesTitle:"I modi: la luce del viaggio",
  modesIntro:"Un modo è la stessa collana di note con una casa diversa: prendi le sette note della maggiore, scegli come tonica un'altra di loro, e le distanze da casa cambiano: si accende un'altra costellazione. Maggiore e minore naturale sono anche loro modi (ionico ed eolio): li chiamiamo scale solo perché sono i due di default. Stessi luoghi, luce diversa.",
@@ -291,9 +294,10 @@ en:{
  modes:["See & hear","Ear only","Wandering tonic"],
  play:"Play", rehear:"Replay", rhythm:"Rhythm", mic:"Sing",
  speeds:["Slow","Normal","Fast","Turbo"],
- scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian"],
+ scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
  grpScales:"Other scales", grpModes:"The major scale and its modes",
- SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side"},
+ chordsTitle:"Chords of the mode · tap to play and queue up",
+ SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side",blM:"major pentatonic plus the star",blm:"minor pentatonic plus the wave: the blue note"},
  tasteBtn:"Taste", tasting:"tasting the scale…",
  modesTitle:"The modes: the light of the journey",
  modesIntro:"A mode is the same necklace of notes with a different home: take the seven notes of the major scale, pick another one of them as the tonic, and the distances from home change: a different constellation lights up. Major and natural minor are modes too (Ionian and Aeolian): we call them scales only because they are the two defaults. Same places, different light.",
@@ -361,9 +365,10 @@ const S9=STR[lang];
 const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
 
 const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11],
- lyd:[0,2,4,6,7,9,11],mixo:[0,2,4,5,7,9,10],dor:[0,2,3,5,7,9,10],phr:[0,1,3,5,7,8,10],loc:[0,1,3,5,6,8,10]};
-const CHARS={lyd:[6],mixo:[10],dor:[9],min:[8],phr:[1],loc:[1,6]};
-const SCENE={lyd:'#352e18',maj:'#2c2818',mixo:'#2a2218',pmaj:'#2c2818',dor:'#2b1f1b',min:'#1b1f30',pmin:'#1b1f30',phr:'#141830',loc:'#0c0b12',chrom:'#1a1b20'};
+ lyd:[0,2,4,6,7,9,11],mixo:[0,2,4,5,7,9,10],dor:[0,2,3,5,7,9,10],phr:[0,1,3,5,7,8,10],loc:[0,1,3,5,6,8,10],
+ blM:[0,2,3,4,7,9],blm:[0,3,5,6,7,10]};
+const CHARS={lyd:[6],mixo:[10],dor:[9],min:[8],phr:[1],loc:[1,6],blM:[3],blm:[6]};
+const SCENE={lyd:'#352e18',maj:'#2c2818',mixo:'#2a2218',pmaj:'#2c2818',dor:'#2b1f1b',min:'#1b1f30',pmin:'#1b1f30',phr:'#141830',loc:'#0c0b12',chrom:'#1a1b20',blM:'#241a16',blm:'#1d1520'};
 const LIGHTORDER=['lyd','maj','mixo','dor','min','phr','loc'];
 const LIGHTSW=['#f1e8cf','#e8c558','#d29a45','#c26a4a','#5d6e9e','#34406e','#241b33'];
 const MODEIC={maj:'flag',lyd:'feather',mixo:'road',dor:'compass',min:'umbrella',phr:'wind',loc:'tornado'};
@@ -438,7 +443,7 @@ function applyStatic(){
  const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
  [['lyd',5],['maj',0],['mixo',6],['dor',7],['min',1],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
  const g2=document.createElement('optgroup'); g2.label=S9.grpScales;
- [['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
+ [['pmaj',2],['pmin',3],['blM',10],['blm',11],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
  sc.appendChild(g1); sc.appendChild(g2);
  sc.value=scale;
  const rs=$('rootsel'); rs.innerHTML='';
@@ -517,7 +522,7 @@ function showFree(){
  $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
- render(); renderSig(); loadBest();
+ render(); renderSig(); renderChords(); loadBest();
 }
 function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
@@ -537,7 +542,7 @@ function startLevel(w,m){
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML='';
- $('sigstrip').hidden=true;
+ $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
  newGame();
 }
@@ -573,7 +578,7 @@ function startTutorial(){
  $('backbtn').hidden=false; $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
- $('sigstrip').hidden=true;
+ $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render();
  tut={step:1,allowed:[],expect:[],pos:0};
  tutAllow([0]);
@@ -815,6 +820,69 @@ function newGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  $('round').textContent=seq.length; playSeq();
 }
+let chordSeq=[];
+function diatonicChords(){
+ const sc=SCALES[scale];
+ if(sc.length!==7) return null;
+ return sc.map((k,i)=>{
+  const n2=sc[(i+2)%7]+((i+2)>=7?12:0);
+  const n3=sc[(i+4)%7]+((i+4)>=7?12:0);
+  const t3=n2-k, t5=n3-k;
+  let q='maj';
+  if(t3===3&&t5===7)q='min'; else if(t3===3&&t5===6)q='dim'; else if(t3===4&&t5===8)q='aug';
+  const ROM=['I','II','III','IV','V','VI','VII'][i];
+  const name=q==='maj'?ROM:(q==='aug'?ROM+'+':ROM.toLowerCase()+(q==='dim'?'°':''));
+  return {k:k, notes:[k,n2,n3], name:name};
+ });
+}
+function chordTones(c){
+ c.notes.forEach(n=>tone(60+root+n,0.85));
+ tone(48+root+c.k,0.85);
+}
+function chordFlash(c,ms){
+ c.notes.forEach(n=>{const b=$('b'+(n%12)); if(b){b.style.transform='scale(1.22)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||380);}});
+ const ct=$('ctr');
+ if(ct){ct.style.background=C[c.k%12].h; ct.style.color=ink(c.k%12);
+  ct.innerHTML='<span style="font-size:30px;font-weight:700">'+c.name+'</span>';
+  ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||380);}
+}
+function tapChord(c){
+ if(state==='play'||state==='input'||state==='wait') return;
+ ensureCtx(); chordTones(c); chordFlash(c);
+ if(chordSeq.length<16){chordSeq.push(c); renderChordSeq();}
+}
+function renderChordSeq(){
+ const row=$('chordseqrow');
+ if(!chordSeq.length){row.hidden=true; row.innerHTML=''; return;}
+ row.hidden=false;
+ let h='';
+ chordSeq.forEach(c=>{h+='<span class="chip" style="font-weight:600;color:'+C[c.k%12].h+'">'+c.name+'</span>';});
+ row.innerHTML=h+'<button class="btn" id="seqplay" style="padding:6px 10px" aria-label="play"><i class="ti ti-player-play" style="font-size:13px"></i></button><button class="btn" id="seqclear" style="padding:6px 10px" aria-label="clear"><i class="ti ti-x" style="font-size:13px"></i></button>';
+ $('seqplay').addEventListener('click',playChordSeq);
+ $('seqclear').addEventListener('click',()=>{chordSeq=[]; renderChordSeq();});
+}
+function playChordSeq(){
+ if(!chordSeq.length||state==='play'||state==='input'||state==='wait') return;
+ ensureCtx(); clearTimers(); state='play';
+ const stepMs=Math.max(380,700/speed); let t=100;
+ chordSeq.forEach(c=>{timers.push(setTimeout(()=>{chordTones(c); chordFlash(c,stepMs-60);},t)); t+=stepMs;});
+ timers.push(setTimeout(()=>{state='idle';},t+200));
+}
+function renderChords(){
+ const bar=$('chordbar');
+ const chs=game.kind==='free'?diatonicChords():null;
+ if(!chs){bar.hidden=true; $('chordseqrow').hidden=true; chordSeq=[]; return;}
+ let h='<p style="font-size:12px;color:var(--muted);margin:0 0 6px">'+S9.chordsTitle+'</p><div style="display:flex;gap:6px;flex-wrap:wrap">';
+ chs.forEach((c,i)=>{
+  let dots='';
+  c.notes.forEach(n=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+C[n%12].h+'"></span>';});
+  h+='<button class="pill" style="gap:6px" data-ci="'+i+'"><span style="font-weight:700">'+c.name+'</span><span style="display:inline-flex;gap:2px">'+dots+'</span></button>';
+ });
+ h+='</div>';
+ bar.hidden=false; bar.innerHTML=h;
+ [...bar.querySelectorAll('button')].forEach(b=>{b.addEventListener('click',()=>tapChord(chs[+b.dataset.ci]));});
+ chordSeq=[]; renderChordSeq();
+}
 function tasteMelody(){
  if(state==='play'||state==='wait'||state==='input') return;
  ensureCtx(); clearTimers(); state='play'; setStatus(S9.tasting);
@@ -976,7 +1044,7 @@ function hit(k,fromMic){
 $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
-$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); renderSig(); loadBest();});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
 $('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
