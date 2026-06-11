@@ -62,6 +62,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #wheelbox{display:flex; justify-content:center; border-radius:20px; transition:background .5s; padding:6px 0;}
 .pbtn{flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--surface2); color:var(--text); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:15px;}
 .pbtn:active{transform:scale(0.94);}
+.swt{border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:999px; padding:8px 13px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+.swt[aria-pressed="true"]{background:var(--gold); color:#14151a; border-color:var(--gold);}
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
@@ -156,14 +158,11 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
         <button class="btn" id="tastebtn"><i class="ti ti-music"></i><span id="tastetxt"></span></button>
         <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
-      <div class="crow actions">
-        <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i><span id="playtxt"></span></button>
-        <button class="btn" id="rehear"><i class="ti ti-refresh"></i><span id="reheartxt"></span></button>
-      </div>
       <div class="crow options">
-        <select id="spdsel" aria-label="Speed"></select>
-        <button class="pill" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool" style="font-size:14px"></i><span id="rhythmtxt"></span></button>
-        <button class="pill" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
+        <button class="btn" id="rehear" style="flex:0 0 auto;" aria-label="replay"><i class="ti ti-refresh"></i></button>
+        <span style="display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-gauge" style="font-size:16px; color:var(--muted);"></i><select id="spdsel" aria-label="Speed"></select></span>
+        <button class="swt" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool" style="font-size:14px"></i><span id="rhythmtxt"></span></button>
+        <button class="swt" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
       </div>
     </div>
 
@@ -177,6 +176,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
       <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
     </div>
     <div id="reveal"></div>
+    <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><p id="lvltheorytext" style="font-size:13px; line-height:1.6; color:var(--text); margin:8px 0 0;"></p></details>
     <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
 
@@ -235,6 +235,7 @@ it:{
  SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore",blM:"pentatonica maggiore più la stella",blm:"pentatonica minore più l'onda: la blue note"},
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
+ optTheory:"Teoria del livello",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
@@ -332,6 +333,7 @@ en:{
  SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side",blM:"major pentatonic plus the star",blm:"minor pentatonic plus the wave: the blue note"},
  tasteBtn:"Taste", tasting:"tasting the scale…",
  prTap:"tap to start", prNew:"this level's new note",
+ optTheory:"Level theory",
  fiTitle:"Free play", fiClose:"Start",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
@@ -473,13 +475,11 @@ function applyStatic(){
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
- $('playtxt').textContent=S9.play;
- $('reheartxt').textContent=S9.rehear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('roundlbl').textContent=S9.round;
  $('bestlbl').textContent=S9.bestScale;
- $('status').textContent=S9.pressPlay;
+ setStatus('');
  $('tutbtntxt').textContent=S9.tutBtn;
  $('tastetxt').textContent=S9.tasteBtn;
  $('celtitle').textContent=S9.unlockTitle;
@@ -586,7 +586,8 @@ function showFree(){
  $('gametop').hidden=true;
  $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
- $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
+ $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
+ $('lvltheorybox').hidden=true;
  render(); renderSig(); renderChords(); loadBest();
  if(!localStorage.getItem('hm_free_seen')) openFreeIntro();
 }
@@ -608,14 +609,18 @@ function startLevel(c,w,m){
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
- $('round').textContent='–'; $('reveal').innerHTML='';
+ $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
+ $('lvltheorybox').hidden=false;
+ $('lvltheorysum').textContent=S9.optTheory;
+ $('lvltheorytext').textContent=lv.th;
  render(); loadBest();
- setStatus(S9.pressPlay);
+ showPreroll(beginGame);
 }
 function setStatus(txt,cls){
  const st=$('status');
  st.className=cls||'';
+ st.hidden=!txt;
  if(typeof txt==='string'&&txt.indexOf('<')<0) st.textContent=txt; else st.innerHTML=txt;
 }
 $('tab-levels').addEventListener('click',showLevels);
@@ -644,8 +649,8 @@ function startTutorial(){
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
- $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
- render();
+ $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[]; $('lvltheorybox').hidden=true;
+ render(); clearCenter();
  tut={step:1,allowed:[],expect:[],pos:0};
  tutAllow([0]);
  setStatus(S9.tut1);
@@ -804,6 +809,7 @@ function render(){
    w.appendChild(d);
   }
  }
+ if((game.kind==='level'||game.kind==='free')&&(state==='idle'||state==='over')) centerPlay(); else clearCenter();
 }
 function updateNotes(){
  document.querySelectorAll('#wheel .nt').forEach(s=>{s.textContent=NOTE[(root+ +s.dataset.k)%12];});
@@ -835,18 +841,27 @@ function buzz(){
 function chime(){[0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});}
 function playInterval(k){ensureCtx(); const t=ctx.currentTime; tone(60,0.5); setTimeout(()=>tone(60+k,0.5),560); setTimeout(()=>{tone(60,0.95);tone(60+k,0.95);},1180);}
 function playScaleAsc(id){ensureCtx(); const ns=SCALES[id].concat([12]); ns.forEach((k,i)=>setTimeout(()=>tone(60+k,0.34),i*300));}
-function flash(k,ms){
+function flash(k,ms,skipCenter){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
+ if(skipCenter) return;
  const ct=$('ctr');
- if(ct){ct.style.background=C[k].h; ct.style.color=ink(k);
+ if(ct){delete ct.dataset.mode; ct.style.background=C[k].h; ct.style.color=ink(k);
   ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
-  ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
+  ct.style.opacity='0.95'; setTimeout(()=>{if(ct.dataset.mode!=='play')ct.style.opacity='0';},ms||300);}
 }
 function pulse(ms){
  const ct=$('ctr'); if(!ct) return;
- ct.style.background='var(--surface2)'; ct.innerHTML='<i class="ti ti-ear" style="font-size:'+Math.round(S*0.12)+'px;color:var(--muted)"></i>';
- ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);
+ delete ct.dataset.mode; ct.style.background='var(--surface2)'; ct.innerHTML='<i class="ti ti-ear" style="font-size:'+Math.round(S*0.12)+'px;color:var(--muted)"></i>';
+ ct.style.opacity='0.95'; setTimeout(()=>{if(ct.dataset.mode!=='play')ct.style.opacity='0';},ms||300);
 }
+function centerPlay(){
+ const ct=$('ctr'); if(!ct) return;
+ ct.dataset.mode='play'; ct.style.background='var(--text)'; ct.style.color='var(--bg)';
+ ct.innerHTML='<i class="ti ti-player-play" style="font-size:'+Math.round(S*0.17)+'px"></i>';
+ ct.style.opacity='1'; ct.style.pointerEvents='auto';
+ ct.onclick=()=>{ if(state==='idle'||state==='over') beginGame(); };
+}
+function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 function playSeq(){
  state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML='';
@@ -888,13 +903,9 @@ function showPreroll(cb){
  timers.push(setTimeout(go,2200));
  pr.onclick=go;
 }
-function newGame(){
+function beginGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
- if(game.kind==='level'){
-  showPreroll(()=>{ $('round').textContent=seq.length; playSeq(); });
- } else {
-  $('round').textContent=seq.length; playSeq();
- }
+ clearCenter(); $('round').textContent=seq.length; playSeq();
 }
 let chordSeq=[];
 function diatonicChords(){
@@ -984,7 +995,7 @@ function tasteMelody(){
   timers.push(setTimeout(()=>{flash(k%12,ms-80); tone(60+root+k,Math.max(0.2,ms*0.85/1000));},t));
   t+=ms;
  });
- timers.push(setTimeout(()=>{state='idle'; setStatus(S9.pressPlay);},t+100));
+ timers.push(setTimeout(()=>{state='idle'; setStatus(''); centerPlay();},t+100));
 }
 
 let micOn=false, micStream=null, micAn=null, micBuf=null, micTimer=null, micGlowed=-1;
@@ -1075,12 +1086,13 @@ function stopMic(){
 function press(k){
  if(game.kind==='tut'){tutPress(k); return;}
  if(state==='input'){hit(k); return;}
- if(state==='idle'||state==='over'){ensureCtx(); flash(k); tone(60+root+k,0.38);}
+ if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
 }
 function hit(k,fromMic){
  if(state!=='input') return; ensureCtx();
- flash(k); if(!fromMic) tone(60+root+k,0.38);
- if(k===seq[step]){
+ const correct=(k===seq[step]);
+ flash(k,300,!correct); if(!fromMic) tone(60+root+k,0.38);
+ if(correct){
   step++;
   if(step===seq.length){
    setStatus(S9.correct,'ok');
@@ -1115,14 +1127,14 @@ function hit(k,fromMic){
    const d=document.createElement('div'); d.className='chip'+(i===step?' err':'');
    d.innerHTML='<span class="sw" style="background:'+C[q].h+';color:'+ink(q)+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+IV[q]+'</b>';
    rv.appendChild(d);});
+  centerPlay();
  }
 }
-$('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
-$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
+$('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
 $('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
@@ -1139,7 +1151,7 @@ document.addEventListener('keydown',e=>{
  const tag=(e.target.tagName||'').toLowerCase();
  if(tag==='select'||tag==='input'||tag==='textarea') return;
  const key=e.key.toLowerCase();
- if(key==='enter'){if(document.activeElement===document.body){e.preventDefault(); $('newgame').click();} return;}
+ if(key==='enter'){if(document.activeElement===document.body&&(state==='idle'||state==='over')){e.preventDefault(); beginGame();} return;}
  if(key==='r'){$('rehear').click(); return;}
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
