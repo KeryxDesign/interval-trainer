@@ -126,7 +126,9 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
   </div>
 
   <div id="view-levels" hidden>
-    <p id="coursetitle" style="font-size:14px; font-weight:600; text-align:center; margin:0 0 2px;"></p>
+    <div id="coursepick" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:0 0 12px;"></div>
+    <p id="coursetitle" style="font-size:15px; font-weight:600; text-align:center; margin:0 0 4px;"></p>
+    <p id="coursedesc" style="font-size:13px; line-height:1.55; color:var(--text); background:var(--surface); border-radius:12px; padding:11px 14px; margin:0 0 6px;"></p>
     <p id="coursesub" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 8px;"></p>
     <div id="mapbox"><div id="map"></div></div>
     <p id="starsline" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 14px;"></p>
@@ -203,7 +205,7 @@ it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
  tabs:["Livelli","Libero","Teoria","Guida"],
- course:"Corso: la scala maggiore", coursesub:"Un grado alla volta, in ordine di importanza melodica.",
+ coursesub:"Un grado alla volta, in ordine di importanza melodica.",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  unlock:"Sblocca tutti i livelli",
@@ -252,13 +254,23 @@ it:{
  IV:['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'],
  DEG:['tonica','sopratonica','sopratonica','mediante','mediante','sottodominante','tritono','dominante','sopradominante','sopradominante','sottotonica','sensibile'],
  NM:['casa','fiamma','sole','stella','foglia','albero','onda','cielo','ancora','luna','fiore','fulmine'],
- WORLDS:[
-  {name:"I due poli", th:"Tonica e dominante: casa e il suo pilastro. È l'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G)."},
-  {name:"L'arpeggio maggiore", th:"Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l'identità del modo. È la nota che illumina. Le melodie \"abitano\" queste tre note: quasi tutti i temi memorabili partono o atterrano sull'arpeggio."},
-  {name:"Il passo", th:"La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare."},
-  {name:"La pentatonica", th:"La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala \"a prova di errore\" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela."},
-  {name:"La sensibile", th:"Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa."},
-  {name:"La scala completa", th:"La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica."}],
+ courses:{
+  maj:{title:"La scala maggiore", desc:"La scala più usata della musica occidentale: sette gradi che suonano \"a casa\", luminosi e stabili, dove ogni tensione sa dove risolvere. È l'alfabeto su cui si reggono modi, accordi e quasi ogni melodia che conosci.",
+   levels:[
+   {name:"I due poli", th:"Tonica e dominante: casa e il suo pilastro. È l'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G)."},
+   {name:"L'arpeggio maggiore", th:"Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l'identità del modo. È la nota che illumina. Le melodie \"abitano\" queste tre note: quasi tutti i temi memorabili partono o atterrano sull'arpeggio."},
+   {name:"Il passo", th:"La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare."},
+   {name:"La pentatonica", th:"La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala \"a prova di errore\" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela."},
+   {name:"La sensibile", th:"Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa."},
+   {name:"La scala completa", th:"La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica."}]},
+  min:{title:"La scala minore naturale", desc:"Il lato in ombra della musica: sette gradi malinconici, intimi, profondi. Stessa famiglia della maggiore (è il suo modo eolio) ma con terza, sesta e settima abbassate. La scala di gran parte del rock, del folk e della musica triste che amiamo.",
+   levels:[
+   {name:"I due poli", th:"Tonica e dominante, identici alla maggiore: casa e il suo pilastro. La quinta è neutra, non dice ancora se la scala sarà felice o triste. È la base che sorregge ogni tonalità, maggiore o minore che sia."},
+   {name:"L'arpeggio minore", th:"Arriva la terza minore, ed ecco l'ombra. Con tonica e quinta forma la triade minore, il suono della malinconia. È il gemello scuro dell'arpeggio maggiore: un solo semitono più in basso, e tutto cambia colore."},
+   {name:"Il passo", th:"La sopratonica, identica alla maggiore: il gradino che fa camminare le melodie. In minore il suo passo verso la terza è un semitono, un sapore più stretto e mediterraneo."},
+   {name:"La sottotonica", th:"La settima minore, un tono sotto casa: niente fretta di risolvere, niente sensibile. È il suono del rock, del folk, del minore antico e modale. Dà alla scala il suo carattere sospeso, non drammatico."},
+   {name:"La sesta minore", th:"Il grado più scuro: la sesta minore pesa verso il basso e con la dominante crea la tensione più dolente del minore. È la lacrima della scala, il colore del lamento."},
+   {name:"La scala completa", th:"Il quarto grado chiude il cerchio: tutti e sette i gradi del minore naturale. Ora hai per intero la scala della malinconia, la base da cui nascono il minore armonico, il dorico e mezzo repertorio del mondo."}]}},
  TH:[
   "Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.",
   "Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.",
@@ -286,7 +298,7 @@ en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
  tabs:["Levels","Free play","Theory","Guide"],
- course:"Course: the major scale", coursesub:"One degree at a time, in order of melodic importance.",
+ coursesub:"One degree at a time, in order of melodic importance.",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  unlock:"Unlock all levels",
@@ -335,13 +347,23 @@ en:{
  IV:['R','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
  DEG:['tonic','supertonic','supertonic','mediant','mediant','subdominant','tritone','dominant','submediant','submediant','subtonic','leading tone'],
  NM:['home','flame','sun','star','leaf','tree','wave','sky','anchor','moon','flower','lightning'],
- WORLDS:[
-  {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (R) and when you are on the springboard (P5)."},
-  {name:"The major arpeggio", th:"Enter the mediant: with tonic and dominant it forms the major triad, C-E-G, the identity of the mode. It is the note that brightens. Melodies live inside these three notes: most memorable themes start or land on the arpeggio."},
-  {name:"The step", th:"The supertonic is the passing note par excellence: it connects tonic and mediant by stepwise motion. On its own it is neither rest nor tension: it is movement. With it, melodies stop leaping and start walking."},
-  {name:"The pentatonic", th:"The submediant completes the major pentatonic: five notes with no semitones, hence no tension. It is the fail-safe scale of half the world's music, from blues to folk songs. In here any sequence sounds good: enjoy it."},
-  {name:"The leading tone", th:"Here comes the first real tension: the leading tone, a half step from home. It is the lightning that begs to discharge onto the tonic, the note that makes closure inevitable. In melody it has a precise role: announcing the return home."},
-  {name:"The full scale", th:"The subdominant closes the circle: all seven degrees. In melody it tends to fall gently onto the mediant, and with the leading tone it forms the tritone hidden inside the major scale (fa-ti), the secret engine of every cadence. Now you have the whole scale: from here on, it is music."}],
+ courses:{
+  maj:{title:"The major scale", desc:"The most used scale in Western music: seven degrees that sound 'at home', bright and stable, where every tension knows where to resolve. It's the alphabet that modes, chords and almost every melody you know are built on.",
+   levels:[
+   {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (R) and when you are on the springboard (P5)."},
+   {name:"The major arpeggio", th:"Enter the mediant: with tonic and dominant it forms the major triad, C-E-G, the identity of the mode. It is the note that brightens. Melodies live inside these three notes: most memorable themes start or land on the arpeggio."},
+   {name:"The step", th:"The supertonic is the passing note par excellence: it connects tonic and mediant by stepwise motion. On its own it is neither rest nor tension: it is movement. With it, melodies stop leaping and start walking."},
+   {name:"The pentatonic", th:"The submediant completes the major pentatonic: five notes with no semitones, hence no tension. It is the fail-safe scale of half the world's music, from blues to folk songs. In here any sequence sounds good: enjoy it."},
+   {name:"The leading tone", th:"Here comes the first real tension: the leading tone, a half step from home. It is the lightning that begs to discharge onto the tonic, the note that makes closure inevitable. In melody it has a precise role: announcing the return home."},
+   {name:"The full scale", th:"The subdominant closes the circle: all seven degrees. In melody it tends to fall gently onto the mediant, and with the leading tone it forms the tritone hidden inside the major scale (fa-ti), the secret engine of every cadence. Now you have the whole scale: from here on, it is music."}]},
+  min:{title:"The natural minor scale", desc:"The shadow side of music: seven melancholic, intimate, deep degrees. Same family as major (it's its Aeolian mode) but with lowered third, sixth and seventh. The scale of much of rock, folk and the sad music we love.",
+   levels:[
+   {name:"The two poles", th:"Tonic and dominant, identical to major: home and its pillar. The fifth is neutral, it doesn't yet say whether the scale will be happy or sad. It's the base that holds up any key, major or minor."},
+   {name:"The minor arpeggio", th:"Here comes the minor third, and with it the shadow. With tonic and fifth it forms the minor triad, the sound of melancholy. It's the dark twin of the major arpeggio: one semitone lower, and everything changes color."},
+   {name:"The step", th:"The supertonic, identical to major: the stair-step that makes melodies walk. In minor its step toward the third is a semitone, a tighter, more Mediterranean flavor."},
+   {name:"The subtonic", th:"The minor seventh, a whole tone below home: no rush to resolve, no leading tone. It's the sound of rock, folk, the old modal minor. It gives the scale its suspended, undramatic character."},
+   {name:"The minor sixth", th:"The darkest degree: the minor sixth leans downward and with the dominant creates the most sorrowful tension in minor. It's the scale's tear, the color of lament."},
+   {name:"The full scale", th:"The fourth degree closes the circle: all seven degrees of natural minor. Now you have the full scale of melancholy, the base from which harmonic minor, Dorian and half the world's repertoire are born."}]}},
  TH:[
   "The resting point. Everything is measured from here and everything, sooner or later, returns here. When the melody lands on the tonic, the phrase closes.",
   "A semitone above home: it creeps, it presses, it will not sit still. Pure chromatic tension, the dark color of the Phrygian mode.",
@@ -394,7 +416,9 @@ const C=[
  {h:'hsl(285,55%,49%)',ic:'flower'},
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
 const ink=k=>C[k].ink||'#fff';
-const WADD=[[0,7],[4],[2],[9],[11],[5]];
+const CWADD={maj:[[0,7],[4],[2],[9],[11],[5]], min:[[0,7],[3],[2],[10],[8],[5]]};
+const COURSE_IDS=['maj','min'];
+let curCourse=(localStorage.getItem('hm_course')&&['maj','min'].includes(localStorage.getItem('hm_course')))?localStorage.getItem('hm_course'):'maj';
 const STAR1=5, STAR2=8;
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
@@ -404,27 +428,27 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 let rhythm=localStorage.getItem('it_rhythm')==='1';
 const $=id=>document.getElementById(id);
 
-function prog(){try{return JSON.parse(localStorage.getItem('it_prog_maj')||'{}')}catch(e){return{}}}
-function saveProg(key,entry){const p=prog(); const old=p[key]||{stars:0,bestRound:0};
+function prog(c){try{return JSON.parse(localStorage.getItem('it_prog_'+c)||'{}')}catch(e){return{}}}
+function saveProg(c,key,entry){const p=prog(c); const old=p[key]||{stars:0,bestRound:0};
  p[key]={stars:Math.max(old.stars,entry.stars), bestRound:Math.max(old.bestRound,entry.bestRound)};
- localStorage.setItem('it_prog_maj',JSON.stringify(p));}
-function starsOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.stars:0;}
-function bestOf(w,m){const e=prog()['w'+w+'m'+m]; return e?e.bestRound:0;}
+ localStorage.setItem('it_prog_'+c,JSON.stringify(p));}
+function starsOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.stars:0;}
+function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
-function worldUnlocked(i){return unlockAll()||i===0||starsOf(i-1,1)>=2;}
-function modeUnlocked(w,m){return unlockAll()||(m===0?worldUnlocked(w):starsOf(w,m-1)>=1);}
-function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WADD[i]); return s.sort((a,b)=>a-b);}
-function maxUnlockedWorld(){let m=0; for(let i=0;i<WADD.length;i++){if(worldUnlocked(i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
+function worldUnlocked(c,i){return unlockAll()||i===0||starsOf(c,i-1,1)>=2;}
+function modeUnlocked(c,w,m){return unlockAll()||(m===0?worldUnlocked(c,w):starsOf(c,w,m-1)>=1);}
+function cumSet(c,wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return s.sort((a,b)=>a-b);}
+function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
+function activeSet(){if(game.kind==='tut')return[0,7]; return game.kind==='free'?SCALES[scale]:cumSet(game.c,game.w);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
-function totalStars(){const p=prog(); let t=0; for(const k in p)t+=p[k].stars; return t;}
+function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
+function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
 
 function applyStatic(){
  $('htag').textContent=S9.tag;
  $('hplaytxt').textContent=S9.playCta.toUpperCase();
  $('hguide').textContent=S9.guideCta;
  ['levels','free','theory','guide'].forEach((t,i)=>{$('tab-'+t).textContent=S9.tabs[i];});
- $('coursetitle').textContent=S9.course;
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
@@ -498,8 +522,8 @@ function applyStatic(){
   const d=document.createElement('div'); d.className='edot';
   d.style.cssText='left:'+(x-6)+'px;top:'+(y-6)+'px;background:'+C[k].h;
   em.appendChild(d);}
- const ts=totalStars(), mw=maxUnlockedWorld();
- $('hprog').textContent=(ts>0||mw>0)?(S9.level+' '+(mw+1)+' · '+ts+'★'):'';
+ const ts=totalStars();
+ $('hprog').textContent=ts>0?(ts+'★'):'';
 }
 
 function setView(name){
@@ -511,12 +535,25 @@ function setView(name){
  ['levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===name);});
 }
 function showHome(){clearTimers(); state='idle'; seq=[]; stopMic(); applyStaticHomeProg(); setView('home');}
-function applyStaticHomeProg(){const ts=totalStars(), mw=maxUnlockedWorld(); $('hprog').textContent=(ts>0||mw>0)?(S9.level+' '+(mw+1)+' · '+ts+'★'):'';}
+function applyStaticHomeProg(){const ts=totalStars(); $('hprog').textContent=ts>0?(ts+'★'):'';}
+function renderCoursePick(){
+ const box=$('coursepick'); box.innerHTML='';
+ COURSE_IDS.forEach(c=>{
+  const b=document.createElement('button'); b.className='pill';
+  if(c===curCourse) b.setAttribute('aria-pressed','true');
+  const cs=courseStars(c);
+  b.innerHTML=S9.courses[c].title+(cs>0?' <span style="color:var(--gold)">'+cs+'★</span>':'');
+  b.addEventListener('click',()=>{curCourse=c; localStorage.setItem('hm_course',c); showLevels();});
+  box.appendChild(b);
+ });
+}
 function showLevels(){
  clearTimers(); state='idle'; seq=[]; stopMic();
  setView('levels');
+ $('coursedesc').textContent=S9.courses[curCourse].desc;
+ $('coursetitle').textContent=S9.courses[curCourse].title;
  $('unlockall').checked=unlockAll();
- renderMap(); renderWorlds();
+ renderCoursePick(); renderMap(); renderWorlds();
 }
 function showFree(){
  clearTimers(); state='idle'; seq=[]; game={kind:'free'};
@@ -530,16 +567,17 @@ function showFree(){
 }
 function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
-function startLevel(w,m){
- clearTimers(); game={kind:'level',w:w,m:m}; root=0;
+function startLevel(c,w,m){
+ clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=0;
+ const lv=S9.courses[c].levels[w];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+S9.WORLDS[w].name+'</b> · '+MODES[m]+S9.modeSuffix[m];
+ $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+lv.name+'</b> · '+MODES[m]+S9.modeSuffix[m];
  $('lvltheory').hidden=false;
- $('lvlsum').textContent=S9.level+' '+(w+1)+' · '+S9.WORLDS[w].name;
- $('lvltheory').querySelector('p').textContent=S9.WORLDS[w].th;
- const seen='hm_seen_w'+w;
+ $('lvlsum').textContent=S9.level+' '+(w+1)+' · '+lv.name;
+ $('lvltheory').querySelector('p').textContent=lv.th;
+ const seen='hm_seen_'+c+w;
  $('lvltheory').open=!localStorage.getItem(seen);
  localStorage.setItem(seen,'1');
  $('backbtn').hidden=false; $('rowsetup').hidden=true;
@@ -617,7 +655,7 @@ function tutPress(k){
     tut.step=4; tutAllow([-1]);
     setStatus(S9.tutDone,'ok'); chime();
     localStorage.setItem('hm_tut_done','1');
-    timers.push(setTimeout(()=>startLevel(0,0),2200));
+    timers.push(setTimeout(()=>startLevel('maj',0,0),2200));
    }
   } else {
    tut.pos=0; tutAllow([-1]);
@@ -628,14 +666,14 @@ function tutPress(k){
   }
  }
 }
-function showCelebrate(i){
+function showCelebrate(c,i){
  const ico=$('celico'); ico.innerHTML='';
- WADD[i].forEach(k=>{
+ CWADD[c][i].forEach(k=>{
   const d=document.createElement('div');
   d.style.cssText='width:64px;height:64px;border-radius:50%;background:'+C[k].h+';display:flex;align-items:center;justify-content:center;color:'+ink(k);
   d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:30px"></i>';
   ico.appendChild(d);});
- $('celname').textContent=(i+1)+'. '+S9.WORLDS[i].name;
+ $('celname').textContent=(i+1)+'. '+S9.courses[c].levels[i].name;
  $('celebrate').hidden=false;
  chime(); setTimeout(chime,400);
 }
@@ -643,13 +681,13 @@ function showCelebrate(i){
 function bestKey(){return 'it_best_'+scale;}
 function loadBest(){
  if(game.kind==='free') $('best').textContent=localStorage.getItem(bestKey())||0;
- else $('best').textContent=bestOf(game.w,game.m);
+ else $('best').textContent=bestOf(game.c,game.w,game.m);
 }
 
 function renderMap(){
  const MS=210, MC=MS/2, MR=MS/2-18;
  const map=$('map'); map.style.width=MS+'px'; map.style.height=MS+'px'; map.innerHTML='';
- const unlocked=cumSet(maxUnlockedWorld());
+ const unlocked=cumSet(curCourse,maxUnlockedWorld(curCourse));
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=MC+MR*Math.cos(a), y=MC+MR*Math.sin(a);
   const d=document.createElement('div'); d.className='mapdot'+(unlocked.includes(k)?'':' off');
@@ -660,11 +698,11 @@ function renderMap(){
 }
 function renderWorlds(){
  const box=$('worlds'); box.innerHTML='';
- S9.WORLDS.forEach((w,i)=>{
-  const unlocked=worldUnlocked(i);
+ S9.courses[curCourse].levels.forEach((w,i)=>{
+  const unlocked=worldUnlocked(curCourse,i);
   const card=document.createElement('div'); card.className='world'+(unlocked?'':' locked');
   let ints='';
-  WADD[i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+  CWADD[curCourse][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
   if(!unlocked){
    h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
@@ -672,13 +710,13 @@ function renderWorlds(){
   } else {
    card.innerHTML=h;
    MODES.forEach((mn,m)=>{
-    const mu=modeUnlocked(i,m);
+    const mu=modeUnlocked(curCourse,i,m);
     const b=document.createElement('button'); b.className='mrow'; b.disabled=!mu;
     b.innerHTML='<span>'+(mu?'<i class="ti ti-player-play" style="font-size:13px;vertical-align:-2px"></i> ':'<i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> ')+mn+
-     (mu&&bestOf(i,m)?' <span style="color:var(--muted);font-size:12px">· '+S9.bestShort+' '+bestOf(i,m)+'</span>':'')+
+     (mu&&bestOf(curCourse,i,m)?' <span style="color:var(--muted);font-size:12px">· '+S9.bestShort+' '+bestOf(curCourse,i,m)+'</span>':'')+
      (!mu?' <span style="color:var(--muted);font-size:12px">· '+S9.lockMode+'</span>':'')+'</span>'+
-     '<span class="stars">'+starsStr(starsOf(i,m))+'</span>';
-    if(mu) b.addEventListener('click',()=>startLevel(i,m));
+     '<span class="stars">'+starsStr(starsOf(curCourse,i,m))+'</span>';
+    if(mu) b.addEventListener('click',()=>startLevel(curCourse,i,m));
     card.appendChild(b);
    });
   }
@@ -1026,11 +1064,11 @@ function hit(k,fromMic){
   if(game.kind==='level'){
    const completed=seq.length-1;
    let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
-   const before=starsOf(game.w,game.m);
-   const wBefore=WADD.map((_,i)=>worldUnlocked(i));
-   saveProg('w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
-   const newW=WADD.findIndex((_,i)=>worldUnlocked(i)&&!wBefore[i]);
-   if(newW>=0) timers.push(setTimeout(()=>showCelebrate(newW),900));
+   const before=starsOf(game.c,game.w,game.m);
+   const wBefore=CWADD[game.c].map((_,i)=>worldUnlocked(game.c,i));
+   saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
+   const newW=CWADD[game.c].findIndex((_,i)=>worldUnlocked(game.c,i)&&!wBefore[i]);
+   if(newW>=0) timers.push(setTimeout(()=>showCelebrate(game.c,newW),900));
    loadBest();
    msg+=' · '+S9.roundW+' '+completed;
    if(st>before){msg+=S9.newStar; chime();}
