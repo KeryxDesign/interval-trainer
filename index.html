@@ -693,8 +693,9 @@ function renderSig(){
  h+='<span style="font-size:12px;color:var(--muted);margin-left:4px">'+S9.SIG[scale]+'</span>';
  const li=LIGHTORDER.indexOf(scale);
  if(li>=0){
-  h+='<span style="flex-basis:100%;height:0"></span><span style="display:inline-flex;gap:3px;align-items:center">';
-  LIGHTSW.forEach((c2,i)=>{h+='<span style="width:'+(i===li?14:10)+'px;height:'+(i===li?14:10)+'px;border-radius:50%;background:'+c2+(i===li?';outline:2px solid #fff':'')+'"></span>';});
+  h+='<span style="flex-basis:100%;height:0"></span><span style="display:inline-flex;gap:4px;align-items:center;margin-top:5px">';
+  LIGHTORDER.forEach((mk2,i)=>{const cur=i===li;
+   h+='<span style="width:'+(cur?22:17)+'px;height:'+(cur?22:17)+'px;border-radius:50%;background:'+LIGHTSW[i]+';color:'+inkSW(i)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+(cur?';outline:2px solid #fff':'')+'"><i class="ti ti-'+MODEIC[mk2]+'" style="font-size:'+(cur?12:9)+'px"></i></span>';});
   h+='</span>';
  }
  el.innerHTML=h; el.hidden=false;
@@ -704,6 +705,14 @@ function render(){
  const wb=$('wheelbox');
  wb.style.background=(game.kind==='free'&&SCENE[scale])?SCENE[scale]:'transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
+ if(game.kind==='free'&&MODEIC[scale]){
+  const mli2=LIGHTORDER.indexOf(scale);
+  const wm=document.createElement('i');
+  wm.className='ti ti-'+MODEIC[scale];
+  wm.setAttribute('aria-hidden','true');
+  wm.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:'+Math.round(S*0.44)+'px;color:'+LIGHTSW[mli2]+';opacity:0.13;pointer-events:none;';
+  w.appendChild(wm);
+ }
  const cs=Math.round(S*0.36);
  const ctr=document.createElement('div'); ctr.id='ctr';
  ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
