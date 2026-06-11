@@ -40,7 +40,8 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #hprog{font-size:13px; color:var(--muted); margin:10px 0 0; min-height:18px;}
 #hguide{font-size:15px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:12px; cursor:pointer; margin-top:4px;}
 .controls{display:flex; flex-direction:column; gap:8px; margin-bottom:12px;}
-.crow{display:flex; gap:8px; align-items:center;}
+.crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+#scsel{flex:1 1 auto; min-width:0;}
 .crow.actions .btn{flex:1; justify-content:center; padding:12px 14px;}
 .crow.actions .btn.primary{flex:1.6;}
 select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:10px; padding:9px 10px; font-size:14px; appearance:none;}
@@ -59,7 +60,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #status.ok{border:1px solid #2e9e5b;}
 #ctxlabel{font-size:13px; color:var(--muted); margin:0 0 10px;}
 #wheelbox{display:flex; justify-content:center; border-radius:20px; transition:background .5s; padding:6px 0;}
-#sigstrip{display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:-4px 0 10px;}
+.pbtn{flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--surface2); color:var(--text); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:15px;}
+.pbtn:active{transform:scale(0.94);}
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
@@ -149,8 +151,10 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <div class="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
+        <span id="modechip" hidden style="flex:0 0 auto;"></span>
         <select id="rootsel" aria-label="Tonic"></select>
         <button class="btn" id="tastebtn"><i class="ti ti-music"></i><span id="tastetxt"></span></button>
+        <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
       <div class="crow actions">
         <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i><span id="playtxt"></span></button>
@@ -162,7 +166,6 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
         <button class="pill" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
       </div>
     </div>
-    <div id="sigstrip" hidden></div>
 
     <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
@@ -181,6 +184,11 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <p id="thintro" style="font-size:13px; color:var(--muted); margin:0 0 12px;"></p>
     <div id="theory"></div>
   </div>
+</div>
+<div id="freeintro" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:46; text-align:left; padding:32px 22px; max-width:480px; margin:0 auto;">
+  <p id="fi-title" style="font-size:22px; font-weight:700; margin:0 0 16px;"></p>
+  <p id="fi-body" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 26px;"></p>
+  <button class="btn primary" id="fi-close" style="justify-content:center; padding:13px;"></button>
 </div>
 <div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:28px; cursor:pointer;">
   <p id="pr-level" style="font-size:13px; color:var(--muted); margin:0 0 18px;"></p>
@@ -227,6 +235,9 @@ it:{
  SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore",blM:"pentatonica maggiore più la stella",blm:"pentatonica minore più l'onda: la blue note"},
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
+ fiTitle:"Modalità Libero", fiClose:"Inizia",
+ fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
+ compLabel:"Formula:",
  modesTitle:"I modi: la luce del viaggio",
  modesIntro:"Un modo è la stessa collana di note con una casa diversa: prendi le sette note della maggiore, scegli come tonica un'altra di loro, e le distanze da casa cambiano: si accende un'altra costellazione. Maggiore e minore naturale sono anche loro modi (ionico ed eolio): li chiamiamo scale solo perché sono i due di default. Stessi luoghi, luce diversa.",
  MODETH:{
@@ -321,6 +332,9 @@ en:{
  SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side",blM:"major pentatonic plus the star",blm:"minor pentatonic plus the wave: the blue note"},
  tasteBtn:"Taste", tasting:"tasting the scale…",
  prTap:"tap to start", prNew:"this level's new note",
+ fiTitle:"Free play", fiClose:"Start",
+ fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
+ compLabel:"Formula:",
  modesTitle:"The modes: the light of the journey",
  modesIntro:"A mode is the same necklace of notes with a different home: take the seven notes of the major scale, pick another one of them as the tonic, and the distances from home change: a different constellation lights up. Major and natural minor are modes too (Ionian and Aeolian): we call them scales only because they are the two defaults. Same places, different light.",
  MODETH:{
@@ -493,7 +507,8 @@ function applyStatic(){
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
    '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
    '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
-   '<i class="ti ti-chevron-down" style="margin-left:auto;color:var(--muted);font-size:15px"></i></summary>'+
+   '<button class="pbtn" data-iv="'+k+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
+   '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
    '<p style="margin:0 0 0 44px;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
   thBox.appendChild(d);});
@@ -511,10 +526,13 @@ function applyStatic(){
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
    '<span style="width:34px;height:34px;border-radius:50%;background:'+LIGHTSW[idx]+';display:flex;align-items:center;justify-content:center;color:'+inkSW(idx)+';flex-shrink:0"><i class="ti ti-'+MODEIC[mk]+'" style="font-size:17px"></i></span>'+
    '<span style="font-size:15px;font-weight:600">'+S9.scales[NAMEIDX[mk]]+' <span style="color:var(--muted);font-weight:400">· '+m.nick+'</span></span>'+
-   '<i class="ti ti-chevron-down" style="margin-left:auto;color:var(--muted);font-size:15px"></i></summary>'+
+   '<button class="pbtn" data-mode="'+mk+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
+   '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 8px 44px;font-size:13px;line-height:1.55;color:var(--text)">'+m.desc+'</p>'+
-   '<div style="display:flex;gap:4px;margin:0 0 4px 44px;flex-wrap:wrap;align-items:center">'+cons+'<span style="font-size:11px;color:var(--muted);margin-left:4px">'+(S9.SIG[mk]||'')+'</span></div>';
+   '<div style="display:flex;gap:4px;margin:0 0 8px 44px;flex-wrap:wrap;align-items:center">'+cons+'<span style="font-size:11px;color:var(--muted);margin-left:4px">'+(S9.SIG[mk]||'')+'</span></div>'+
+   '<p style="margin:0 0 0 44px;font-size:12px;color:var(--muted)"><b style="color:var(--text)">'+S9.compLabel+'</b> '+SCALES[mk].map(k=>IV[k]).join(' · ')+'</p>';
   thBox.appendChild(d);});
+ thBox.querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); if(b.dataset.iv!=null) playInterval(+b.dataset.iv); else playScaleAsc(b.dataset.mode);}));
  const gd=$('guide'); gd.innerHTML='';
  S9.GUIDE.forEach(s=>{const d=document.createElement('div'); d.className='world'; d.style.padding='14px 16px';
   d.innerHTML='<p style="font-size:15px;font-weight:600;margin:0 0 6px">'+s.h+'</p><p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">'+s.p+'</p>';
@@ -532,7 +550,7 @@ function applyStatic(){
 }
 
 function setView(name){
- $('preroll').hidden=true;
+ $('preroll').hidden=true; $('freeintro').hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free');
  $('tabs').hidden=name==='home';
@@ -570,6 +588,13 @@ function showFree(){
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
  render(); renderSig(); renderChords(); loadBest();
+ if(!localStorage.getItem('hm_free_seen')) openFreeIntro();
+}
+function openFreeIntro(){
+ $('fi-title').textContent=S9.fiTitle;
+ $('fi-body').innerHTML=S9.fiBody;
+ $('fi-close').textContent=S9.fiClose;
+ $('freeintro').hidden=false;
 }
 function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
@@ -584,7 +609,7 @@ function startLevel(c,w,m){
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML='';
- $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
+ $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
  setStatus(S9.pressPlay);
 }
@@ -619,7 +644,7 @@ function startTutorial(){
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
- $('sigstrip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
+ $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render();
  tut={step:1,allowed:[],expect:[],pos:0};
  tutAllow([0]);
@@ -739,23 +764,11 @@ function consChips(mk,sz){
  return h;
 }
 function renderSig(){
- const el=$('sigstrip');
- if(game.kind!=='free'||!S9.SIG[scale]){el.hidden=true; return;}
- let h='';
+ const el=$('modechip');
  const mli=LIGHTORDER.indexOf(scale);
- if(MODEIC[scale]&&mli>=0){
-  h+='<span style="width:24px;height:24px;border-radius:50%;background:'+LIGHTSW[mli]+';color:'+inkSW(mli)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:3px"><i class="ti ti-'+MODEIC[scale]+'" style="font-size:13px"></i></span>';
- }
- h+=consChips(scale,22);
- h+='<span style="font-size:12px;color:var(--muted);margin-left:4px">'+S9.SIG[scale]+'</span>';
- const li=LIGHTORDER.indexOf(scale);
- if(li>=0){
-  h+='<span style="flex-basis:100%;height:0"></span><span style="display:inline-flex;gap:4px;align-items:center;margin-top:5px">';
-  LIGHTORDER.forEach((mk2,i)=>{const cur=i===li;
-   h+='<span style="width:'+(cur?22:17)+'px;height:'+(cur?22:17)+'px;border-radius:50%;background:'+LIGHTSW[i]+';color:'+inkSW(i)+';display:inline-flex;align-items:center;justify-content:center;flex-shrink:0'+(cur?';outline:2px solid #fff':'')+'"><i class="ti ti-'+MODEIC[mk2]+'" style="font-size:'+(cur?12:9)+'px"></i></span>';});
-  h+='</span>';
- }
- el.innerHTML=h; el.hidden=false;
+ if(game.kind!=='free'||!MODEIC[scale]||mli<0){el.hidden=true; return;}
+ el.innerHTML='<span style="width:30px;height:30px;border-radius:50%;background:'+LIGHTSW[mli]+';color:'+inkSW(mli)+';display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line)"><i class="ti ti-'+MODEIC[scale]+'" style="font-size:16px"></i></span>';
+ el.hidden=false;
 }
 function render(){
  layout();
@@ -820,6 +833,8 @@ function buzz(){
  o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+0.45);
 }
 function chime(){[0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});}
+function playInterval(k){ensureCtx(); const t=ctx.currentTime; tone(60,0.5); setTimeout(()=>tone(60+k,0.5),560); setTimeout(()=>{tone(60,0.95);tone(60+k,0.95);},1180);}
+function playScaleAsc(id){ensureCtx(); const ns=SCALES[id].concat([12]); ns.forEach((k,i)=>setTimeout(()=>tone(60+k,0.34),i*300));}
 function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
@@ -1104,6 +1119,8 @@ function hit(k,fromMic){
 }
 $('newgame').addEventListener('click',function(){this.blur(); newGame();});
 $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
+$('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
+$('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
