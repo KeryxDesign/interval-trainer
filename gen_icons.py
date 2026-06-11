@@ -1,80 +1,60 @@
 #!/usr/bin/env python3
-"""Icona Huermony: occhio (vista) con iride a 12 colori (spettro) e una nota
-da ottavo come pupilla (udito). Vista + suono = sinestesia. Richiede Pillow."""
-import colorsys, math
-from PIL import Image, ImageDraw
+"""Icona Huermony: occhio (vista) + nota da ottavo come pupilla (udito),
+monocromo bianco su fondo blu. Richiede Pillow."""
+import math
+from PIL import Image, ImageDraw, ImageChops
 
-HUES = [(0,75,48),(22,85,45),(40,90,43),(55,75,41),(78,60,42),(135,55,36),
-        (172,80,32),(196,85,38),(222,70,50),(252,58,56),(285,55,49),(320,70,48)]
-BG = (20, 21, 26)
-DARK = (16, 17, 22)
-
-def hsl(h, s, l):
-    r, g, b = colorsys.hls_to_rgb(h/360.0, l/100.0, s/100.0)
-    return (int(r*255), int(g*255), int(b*255))
-
-COLS = [hsl(*x) for x in HUES]
+BLUE = (37, 99, 235)     # blu brand
+WHITE = (255, 255, 255)
 
 def render(size, ss=4):
     S = size * ss
-    img = Image.new("RGB", (S, S), BG)
+    img = Image.new("RGB", (S, S), BLUE)
     d = ImageDraw.Draw(img)
     cx = cy = S / 2.0
+    stroke = S * 0.034
 
-    # --- occhio a mandorla: intersezione di due cerchi (sopra e sotto) ---
-    eye_w = S * 0.86
-    lens_r = eye_w * 0.62          # raggio dei due cerchi
-    off = math.sqrt(max(lens_r**2 - (eye_w/2)**2, 0))  # curvatura verticale
+    # --- occhio a mandorla: intersezione di due cerchi (contorno bianco) ---
+    eye_w = S * 0.84
+    lens_r = eye_w * 0.62
+    off = math.sqrt(max(lens_r**2 - (eye_w/2)**2, 0))
     top_c = (cx, cy - lens_r + off)
     bot_c = (cx, cy + lens_r - off)
-    ma = Image.new("L", (S, S), 0); ImageDraw.Draw(ma).ellipse(
-        [top_c[0]-lens_r, top_c[1]-lens_r, top_c[0]+lens_r, top_c[1]+lens_r], fill=255)
-    mb = Image.new("L", (S, S), 0); ImageDraw.Draw(mb).ellipse(
-        [bot_c[0]-lens_r, bot_c[1]-lens_r, bot_c[0]+lens_r, bot_c[1]+lens_r], fill=255)
-    from PIL import ImageChops
-    lens = ImageChops.darker(ma, mb)            # bianco solo dove dentro entrambi
+    def lens_mask(scale):
+        rr = lens_r * scale
+        tc = (cx, cy - rr + math.sqrt(max(rr**2-(eye_w*scale/2)**2,0)))
+        bc = (cx, cy + rr - math.sqrt(max(rr**2-(eye_w*scale/2)**2,0)))
+        ma = Image.new("L",(S,S),0); ImageDraw.Draw(ma).ellipse([tc[0]-rr,tc[1]-rr,tc[0]+rr,tc[1]+rr],fill=255)
+        mb = Image.new("L",(S,S),0); ImageDraw.Draw(mb).ellipse([bc[0]-rr,bc[1]-rr,bc[0]+rr,bc[1]+rr],fill=255)
+        return ImageChops.darker(ma,mb)
+    outer = lens_mask(1.0)
+    inner = lens_mask(1.0 - stroke/lens_r*2.0)
+    ring = ImageChops.subtract(outer, inner)
+    wimg = Image.new("RGB",(S,S),WHITE)
+    img.paste(wimg, (0,0), ring)
 
-    # sclera (bianco dell'occhio)
-    white = Image.new("RGB", (S, S), (236, 238, 242))
-    img.paste(white, (0, 0), lens)
-
-    # --- iride: 12 spicchi di spettro ---
+    # --- iride: cerchio bianco di contorno ---
     ir = eye_w * 0.30
-    iris = Image.new("RGB", (S, S), BG)
-    di = ImageDraw.Draw(iris)
-    bbox = [cx-ir, cy-ir, cx+ir, cy+ir]
-    for k in range(12):
-        a0 = -90 + k*30 - 0.5
-        di.pieslice(bbox, a0, a0+31, fill=COLS[k])
-    irism = Image.new("L", (S, S), 0)
-    ImageDraw.Draw(irism).ellipse(bbox, fill=255)
-    irism = ImageChops.darker(irism, lens)      # iride tagliata dalle palpebre
-    img.paste(iris, (0, 0), irism)
+    bbox=[cx-ir,cy-ir,cx+ir,cy+ir]
+    d.ellipse(bbox, outline=WHITE, width=int(stroke*0.8))
 
-    # anello scuro sottile attorno all'iride
-    d.ellipse(bbox, outline=DARK, width=max(2, int(S*0.006)))
-
-    # --- nota da ottavo come pupilla (scura) ---
-    nh = ir * 0.42                              # raggio testa nota
-    head = (cx - ir*0.22, cy + ir*0.28)
-    # testa (ellisse leggermente inclinata)
-    htmp = Image.new("RGBA", (S, S), (0,0,0,0))
-    ImageDraw.Draw(htmp).ellipse(
-        [head[0]-nh*1.15, head[1]-nh*0.82, head[0]+nh*1.15, head[1]+nh*0.82], fill=DARK+(255,))
+    # --- nota da ottavo bianca come pupilla ---
+    nh = ir * 0.40
+    head = (cx - ir*0.20, cy + ir*0.30)
+    htmp = Image.new("RGBA",(S,S),(0,0,0,0))
+    ImageDraw.Draw(htmp).ellipse([head[0]-nh*1.15,head[1]-nh*0.82,head[0]+nh*1.15,head[1]+nh*0.82], fill=WHITE+(255,))
     htmp = htmp.rotate(20, center=head, resample=Image.BICUBIC)
-    img.paste(htmp, (0,0), htmp)
-    # gambo
+    img.paste(htmp,(0,0),htmp)
     stem_x = head[0] + nh*1.02
-    stem_top = cy - ir*0.62
-    d.rectangle([stem_x-ir*0.07, stem_top, stem_x+ir*0.07, head[1]], fill=DARK)
-    # bandierina
+    stem_top = cy - ir*0.58
+    d.rectangle([stem_x-ir*0.075, stem_top, stem_x+ir*0.075, head[1]], fill=WHITE)
     d.polygon([(stem_x+ir*0.05, stem_top),
                (stem_x+ir*0.05, stem_top+ir*0.46),
-               (stem_x+ir*0.42, stem_top+ir*0.30),
-               (stem_x+ir*0.40, stem_top+ir*0.02)], fill=DARK)
+               (stem_x+ir*0.44, stem_top+ir*0.30),
+               (stem_x+ir*0.42, stem_top+ir*0.02)], fill=WHITE)
 
-    return img.resize((size, size), Image.LANCZOS)
+    return img.resize((size,size), Image.LANCZOS)
 
-for name, size in [("icon-512.png",512), ("icon-192.png",192), ("apple-touch-icon.png",180)]:
+for name,size in [("icon-512.png",512),("icon-192.png",192),("apple-touch-icon.png",180)]:
     render(size).save(name)
-    print(name, "ok")
+    print(name,"ok")
