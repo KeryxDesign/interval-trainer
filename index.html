@@ -46,11 +46,11 @@ button.btn:active{transform:scale(0.97);}
 button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--text); font-size:15px;}
 .pill{background:var(--surface); color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:9px 14px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px;}
 .pill[aria-pressed="true"]{color:var(--text); border-color:var(--gold); box-shadow:inset 0 0 0 1px var(--gold);}
-.stats{display:flex; gap:8px; margin:10px 0 4px;}
-.stat{flex:1; background:var(--surface); border-radius:12px; display:flex; align-items:baseline; gap:8px; padding:7px 12px;}
+.stats{display:flex; gap:8px; margin:8px 0 2px;}
+.stat{flex:1; background:var(--surface); border-radius:12px; display:flex; align-items:baseline; gap:8px; padding:4px 10px;}
 .stat p{margin:0;}
 .stat .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
-.stat .val{font-size:17px; font-weight:600;}
+.stat .val{font-size:15px; font-weight:600;}
 #status{font-size:16px; font-weight:600; text-align:center; min-height:46px; display:flex; align-items:center; justify-content:center; background:var(--surface); border-radius:12px; padding:8px 14px; margin:8px 0 12px;}
 #status.err{border:1px solid #e24b4a;}
 #status.ok{border:1px solid #2e9e5b;}
@@ -131,20 +131,24 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <label id="unlockrow"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
   </div>
 
-  <div id="view-guide" hidden><div id="guide"></div></div>
+  <div id="view-guide" hidden>
+    <button class="btn" id="tutbtn" style="width:100%; justify-content:center; margin-bottom:12px;"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
+    <div id="guide"></div>
+  </div>
 
   <div id="view-game" hidden>
     <p id="ctxlabel" hidden></p>
-    <div id="lvltheory" hidden style="background:var(--surface); border-radius:12px; padding:12px 14px; margin:0 0 12px;">
-      <p style="font-size:13px; line-height:1.6; margin:0; color:var(--text);"></p>
-    </div>
+    <details id="lvltheory" hidden style="background:var(--surface); border-radius:12px; padding:10px 14px; margin:0 0 12px;">
+      <summary id="lvlsum" style="font-size:13px; font-weight:600; cursor:pointer; list-style-position:inside;"></summary>
+      <p style="font-size:13px; line-height:1.6; margin:8px 0 0; color:var(--text);"></p>
+    </details>
     <div class="controls">
       <div class="crow" id="rowsetup">
-        <button class="btn" id="backbtn" hidden><i class="ti ti-arrow-left"></i><span id="backtxt"></span></button>
         <select id="scsel" aria-label="Scale"></select>
         <select id="rootsel" aria-label="Tonic"></select>
       </div>
       <div class="crow actions">
+        <button class="btn" id="backbtn" hidden style="flex:0 0 auto;"><i class="ti ti-arrow-left"></i><span id="backtxt"></span></button>
         <button class="btn primary" id="newgame"><i class="ti ti-player-play"></i><span id="playtxt"></span></button>
         <button class="btn" id="rehear"><i class="ti ti-refresh"></i><span id="reheartxt"></span></button>
       </div>
@@ -155,15 +159,14 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
-      <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
-    </div>
-
     <p id="keyhint" style="display:none; font-size:12px; color:var(--muted); margin:0 0 8px;"></p>
     <p id="status"></p>
     <p id="micline" hidden style="font-size:13px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
+    <div class="stats">
+      <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
+      <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
+    </div>
     <div id="reveal"></div>
     <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
@@ -172,6 +175,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <p id="thintro" style="font-size:13px; color:var(--muted); margin:0 0 12px;"></p>
     <div id="theory"></div>
   </div>
+</div>
+<div id="celebrate" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.94); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:50; text-align:center; padding:24px; cursor:pointer;">
+  <div id="celico" style="display:flex; gap:14px; margin-bottom:22px;"></div>
+  <p id="celtitle" style="font-size:22px; font-weight:700; margin:0 0 6px;"></p>
+  <p id="celname" style="font-size:16px; color:var(--muted); margin:0 0 28px;"></p>
+  <p id="celtap" style="font-size:13px; color:var(--muted); margin:0;"></p>
 </div>
 
 <script>
@@ -205,6 +214,16 @@ it:{
  wrong:(s,n,d)=>"sbagliato al passo "+s+": era "+n+" ("+d+")", roundW:"round",
  micListen:"in ascolto…", micErr:"microfono non disponibile o permesso negato",
  keyhint:"Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.",
+ tutBtn:"Prova il tutorial guidato (2 minuti)",
+ tutLabel:"Tutorial",
+ tut1:"Questa è la ruota degli intervalli. Il cerchio rosso in alto è la tonica: casa. Toccalo.",
+ tut2:"Questo è il suono di casa, il punto di riposo. Ora tocca il cerchio azzurro: la quinta.",
+ tut3:"Senti come \"apre\"? Ora ascolta una melodia di 2 note e ripetila nello stesso ordine.",
+ tutGo:"tocca a te: ripeti le due note",
+ tutRetry:"quasi! La prima era casa, la rossa. Riascolta.",
+ tutDone:"Perfetto, hai capito tutto: a ogni round la melodia cresce di una nota. Si parte!",
+ unlockTitle:"Nuovo livello sbloccato!",
+ unlockTap:"tocca per continuare",
  legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha.",
  semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
@@ -234,7 +253,7 @@ it:{
   "Il fulmine: a un semitono da casa, carica massima verso l'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
  GUIDE:[
   {h:"Cos'è", p:"Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze."},
-  {h:"Come si gioca", p:"Premi Gioca: senti una melodia che parte sempre dalla tonica. Ripetila toccando i tasti nello stesso ordine. A ogni round la sequenza si allunga di una nota. Se sbagli la partita finisce e vedi la sequenza giusta: guardala, è il momento in cui si impara di più.<br><br>Con <b>Velocità</b> regoli il tempo di riproduzione. Con <b>Ritmo</b> le note assumono durate diverse e la sequenza diventa una frase musicale: il ritmo è solo da ascoltare, rispondi nell'ordine giusto senza dover rispettare le durate."},
+  {h:"Come si gioca", p:"1. Premi <b>Gioca</b>: parte una breve melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più. Fin dove arrivi?<br><br>Non serve sapere la teoria: colori e simboli ti guidano. Se sbagli vedi la sequenza giusta, ed è lì che si impara. <b>Velocità</b> e <b>Ritmo</b> li regoli quando vuoi (il ritmo è solo da ascoltare: rispondi nell'ordine giusto, senza durate)."},
   {h:"Livelli e stelle", p:"Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 8 · <span style='color:var(--gold)'>★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo."},
   {h:"Libero e Teoria", p:"<b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni."},
   {h:"Canta", p:"Attiva <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando."},
@@ -263,6 +282,16 @@ en:{
  wrong:(s,n,d)=>"wrong at step "+s+": it was "+n+" ("+d+")", roundW:"round",
  micListen:"listening…", micErr:"microphone unavailable or permission denied",
  keyhint:"Keyboard: A = tonic, then W S E D F T G Y H U J up by semitones (piano layout). R = replay, Enter = play. Outside a game the keys play freely.",
+ tutBtn:"Try the guided tutorial (2 minutes)",
+ tutLabel:"Tutorial",
+ tut1:"This is the interval wheel. The red circle at the top is the tonic: home. Tap it.",
+ tut2:"That is the sound of home, the resting point. Now tap the blue circle: the fifth.",
+ tut3:"Hear how it \"opens\"? Now listen to a 2-note melody and repeat it in the same order.",
+ tutGo:"your turn: repeat the two notes",
+ tutRetry:"almost! The first one was home, the red one. Listen again.",
+ tutDone:"Perfect, you got it: each round the melody grows by one note. Here we go!",
+ unlockTitle:"New level unlocked!",
+ unlockTap:"tap to continue",
  legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has.",
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
@@ -292,7 +321,7 @@ en:{
   "The lightning: a semitone from home, maximum upward charge. It is the leading tone, the note that makes the return to the tonic inevitable."],
  GUIDE:[
   {h:"What it is", p:"Huermony trains your relative ear by building a synesthesia: every interval from the tonic always has the same color, the same symbol and the same place on the wheel, whatever the starting note. The tonic always sits at the top. You do not learn notes: you learn distances."},
-  {h:"How to play", p:"Press Play: you hear a melody that always starts from the tonic. Repeat it by tapping the keys in the same order. Each round the sequence grows by one note. If you make a mistake the game ends and you see the right sequence: look at it, that is when you learn the most.<br><br><b>Speed</b> controls playback tempo. With <b>Rhythm</b> the notes take on different durations and the sequence becomes a musical phrase: rhythm is listen-only, answer in the right order without matching durations."},
+  {h:"How to play", p:"1. Press <b>Play</b>: a short melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Got it right? It restarts with one more note. How far can you go?<br><br>No theory needed: colors and symbols guide you. If you make a mistake you see the right sequence, and that is where you learn. Adjust <b>Speed</b> and <b>Rhythm</b> anytime (rhythm is listen-only: answer in the right order, no durations)."},
   {h:"Levels and stars", p:"A course on the major scale: you start from two notes (tonic and dominant) and add one degree at a time, in order of melodic importance, up to the full scale. Each level explains the role of the new degree. Each level has three modes: <b>See & hear</b> (the sequence lights up), <b>Ear only</b> (it plays in the dark: answer with the color in your head), <b>Wandering tonic</b> (the tonic changes every round).<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 8 · <span style='color:var(--gold)'>★★★</span> round 8 without ever using Replay.<br><br>Each mode unlocks with 1★ in the previous one. The next level opens with 2★ in Ear only: the game asks you to have the association in your head, not on the screen."},
   {h:"Free play and Theory", p:"<b>Free play</b>: the same game on a scale and tonic of your choice, with a separate best score per scale. <b>Theory</b>: the musical function of every interval, with its distance in semitones and tones."},
   {h:"Sing", p:"Turn on <b>Sing</b> and answer with your voice (or whistling, or a monophonic instrument) instead of tapping. Any octave works: the note matters, not the register. A note registers when you hold it in tune for about 150 ms; to repeat the same note twice, separate the two with a short pause. Notes outside the level are ignored. While you sing, the wheel lights up on what you are producing."},
@@ -307,17 +336,18 @@ const KB=['A','W','S','E','D','F','T','G','Y','H','U','J'];
 const KEYMAP={a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11};
 const C=[
  {h:'hsl(0,75%,48%)',ic:'home'},
- {h:'hsl(22,85%,49%)',ic:'flame'},
- {h:'hsl(40,90%,43%)',ic:'sun'},
- {h:'hsl(55,75%,41%)',ic:'star'},
- {h:'hsl(78,60%,42%)',ic:'leaf'},
+ {h:'hsl(22,85%,45%)',ic:'flame'},
+ {h:'hsl(40,90%,43%)',ic:'sun',ink:'#14151a'},
+ {h:'hsl(55,75%,41%)',ic:'star',ink:'#14151a'},
+ {h:'hsl(78,60%,42%)',ic:'leaf',ink:'#14151a'},
  {h:'hsl(135,55%,36%)',ic:'tree'},
  {h:'hsl(172,80%,32%)',ic:'ripple'},
- {h:'hsl(196,85%,42%)',ic:'cloud'},
+ {h:'hsl(196,85%,38%)',ic:'cloud'},
  {h:'hsl(222,70%,50%)',ic:'anchor'},
  {h:'hsl(252,58%,56%)',ic:'moon'},
  {h:'hsl(285,55%,49%)',ic:'flower'},
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
+const ink=k=>C[k].ink||'#fff';
 const WADD=[[0,7],[4],[2],[9],[11],[5]];
 const STAR1=5, STAR2=8;
 
@@ -339,7 +369,7 @@ function worldUnlocked(i){return unlockAll()||i===0||starsOf(i-1,1)>=2;}
 function modeUnlocked(w,m){return unlockAll()||(m===0?worldUnlocked(w):starsOf(w,m-1)>=1);}
 function cumSet(wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(WADD[i]); return s.sort((a,b)=>a-b);}
 function maxUnlockedWorld(){let m=0; for(let i=0;i<WADD.length;i++){if(worldUnlocked(i))m=i;} return m;}
-function activeSet(){return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; return game.kind==='free'?SCALES[scale]:cumSet(game.w);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function totalStars(){const p=prog(); let t=0; for(const k in p)t+=p[k].stars; return t;}
 
@@ -361,6 +391,9 @@ function applyStatic(){
  $('bestlbl').textContent=S9.bestScale;
  $('keyhint').textContent=S9.keyhint;
  $('status').textContent=S9.pressPlay;
+ $('tutbtntxt').textContent=S9.tutBtn;
+ $('celtitle').textContent=S9.unlockTitle;
+ $('celtap').textContent=S9.unlockTap;
  $('legsum').textContent=S9.legsum;
  $('thintro').textContent=S9.thintro;
  const sc=$('scsel'); sc.innerHTML='';
@@ -373,15 +406,16 @@ function applyStatic(){
  sp.value=String(speed);
  const lg=$('legend'); lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
-  d.innerHTML='<span class="sw" style="background:'+c.h+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
+  d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
   lg.appendChild(d);});
  const thBox=$('theory'); thBox.innerHTML='';
- C.forEach((c,k)=>{const d=document.createElement('div'); d.className='world'; d.style.padding='12px 14px';
-  d.innerHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">'+
-   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
-   '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.NM[k]+'</span></span></div>'+
-   '<p style="margin:0 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
-   '<p style="margin:0;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
+ C.forEach((c,k)=>{const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
+  d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
+   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
+   '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
+   '<i class="ti ti-chevron-down" style="margin-left:auto;color:var(--muted);font-size:15px"></i></summary>'+
+   '<p style="margin:8px 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
+   '<p style="margin:0 0 0 44px;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
   thBox.appendChild(d);});
  const gd=$('guide'); gd.innerHTML='';
  S9.GUIDE.forEach(s=>{const d=document.createElement('div'); d.className='world'; d.style.padding='14px 16px';
@@ -420,7 +454,7 @@ function showFree(){
  root=+$('rootsel').value;
  setView('free');
  $('ctxlabel').hidden=true; $('lvltheory').hidden=true; $('backbtn').hidden=true;
- $('scsel').hidden=false; $('rootsel').hidden=false;
+ $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(S9.pressPlay); $('reveal').innerHTML='';
  render(); loadBest();
@@ -432,10 +466,14 @@ function startLevel(w,m){
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('ctxlabel').hidden=false;
- $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+S9.WORLDS[w].name+'</b> · '+MODES[m]+S9.modeSuffix[m]+'<br>'+S9.starsCtx;
+ $('ctxlabel').innerHTML=S9.level+' '+(w+1)+' · <b>'+S9.WORLDS[w].name+'</b> · '+MODES[m]+S9.modeSuffix[m];
  $('lvltheory').hidden=false;
+ $('lvlsum').textContent=S9.level+' '+(w+1)+' · '+S9.WORLDS[w].name;
  $('lvltheory').querySelector('p').textContent=S9.WORLDS[w].th;
- $('backbtn').hidden=false;
+ const seen='hm_seen_w'+w;
+ $('lvltheory').open=!localStorage.getItem(seen);
+ localStorage.setItem(seen,'1');
+ $('backbtn').hidden=false; $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML='';
@@ -453,8 +491,83 @@ $('tab-theory').addEventListener('click',showTheory);
 $('tab-guide').addEventListener('click',showGuide);
 $('backbtn').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showHome);
-$('hplay').addEventListener('click',showLevels);
+$('hplay').addEventListener('click',()=>{
+ if(totalStars()===0&&!localStorage.getItem('hm_tut_done')) startTutorial(); else showLevels();
+});
 $('hguide').addEventListener('click',showGuide);
+$('tutbtn').addEventListener('click',startTutorial);
+$('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; showLevels();});
+
+let tut={step:0,allowed:[],expect:[],pos:0};
+function tutAllow(arr){
+ tut.allowed=arr;
+ document.querySelectorAll('#wheel .key').forEach(b=>{const k=+b.id.slice(1); b.style.opacity=(arr.length===0||arr.includes(k))?'1':'0.3';});
+}
+function startTutorial(){
+ clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
+ setView('free');
+ $('tab-free').classList.remove('on');
+ $('ctxlabel').hidden=false; $('ctxlabel').textContent=S9.tutLabel;
+ $('lvltheory').hidden=true;
+ $('backbtn').hidden=false; $('rowsetup').hidden=true;
+ $('scsel').hidden=true; $('rootsel').hidden=true;
+ $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
+ render();
+ tut={step:1,allowed:[],expect:[],pos:0};
+ tutAllow([0]);
+ setStatus(S9.tut1);
+}
+function tutMelody(cb){
+ timers.push(setTimeout(()=>{flash(0,420); tone(60,0.45);},400));
+ timers.push(setTimeout(()=>{flash(7,420); tone(67,0.45);},1050));
+ timers.push(setTimeout(cb,1750));
+}
+function tutPress(k){
+ if(tut.allowed.length&&!tut.allowed.includes(k)) return;
+ ensureCtx();
+ if(tut.step===1&&k===0){
+  flash(0); tone(60,0.5); tutAllow([-1]);
+  timers.push(setTimeout(()=>{tutAllow([7]); setStatus(S9.tut2);},800));
+  tut.step=2; return;
+ }
+ if(tut.step===2&&k===7){
+  flash(7); tone(67,0.5); tutAllow([-1]); tut.step=3;
+  timers.push(setTimeout(()=>{
+   setStatus(S9.tut3);
+   tutMelody(()=>{tut.expect=[0,7]; tut.pos=0; tutAllow([0,7]); setStatus(S9.tutGo);});
+  },800));
+  return;
+ }
+ if(tut.step===3&&tut.expect.length){
+  flash(k); tone(60+k,0.4);
+  if(k===tut.expect[tut.pos]){
+   tut.pos++;
+   if(tut.pos>=tut.expect.length){
+    tut.step=4; tutAllow([-1]);
+    setStatus(S9.tutDone,'ok'); chime();
+    localStorage.setItem('hm_tut_done','1');
+    timers.push(setTimeout(()=>startLevel(0,0),2200));
+   }
+  } else {
+   tut.pos=0; tutAllow([-1]);
+   setStatus(S9.tutRetry,'err');
+   timers.push(setTimeout(()=>{
+    tutMelody(()=>{tutAllow([0,7]); setStatus(S9.tutGo);});
+   },700));
+  }
+ }
+}
+function showCelebrate(i){
+ const ico=$('celico'); ico.innerHTML='';
+ WADD[i].forEach(k=>{
+  const d=document.createElement('div');
+  d.style.cssText='width:64px;height:64px;border-radius:50%;background:'+C[k].h+';display:flex;align-items:center;justify-content:center;color:'+ink(k);
+  d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:30px"></i>';
+  ico.appendChild(d);});
+ $('celname').textContent=(i+1)+'. '+S9.WORLDS[i].name;
+ $('celebrate').hidden=false;
+ chime(); setTimeout(chime,400);
+}
 
 function bestKey(){return 'it_best_'+scale;}
 function loadBest(){
@@ -469,7 +582,7 @@ function renderMap(){
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=MC+MR*Math.cos(a), y=MC+MR*Math.sin(a);
   const d=document.createElement('div'); d.className='mapdot'+(unlocked.includes(k)?'':' off');
-  d.style.cssText='left:'+(x-15)+'px;top:'+(y-15)+'px;width:30px;height:30px;background:'+C[k].h;
+  d.style.cssText='left:'+(x-15)+'px;top:'+(y-15)+'px;width:30px;height:30px;background:'+C[k].h+';color:'+ink(k);
   d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:15px"></i>';
   map.appendChild(d);
  }
@@ -480,7 +593,7 @@ function renderWorlds(){
   const unlocked=worldUnlocked(i);
   const card=document.createElement('div'); card.className='world'+(unlocked?'':' locked');
   let ints='';
-  WADD[i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+  WADD[i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
   if(!unlocked){
    h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
@@ -520,10 +633,11 @@ function render(){
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=CXY+R*Math.cos(a), y=CXY+R*Math.sin(a);
   if(sc.includes(k)){
+   const free=game.kind==='free';
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
-   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+(k===0?';border:2.5px solid #fff':'');
+   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+';color:'+ink(k)+(k===0?';border:2.5px solid #fff':'');
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*0.28)+'px"></i><span style="font-size:'+(KEY*0.2)+'px;line-height:1.15">'+IV[k]+'</span><span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span><span class="kb">'+KB[k]+'</span>';
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*(free?0.28:0.32))+'px"></i><span style="font-size:'+(KEY*(free?0.2:0.24))+'px;line-height:1.15">'+IV[k]+'</span>'+(free?'<span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    b.addEventListener('click',()=>press(k));
    w.appendChild(b);
   } else {
@@ -564,7 +678,7 @@ function chime(){[0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90)
 function flash(k,ms){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  const ct=$('ctr');
- if(ct){ct.style.background=C[k].h;
+ if(ct){ct.style.background=C[k].h; ct.style.color=ink(k);
   ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
   ct.style.opacity='0.95'; setTimeout(()=>{ct.style.opacity='0';},ms||300);}
 }
@@ -689,6 +803,7 @@ function stopMic(){
 }
 
 function press(k){
+ if(game.kind==='tut'){tutPress(k); return;}
  if(state==='input'){hit(k); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k); tone(60+root+k,0.38);}
 }
@@ -714,7 +829,10 @@ function hit(k,fromMic){
    const completed=seq.length-1;
    let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
    const before=starsOf(game.w,game.m);
+   const wBefore=WADD.map((_,i)=>worldUnlocked(i));
    saveProg('w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
+   const newW=WADD.findIndex((_,i)=>worldUnlocked(i)&&!wBefore[i]);
+   if(newW>=0) timers.push(setTimeout(()=>showCelebrate(newW),900));
    loadBest();
    msg+=' · '+S9.roundW+' '+completed;
    if(st>before){msg+=S9.newStar; chime();}
@@ -725,7 +843,7 @@ function hit(k,fromMic){
   const rv=$('reveal'); rv.innerHTML='';
   seq.forEach((q,i)=>{
    const d=document.createElement('div'); d.className='chip'+(i===step?' err':'');
-   d.innerHTML='<span class="sw" style="background:'+C[q].h+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+IV[q]+'</b>';
+   d.innerHTML='<span class="sw" style="background:'+C[q].h+';color:'+ink(q)+'"><i class="ti ti-'+C[q].ic+'" style="font-size:11px"></i></span><b>'+IV[q]+'</b>';
    rv.appendChild(d);});
  }
 }
