@@ -209,8 +209,8 @@ it:{
  modes:["Vedi e senti","Solo orecchio","Tonica vagabonda"],
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo", mic:"Canta",
  speeds:["Lento","Normale","Veloce","Turbo"],
- scales:["Maggiore","Minore naturale","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio"],
- grpScales:"Scale", grpModes:"Modi della maggiore",
+ scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio"],
+ grpScales:"Altre scale", grpModes:"La maggiore e i suoi modi",
  SIG:{lyd:"mezzogiorno · l'albero diventa onda",maj:"mattina · la scala di riferimento",mixo:"pomeriggio · il fulmine diventa fiore",dor:"tramonto · l'ancora diventa luna",min:"sera · il minore naturale (eolio)",phr:"notte · il sole diventa fiamma",loc:"eclissi · fiamma e onda insieme",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore"},
  modesTitle:"I modi: la luce del viaggio",
  modesIntro:"Un modo è la stessa collana di note con una casa diversa: prendi le sette note della maggiore, scegli come tonica un'altra di loro, e le distanze da casa cambiano: si accende un'altra costellazione. Maggiore e minore naturale sono anche loro modi (ionico ed eolio): li chiamiamo scale solo perché sono i due di default. Stessi luoghi, luce diversa.",
@@ -289,8 +289,8 @@ en:{
  modes:["See & hear","Ear only","Wandering tonic"],
  play:"Play", rehear:"Replay", rhythm:"Rhythm", mic:"Sing",
  speeds:["Slow","Normal","Fast","Turbo"],
- scales:["Major","Natural minor","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian"],
- grpScales:"Scales", grpModes:"Modes of the major scale",
+ scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian"],
+ grpScales:"Other scales", grpModes:"The major scale and its modes",
  SIG:{lyd:"noon · the tree becomes the wave",maj:"morning · the reference scale",mixo:"afternoon · the lightning becomes the flower",dor:"sunset · the anchor becomes the moon",min:"evening · the natural minor (Aeolian)",phr:"night · the sun becomes the flame",loc:"eclipse · flame and wave together",pmaj:"five notes, no semitones",pmin:"five notes, minor side"},
  modesTitle:"The modes: the light of the journey",
  modesIntro:"A mode is the same necklace of notes with a different home: take the seven notes of the major scale, pick another one of them as the tonic, and the distances from home change: a different constellation lights up. Major and natural minor are modes too (Ionian and Aeolian): we call them scales only because they are the two defaults. Same places, different light.",
@@ -431,10 +431,10 @@ function applyStatic(){
  $('legsum').textContent=S9.legsum;
  $('thintro').textContent=S9.thintro;
  const sc=$('scsel'); sc.innerHTML='';
- const g1=document.createElement('optgroup'); g1.label=S9.grpScales;
- [['maj',0],['min',1],['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
- const g2=document.createElement('optgroup'); g2.label=S9.grpModes;
- [['lyd',5],['mixo',6],['dor',7],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
+ const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
+ [['lyd',5],['maj',0],['mixo',6],['dor',7],['min',1],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
+ const g2=document.createElement('optgroup'); g2.label=S9.grpScales;
+ [['pmaj',2],['pmin',3],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
  sc.appendChild(g1); sc.appendChild(g2);
  sc.value=scale;
  const rs=$('rootsel'); rs.innerHTML='';
