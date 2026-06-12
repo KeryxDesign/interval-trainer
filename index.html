@@ -207,6 +207,7 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="wel-title" style="font-size:24px; font-weight:700; margin:0 0 18px;"></p>
   <div id="wel-body" style="font-size:15px; line-height:1.65; color:var(--text); margin:0 0 28px;"></div>
   <button class="btn primary" id="wel-start" style="justify-content:center; padding:14px; font-size:16px;"></button>
+  <button id="wel-skip" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; align-self:center; margin-top:4px;"></button>
 </div>
 <div id="freeintro" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:46; text-align:left; padding:32px 22px; max-width:480px; margin:0 auto;">
   <p id="fi-title" style="font-size:22px; font-weight:700; margin:0 0 16px;"></p>
@@ -242,7 +243,7 @@ it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
  tabs:["Livelli","Libero","Teoria","Guida"],
- coursesub:"Un grado alla volta, in ordine di importanza melodica.",
+ coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  unlock:"Sblocca tutti i livelli",
@@ -264,8 +265,8 @@ it:{
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
  optTheory:"Teoria del livello",
  welTitle:"Che cos'è Huermony",
- welBody:"<p>Impara a <b>sentire la musica giocando</b>. Niente spartiti, niente teoria: solo colori e suoni.</p><p>Ogni suono ha un colore. Tu ascolti e ripeti, e piano piano l'orecchio impara da solo.</p><p>Funziona anche se pensi di <b>non avere orecchio</b>: si parte dal primo passo, uno alla volta.</p>",
- welStart:"Iniziamo", prHear:"Riascolta",
+ welBody:"<p>Allena l'orecchio <b>giocando</b>: impari a riconoscere le canzoni e a <b>cantare più intonato</b>. Niente spartiti, niente teoria: solo colori e suoni.</p><p>Ogni suono ha un colore. Tu ascolti e ripeti, e piano piano l'orecchio impara da solo.</p><p>Funziona anche se pensi di <b>non avere orecchio</b>: si parte dal primo passo, uno alla volta.</p>",
+ welStart:"Iniziamo", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
@@ -346,7 +347,7 @@ en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
  tabs:["Levels","Free play","Theory","Guide"],
- coursesub:"One degree at a time, in order of melodic importance.",
+ coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  unlock:"Unlock all levels",
@@ -368,8 +369,8 @@ en:{
  prTap:"tap to start", prNew:"this level's new note",
  optTheory:"Level theory",
  welTitle:"What is Huermony",
- welBody:"<p>Learn to <b>hear music by playing</b>. No sheet music, no theory: just colors and sounds.</p><p>Every sound has a color. You listen and repeat, and little by little your ear learns on its own.</p><p>It works even if you think you <b>have no ear</b>: you start from the first step, one at a time.</p>",
- welStart:"Let's start", prHear:"Replay",
+ welBody:"<p>Train your ear by <b>playing</b>: you learn to recognize songs and <b>sing more in tune</b>. No sheet music, no theory: just colors and sounds.</p><p>Every sound has a color. You listen and repeat, and little by little your ear learns on its own.</p><p>It works even if you think you <b>have no ear</b>: you start from the first step, one at a time.</p>",
+ welStart:"Let's start", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  fiTitle:"Free play", fiClose:"Start",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
@@ -514,6 +515,7 @@ function applyStatic(){
  $('wel-title').textContent=S9.welTitle;
  $('wel-body').innerHTML=S9.welBody;
  $('wel-start').textContent=S9.welStart;
+ $('wel-skip').textContent=S9.welSkip;
  $('pr-heartxt').textContent=S9.prHear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
@@ -767,7 +769,7 @@ function renderWorlds(){
   const card=document.createElement(unlocked?'button':'div'); card.className='world levelcard'+(unlocked?'':' locked');
   let ints='';
   CWADD[curCourse][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
-  let h='<div class="whead"><span class="wname">'+(i+1)+'. '+w.name+'</span><span class="wints">'+ints+'</span></div>';
+  let h='<div class="whead"><span class="wname">'+(i+1)+'. '+plainNames(curCourse,i)+'</span><span class="wints">'+ints+'</span></div>';
   if(!unlocked){
    h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
    card.innerHTML=h;
@@ -781,6 +783,7 @@ function renderWorlds(){
  });
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
 function buildTheoryBody(c,w){
  const lv=S9.courses[c].levels[w];
  // BEGINNER: ascolto grande in chiaro
@@ -795,7 +798,8 @@ function buildTheoryBody(c,w){
  body+='</div>';
  // TEORIA tecnica, facoltativa e nascosta
  body+='<details class="legbox" style="margin:0;"><summary style="font-size:13px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
- body+='<p style="font-size:13px; line-height:1.6; color:var(--text); margin:10px 0 6px;">'+lv.th+'</p>';
+ body+='<p style="font-size:14px; font-weight:600; margin:10px 0 4px;">'+lv.name+'</p>';
+ body+='<p style="font-size:13px; line-height:1.6; color:var(--text); margin:0 0 6px;">'+lv.th+'</p>';
  CWADD[c][w].forEach(k=>{
   body+='<div style="border-top:0.5px solid var(--line); padding-top:10px; margin-top:10px;">'+
    '<p style="margin:0 0 4px; font-size:14px; font-weight:600;">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.semis(k)+S9.tones(k)+'</span></p>'+
@@ -809,7 +813,7 @@ function showLevelDetail(c,w){
  clearTimers(); stopMic(); state='idle'; seq=[]; curCourse=c;
  setView('leveldetail');
  const lv=S9.courses[c].levels[w];
- $('ld-title').textContent=S9.level+' '+(w+1)+' · '+lv.name;
+ $('ld-title').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
  $('ld-theory').innerHTML=buildTheoryBody(c,w);
@@ -1210,6 +1214,7 @@ $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
 $('wel-start').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();});
+$('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); $('welcome').hidden=true; showLevels();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
