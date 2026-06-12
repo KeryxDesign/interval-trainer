@@ -140,6 +140,8 @@ button.levelcard:active{transform:scale(0.99);}
 .snote:active{transform:scale(.92);}
 .scalerow.locked{opacity:.4; filter:saturate(.4);}
 .scalerow.locked .snote{cursor:default;}
+#ld-head{display:flex; align-items:center; gap:10px; margin:0 0 16px; background:var(--surface2); border-radius:12px; padding:11px 13px; border-left:4px solid var(--gold);}
+.ldsec{background:var(--surface); border-radius:14px; padding:16px; margin:0 0 14px;}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface2); border:none; border-radius:10px; padding:10px 12px; margin-top:8px; width:100%; color:var(--text); font-size:14px; cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; color:var(--muted);}
@@ -197,18 +199,22 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-leveldetail" hidden>
-    <div style="display:flex; align-items:center; gap:10px; margin:0 0 16px;">
+    <div id="ld-head">
       <button class="btn" id="ld-back" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
       <div style="flex:1; min-width:0;">
-        <div id="ld-title" style="font-size:16px; font-weight:600; line-height:1.2;"></div>
-        <div id="ld-subtitle" style="font-size:12px; color:var(--muted);"></div>
+        <div id="ld-title" style="font-size:16px; font-weight:700; line-height:1.2;"></div>
+        <div id="ld-subtitle" style="font-size:13px; color:var(--muted);"></div>
       </div>
       <span id="ld-stars" style="color:var(--gold); font-size:14px; white-space:nowrap;"></span>
     </div>
-    <p id="ld-learnhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 12px;"></p>
-    <div id="ld-theory" style="margin:0 0 26px;"></div>
-    <p id="ld-difhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 12px;"></p>
-    <div id="ld-modes"></div>
+    <div class="ldsec">
+      <p id="ld-difhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 14px;"></p>
+      <div id="ld-modes"></div>
+    </div>
+    <div class="ldsec">
+      <p id="ld-learnhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 14px;"></p>
+      <div id="ld-theory"></div>
+    </div>
   </div>
 
   <div id="view-guide" hidden>
@@ -329,7 +335,7 @@ it:{
  modeSuffix:["",' (la sequenza non si illumina)',' (la tonica cambia ogni round)'],
  modes:["Facile","Normale","Difficile"],
  modeDesc:["vedi i colori e ascolti","solo a orecchio, niente colori","la tonica cambia ogni volta"],
- ldLearn:"Cosa stai per imparare", ldDif:"Scegli la difficoltà",
+ ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  speeds:["Lento","Normale","Veloce","Turbo"],
@@ -454,7 +460,7 @@ en:{
  modeSuffix:["",' (the sequence does not light up)',' (the tonic changes every round)'],
  modes:["Easy","Normal","Hard"],
  modeDesc:["see the colors and listen","by ear only, no colors","the tonic changes every time"],
- ldLearn:"What you'll learn", ldDif:"Choose difficulty",
+ ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  speeds:["Slow","Normal","Fast","Turbo"],
@@ -1138,6 +1144,7 @@ function showLevelDetail(c,w){
  $('ld-title').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
  $('ld-subtitle').textContent=CWADD[c][w].map(k=>DEG[k]).join(S9.and);
  const ts=levelStars(c,w); $('ld-stars').textContent='★ '+ts+'/9';
+ $('ld-head').style.borderLeftColor=C[CWADD[c][w][CWADD[c][w].length-1]].h;
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
  const seenKey='hm_seen_theory_'+c+'_'+w, seen=!!localStorage.getItem(seenKey);
