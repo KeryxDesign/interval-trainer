@@ -257,12 +257,11 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="fi-body" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 26px;"></p>
   <button class="btn primary" id="fi-close" style="justify-content:center; padding:13px;"></button>
 </div>
-<div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:28px; cursor:pointer;">
-  <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 18px;"></p>
-  <div id="pr-chips" style="display:flex; gap:12px; margin:0 0 16px;"></div>
-  <p id="pr-iv" style="font-size:21px; font-weight:700; margin:0 0 12px;"></p>
-  <button class="btn" id="pr-hear" style="margin:0 0 18px; padding:9px 16px;"><i class="ti ti-volume"></i><span id="pr-heartxt"></span></button>
-  <p id="pr-essence" style="font-size:15px; line-height:1.55; color:var(--text); max-width:320px; margin:0 0 24px;"></p>
+<div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
+  <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 28px;"></p>
+  <div id="pr-icon" style="font-size:42px; color:var(--gold); margin:0 0 14px; min-height:46px;"></div>
+  <p id="pr-cat" style="font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); margin:0 0 12px;"></p>
+  <p id="pr-tip" style="font-size:17px; line-height:1.6; color:var(--text); max-width:340px; margin:0 0 28px;"></p>
   <div style="width:170px; height:3px; background:var(--line); border-radius:2px; overflow:hidden;"><div id="pr-bar" style="height:100%; width:0; background:var(--text);"></div></div>
   <p id="pr-skip" style="font-size:13px; color:var(--muted); margin:14px 0 0;"></p>
 </div>
@@ -313,6 +312,24 @@ it:{
  SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore",blM:"pentatonica maggiore più la stella",blm:"pentatonica minore più l'onda: la blue note"},
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
+ tipPractical:"Consiglio", tipScience:"Lo sapevi?",
+ tips:[
+  {s:0,ic:'bulb',t:"La distanza tra tonica e mediante (la terza maggiore) è di 4 semitoni: è lei a far suonare \"maggiore\" un accordo."},
+  {s:0,ic:'bulb',t:"La quinta giusta è a 7 semitoni dalla tonica: l'intervallo più stabile dopo l'ottava, il \"pilastro\"."},
+  {s:0,ic:'bulb',t:"La sensibile è a un solo semitono sotto la tonica: per questo \"tira\" così forte verso casa."},
+  {s:0,ic:'bulb',t:"Il tritono divide l'ottava esattamente a metà, 6 semitoni: è l'intervallo più instabile, il motore della tensione."},
+  {s:0,ic:'bulb',t:"La pentatonica non ha semitoni: ecco perché nessuna nota suona mai \"sbagliata\"."},
+  {s:0,ic:'bulb',t:"Un tono vale 2 semitoni. La scala maggiore è una sequenza precisa di toni e semitoni: T-T-S-T-T-T-S."},
+  {s:0,ic:'bulb',t:"Cambiare tonica non cambia le distanze: l'orecchio relativo riconosce gli intervalli, non le note assolute."},
+  {s:1,ic:'brain',t:"Ripetere la melodia a memoria, non solo ascoltarla, fissa l'apprendimento molto più dell'ascolto passivo."},
+  {s:1,ic:'brain',t:"Associare ogni suono a un colore e un simbolo sfrutta la doppia codifica: il cervello memorizza più in fretta."},
+  {s:1,ic:'brain',t:"Cinque minuti al giorno valgono più di un'ora alla settimana: l'orecchio si costruisce con la ripetizione frequente."},
+  {s:1,ic:'brain',t:"L'orecchio relativo è un'abilità che si allena, non un dono: migliora con la pratica a qualsiasi età."},
+  {s:1,ic:'brain',t:"Cantare le note, non solo ascoltarle, accelera l'intonazione: la voce insegna all'orecchio."},
+  {s:1,ic:'brain',t:"Allenare l'orecchio mette al lavoro insieme udito, memoria e movimento: per questo tiene la mente attiva."},
+  {s:1,ic:'brain',t:"Quando \"vedi\" il colore di un intervallo prima di pensarci, la sinestesia sta funzionando: il colore arriva prima del nome."},
+  {s:1,ic:'brain',t:"Sbagliare e poi vedere la risposta giusta è uno dei modi più efficaci per imparare: l'errore corretto fissa il ricordo."}
+ ],
  optTheory:"Teoria del livello",
  welTitle:"Che cos'è Huermony",
  welBody:"<p>Tutto parte da una domanda: <b>perché certe note insieme mi fanno sentire felice, e altre triste?</b></p><p>Quasi tutti affrontano la musica partendo dalle note e dalle forme fisse, ma non imparano mai a <b>sentire</b> quell'effetto: perché due suoni vicini emozionano in un modo e due lontani in un altro.</p><p>Huermony allena proprio questo, <b>giocando</b>. Ti accorgi di costruire melodie tue, che puoi riusare nella tua musica. E senza forzarlo smetti di pensare \"Do, Sol\" e inizi a pensare alla nota da cui parti e a quella che chiude: il nome coincide con la <b>sensazione</b> che cercavi. È lì che inizi a parlare musica.</p><p>Ogni intervallo ha sempre la stessa <b>forma e lo stesso colore</b>: l'associazione visiva lo rende molto più veloce da memorizzare. È questo il cuore di Huermony.</p><p>Si gioca come il vecchio <b>Simon Says</b>, solo con più colori e più note. E puoi giocarci con il tuo <b>strumento in mano</b>: riconosce anche la voce, perfetto per imparare dove stanno le note sullo strumento.</p>",
@@ -419,6 +436,24 @@ en:{
  SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side",blM:"major pentatonic plus the star",blm:"minor pentatonic plus the wave: the blue note"},
  tasteBtn:"Taste", tasting:"tasting the scale…",
  prTap:"tap to start", prNew:"this level's new note",
+ tipPractical:"Tip", tipScience:"Did you know?",
+ tips:[
+  {s:0,ic:'bulb',t:"The distance from tonic to mediant (the major third) is 4 semitones: it's what makes a chord sound \"major\"."},
+  {s:0,ic:'bulb',t:"The perfect fifth is 7 semitones from the tonic: the most stable interval after the octave, the \"pillar\"."},
+  {s:0,ic:'bulb',t:"The leading tone is just one semitone below the tonic: that's why it \"pulls\" home so strongly."},
+  {s:0,ic:'bulb',t:"The tritone splits the octave exactly in half, 6 semitones: the most unstable interval, the engine of tension."},
+  {s:0,ic:'bulb',t:"The pentatonic has no semitones: that's why no note ever sounds \"wrong\"."},
+  {s:0,ic:'bulb',t:"A whole tone is 2 semitones. The major scale is a precise sequence of tones and semitones: W-W-H-W-W-W-H."},
+  {s:0,ic:'bulb',t:"Changing the tonic doesn't change the distances: relative pitch recognizes intervals, not absolute notes."},
+  {s:1,ic:'brain',t:"Repeating the melody from memory, not just listening, locks in learning far more than passive listening."},
+  {s:1,ic:'brain',t:"Pairing each sound with a color and a symbol uses dual coding: the brain memorizes faster."},
+  {s:1,ic:'brain',t:"Five minutes a day beats an hour a week: your ear is built by frequent repetition."},
+  {s:1,ic:'brain',t:"Relative pitch is a trainable skill, not a gift: it improves with practice at any age."},
+  {s:1,ic:'brain',t:"Singing the notes, not just hearing them, speeds up intonation: the voice teaches the ear."},
+  {s:1,ic:'brain',t:"Ear training works hearing, memory and movement together: that's why it keeps the mind active."},
+  {s:1,ic:'brain',t:"When you \"see\" an interval's color before thinking, the synesthesia is working: the color comes before the name."},
+  {s:1,ic:'brain',t:"Making a mistake and then seeing the right answer is one of the most effective ways to learn: corrected errors stick."}
+ ],
  optTheory:"Level theory",
  welTitle:"What is Huermony",
  welBody:"<p>It all starts with one question: <b>why do some notes together make me feel happy, and others sad?</b></p><p>Almost everyone approaches music starting from notes and fixed shapes, but never learns to <b>feel</b> that effect: why two close sounds move you one way and two far apart another.</p><p>Huermony trains exactly that, by <b>playing</b>. You notice you're building your own melodies, ones you can reuse in your music. And without forcing it you stop thinking \"C, G\" and start thinking of the note you start from and the one that closes: the name matches the <b>feeling</b> you were after. That's when you start to speak music.</p><p>Every interval always has the same <b>shape and color</b>: the visual association makes it far faster to memorize. That's the heart of Huermony.</p><p>It plays like the old <b>Simon Says</b> game, just with more colors and more notes. And you can play with your <b>instrument in hand</b>: it hears your voice too, perfect for learning where the notes live on your instrument.</p>",
@@ -575,7 +610,6 @@ function applyStatic(){
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
  $('wel-skip').textContent=S9.welSkip;
- $('pr-heartxt').textContent=S9.prHear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('rehtxt').textContent=S9.rehear;
@@ -812,7 +846,7 @@ function startLevel(c,w,m){
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
- beginGame();
+ showLoading(beginGame);
 }
 function setStatus(txt,cls){
  const st=$('status');
@@ -1173,23 +1207,19 @@ function addNote(forceNew){
  seq.push(k);
  dur.push(rhythm?DURS[Math.floor(Math.random()*DURS.length)]:1);
 }
-function showPreroll(cb){
- const c=game.c, w=game.w, lv=S9.courses[c].levels[w], nn=CWADD[c][w];
- $('pr-level').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
- let chips=''; nn.forEach(k=>{chips+='<span style="width:56px;height:56px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px"><i class="ti ti-'+C[k].ic+'" style="font-size:23px"></i><span style="font-size:11px;font-weight:600">'+IV[k]+'</span></span>';});
- $('pr-chips').innerHTML=chips;
- $('pr-iv').textContent=nn.length===1?(IV[nn[0]]+' · '+DEG[nn[0]]):nn.map(k=>DEG[k]).join(' + ');
- $('pr-essence').textContent=lv.th.split('. ')[0]+'.';
+function showLoading(cb){
+ const tips=S9.tips, tip=tips[Math.floor(Math.random()*tips.length)];
+ $('pr-level').textContent=(game.kind==='level')?(S9.level+' '+(game.w+1)+' · '+plainNames(game.c,game.w)):'';
+ $('pr-icon').innerHTML='<i class="ti ti-'+tip.ic+'"></i>';
+ $('pr-cat').textContent=tip.s?S9.tipScience:S9.tipPractical;
+ $('pr-tip').textContent=tip.t;
  $('pr-skip').textContent=S9.prTap;
- const focus=nn[nn.length-1];
- const hear=$('pr-hear'); hear.onclick=(e)=>{e.stopPropagation(); playInterval(focus);};
  const pr=$('preroll'); pr.hidden=false;
  const bar=$('pr-bar'); bar.style.transition='none'; bar.style.width='0';
- requestAnimationFrame(()=>{bar.style.transition='width 5s linear'; bar.style.width='100%';});
- timers.push(setTimeout(()=>playInterval(focus),500));
+ requestAnimationFrame(()=>{bar.style.transition='width 4.5s linear'; bar.style.width='100%';});
  let done=false;
- const go=()=>{if(done)return; done=true; pr.hidden=true; pr.onclick=null; cb();};
- timers.push(setTimeout(go,5000));
+ const go=()=>{if(done)return; done=true; pr.hidden=true; pr.onclick=null; cb&&cb();};
+ timers.push(setTimeout(go,4500));
  pr.onclick=go;
 }
 function beginGame(){
