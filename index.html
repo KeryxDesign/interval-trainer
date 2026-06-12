@@ -1160,9 +1160,16 @@ function playSeq(){
  timers.push(setTimeout(()=>{state='input'; step=0; setStatus(S9.yourTurn(0,seq.length));},t));
 }
 const DURS=[0.5,1,1,1,1.5,2];
-function addNote(){
- const sc=activeSet(); let k;
- do{k=sc[Math.floor(Math.random()*sc.length)];}while(seq.length&&k===seq[seq.length-1]&&Math.random()<0.6);
+function addNote(forceNew){
+ const sc=activeSet();
+ let pool=sc;
+ if(forceNew&&game.kind==='level'){
+  const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k));
+  const fresh=nn.filter(k=>!seq.includes(k));
+  pool=fresh.length?fresh:(nn.length?nn:sc);
+ }
+ let k;
+ do{k=pool[Math.floor(Math.random()*pool.length)];}while(seq.length&&k===seq[seq.length-1]&&pool.length>1&&Math.random()<0.6);
  seq.push(k);
  dur.push(rhythm?DURS[Math.floor(Math.random()*DURS.length)]:1);
 }
@@ -1186,7 +1193,7 @@ function showPreroll(cb){
  pr.onclick=go;
 }
 function beginGame(){
- ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
+ ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
  bumpStreak();
  clearCenter(); $('round').textContent=seq.length; playSeq();
