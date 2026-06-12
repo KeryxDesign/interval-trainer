@@ -321,6 +321,7 @@ it:{
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
+ courseLocked:"Completa prima il corso precedente", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
@@ -361,22 +362,16 @@ it:{
  DEG:['tonica','sopratonica','sopratonica','mediante','mediante','sottodominante','tritono','dominante','sopradominante','sopradominante','sottotonica','sensibile'],
  NM:['casa','fiamma','sole','stella','foglia','albero','onda','cielo','ancora','luna','fiore','fulmine'],
  courses:{
-  maj:{title:"La scala maggiore", desc:"La scala più usata della musica occidentale: sette gradi che suonano \"a casa\", luminosi e stabili, dove ogni tensione sa dove risolvere. È l'alfabeto su cui si reggono modi, accordi e quasi ogni melodia che conosci.",
+  pent:{title:"La pentatonica", desc:"Cinque note che insieme non sbagliano un colpo: nessun semitono, nessuna tensione. Tutto galleggia, tutto suona bene. È la scala più diffusa al mondo, dal blues ai canti popolari. Qui costruisci le fondamenta dell'orecchio: casa, apertura, movimento. La sensazione di base su cui poi nascerà tutto il resto.",
    levels:[
-   {name:"I due poli", th:"Tonica e dominante: casa e il suo pilastro. È l'intervallo che regge tutta la musica tonale, e ogni melodia si orienta tra questi due punti come tra nord e sud. Prima di tutto il resto, impara a sentire quando sei fermo (T) e quando sei sul trampolino (5G)."},
-   {name:"L'arpeggio maggiore", th:"Arriva la mediante: con tonica e dominante forma la triade maggiore, Do-Mi-Sol, l'identità del modo. È la nota che illumina. Le melodie \"abitano\" queste tre note: quasi tutti i temi memorabili partono o atterrano sull'arpeggio."},
-   {name:"Il passo", th:"La sopratonica è la nota di passaggio per eccellenza: collega tonica e mediante camminando per gradi congiunti. Da sola non è né riposo né tensione: è movimento. Con lei le melodie smettono di saltare e iniziano a camminare."},
-   {name:"La pentatonica", th:"La sopradominante completa la pentatonica maggiore: cinque note senza nessun semitono, quindi nessuna tensione. È la scala \"a prova di errore\" di mezzo mondo musicale, dal blues ai canti popolari. Qui dentro qualsiasi sequenza suona bene: goditela."},
-   {name:"La sensibile", th:"Arriva la prima vera tensione: la sensibile, a mezzo tono da casa. È il fulmine che chiede di scaricarsi sulla tonica, la nota che rende le chiusure inevitabili. Nelle melodie ha un ruolo preciso: annunciare il ritorno a casa."},
-   {name:"La scala completa", th:"La sottodominante chiude il cerchio: tutti e sette i gradi. In melodia tende a scendere dolcemente sulla mediante, e con la sensibile forma il tritono nascosto dentro la scala maggiore (fa-si), il motore segreto di ogni cadenza. Ora hai la scala intera: da qui in poi è musica."}]},
-  min:{title:"La scala minore naturale", desc:"Il lato in ombra della musica: sette gradi malinconici, intimi, profondi. Stessa famiglia della maggiore (è il suo modo eolio) ma con terza, sesta e settima abbassate. La scala di gran parte del rock, del folk e della musica triste che amiamo.",
+   {name:"I due poli", th:"Si parte dai due punti tra cui si muove tutta la musica: la tonica, il riposo, e la dominante, il suo pilastro. Uno è casa, l'altro è la spinta che ti riporta a casa. Non c'è ancora colore né tensione: senti solo l'asse, il nord e il sud del suono. È la sensazione della stabilità, il pavimento sotto i piedi."},
+   {name:"L'arpeggio", th:"Arriva la terza maggiore e di colpo c'è un'identità: con casa e pilastro forma l'accordo maggiore, il suo sorriso. È la nota che accende la luce. Senti come da due punti nudi nasce un colore pieno, aperto, affermativo: la sensazione del sole che sorge."},
+   {name:"Il passo", th:"Finora le note saltavano da un punto all'altro; ora arriva il gradino che le fa camminare. Questa nota non è riposo né tensione: è movimento puro. Con lei la melodia smette di balzare e inizia a passeggiare, un passo dopo l'altro. La sensazione è quella del cammino dolce."},
+   {name:"La pentatonica", th:"L'ultima nota completa la pentatonica: cinque suoni, zero semitoni, zero tensione. È la scala \"a prova di errore\", dove qualsiasi cosa suoni va bene. Senti l'apertura totale, calda e senza gravità: niente tira, tutto galleggia. Tieni a mente bene questa sensazione, perché nel prossimo corso la trasformeremo."}]},
+  maj:{title:"La scala maggiore", desc:"Prendi la pentatonica che hai costruito e aggiungi le due note che le mancano. Sono le uniche due che creano un semitono, e cambiano tutto: dove prima tutto galleggiava, ora compare la gravità. Tensione che chiede di risolvere, il bisogno di tornare a casa. È così che dalla pentatonica nasce il suono pieno e affermativo della scala maggiore, l'alfabeto di quasi ogni melodia che conosci.",
    levels:[
-   {name:"I due poli", th:"Tonica e dominante, identici alla maggiore: casa e il suo pilastro. La quinta è neutra, non dice ancora se la scala sarà felice o triste. È la base che sorregge ogni tonalità, maggiore o minore che sia."},
-   {name:"L'arpeggio minore", th:"Arriva la terza minore, ed ecco l'ombra. Con tonica e quinta forma la triade minore, il suono della malinconia. È il gemello scuro dell'arpeggio maggiore: un solo semitono più in basso, e tutto cambia colore."},
-   {name:"Il passo", th:"La sopratonica, identica alla maggiore: il gradino che fa camminare le melodie. In minore il suo passo verso la terza è un semitono, un sapore più stretto e mediterraneo."},
-   {name:"La sottotonica", th:"La settima minore, un tono sotto casa: niente fretta di risolvere, niente sensibile. È il suono del rock, del folk, del minore antico e modale. Dà alla scala il suo carattere sospeso, non drammatico."},
-   {name:"La sesta minore", th:"Il grado più scuro: la sesta minore pesa verso il basso e con la dominante crea la tensione più dolente del minore. È la lacrima della scala, il colore del lamento."},
-   {name:"La scala completa", th:"Il quarto grado chiude il cerchio: tutti e sette i gradi del minore naturale. Ora hai per intero la scala della malinconia, la base da cui nascono il minore armonico, il dorico e mezzo repertorio del mondo."}]}},
+   {name:"La sensibile", th:"Ecco la prima vera tensione. La sensibile sta a un solo semitono da casa: non sta ferma, preme, tira verso l'alto, chiede di scaricarsi sulla tonica. Dopo tutto il galleggiare della pentatonica, per la prima volta senti una nota che NON vuole restare dov'è: è lei che rende il ritorno a casa inevitabile. La sensazione cambia: ora c'è un richiamo."},
+   {name:"La scala completa", th:"L'ultima nota chiude il cerchio: tutti e sette i gradi. La sottodominante apre il primo passo del viaggio armonico e, insieme alla sensibile, forma il tritono nascosto (fa-si), il motore segreto di ogni chiusura. Ora la scala ha gravità piena: ogni tensione sa dove andare. Questa è la sensazione del maggiore: affermazione, arrivo, casa."}]}},
  TH:[
   "Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.",
   "Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.",
@@ -432,6 +427,7 @@ en:{
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
+ courseLocked:"Finish the previous course first", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
@@ -472,22 +468,16 @@ en:{
  DEG:['tonic','supertonic','supertonic','mediant','mediant','subdominant','tritone','dominant','submediant','submediant','subtonic','leading tone'],
  NM:['home','flame','sun','star','leaf','tree','wave','sky','anchor','moon','flower','lightning'],
  courses:{
-  maj:{title:"The major scale", desc:"The most used scale in Western music: seven degrees that sound 'at home', bright and stable, where every tension knows where to resolve. It's the alphabet that modes, chords and almost every melody you know are built on.",
+  pent:{title:"The pentatonic", desc:"Five notes that never miss together: no semitones, no tension. Everything floats, everything sounds good. It's the most widespread scale in the world, from blues to folk songs. Here you build the foundations of your ear: home, openness, movement. The base sensation everything else will grow from.",
    levels:[
-   {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (T) and when you are on the springboard (P5)."},
-   {name:"The major arpeggio", th:"Enter the mediant: with tonic and dominant it forms the major triad, C-E-G, the identity of the mode. It is the note that brightens. Melodies live inside these three notes: most memorable themes start or land on the arpeggio."},
-   {name:"The step", th:"The supertonic is the passing note par excellence: it connects tonic and mediant by stepwise motion. On its own it is neither rest nor tension: it is movement. With it, melodies stop leaping and start walking."},
-   {name:"The pentatonic", th:"The submediant completes the major pentatonic: five notes with no semitones, hence no tension. It is the fail-safe scale of half the world's music, from blues to folk songs. In here any sequence sounds good: enjoy it."},
-   {name:"The leading tone", th:"Here comes the first real tension: the leading tone, a half step from home. It is the lightning that begs to discharge onto the tonic, the note that makes closure inevitable. In melody it has a precise role: announcing the return home."},
-   {name:"The full scale", th:"The subdominant closes the circle: all seven degrees. In melody it tends to fall gently onto the mediant, and with the leading tone it forms the tritone hidden inside the major scale (fa-ti), the secret engine of every cadence. Now you have the whole scale: from here on, it is music."}]},
-  min:{title:"The natural minor scale", desc:"The shadow side of music: seven melancholic, intimate, deep degrees. Same family as major (it's its Aeolian mode) but with lowered third, sixth and seventh. The scale of much of rock, folk and the sad music we love.",
+   {name:"The two poles", th:"You start from the two points all music moves between: the tonic, the rest, and the dominant, its pillar. One is home, the other is the push that brings you back home. No color yet, no tension: you feel only the axis, the north and south of sound. It's the sensation of stability, the floor under your feet."},
+   {name:"The arpeggio", th:"The major third arrives and suddenly there's an identity: with home and pillar it forms the major chord, its smile. It's the note that turns the light on. Feel how from two bare points a full, open, affirmative color is born: the sensation of the rising sun."},
+   {name:"The step", th:"Until now the notes leaped from point to point; now comes the stair-step that makes them walk. This note is neither rest nor tension: it's pure movement. With it the melody stops jumping and starts strolling, one step after another. The sensation is a gentle walk."},
+   {name:"The pentatonic", th:"The last note completes the pentatonic: five sounds, zero semitones, zero tension. It's the \"fail-safe\" scale where anything you play works. Feel the total openness, warm and weightless: nothing pulls, everything floats. Hold on to this sensation, because in the next course we'll transform it."}]},
+  maj:{title:"The major scale", desc:"Take the pentatonic you built and add the two notes it's missing. They're the only two that create a semitone, and they change everything: where before everything floated, now there's gravity. Tension asking to resolve, the need to get home. That's how the full, affirmative sound of the major scale is born from the pentatonic, the alphabet of almost every melody you know.",
    levels:[
-   {name:"The two poles", th:"Tonic and dominant, identical to major: home and its pillar. The fifth is neutral, it doesn't yet say whether the scale will be happy or sad. It's the base that holds up any key, major or minor."},
-   {name:"The minor arpeggio", th:"Here comes the minor third, and with it the shadow. With tonic and fifth it forms the minor triad, the sound of melancholy. It's the dark twin of the major arpeggio: one semitone lower, and everything changes color."},
-   {name:"The step", th:"The supertonic, identical to major: the stair-step that makes melodies walk. In minor its step toward the third is a semitone, a tighter, more Mediterranean flavor."},
-   {name:"The subtonic", th:"The minor seventh, a whole tone below home: no rush to resolve, no leading tone. It's the sound of rock, folk, the old modal minor. It gives the scale its suspended, undramatic character."},
-   {name:"The minor sixth", th:"The darkest degree: the minor sixth leans downward and with the dominant creates the most sorrowful tension in minor. It's the scale's tear, the color of lament."},
-   {name:"The full scale", th:"The fourth degree closes the circle: all seven degrees of natural minor. Now you have the full scale of melancholy, the base from which harmonic minor, Dorian and half the world's repertoire are born."}]}},
+   {name:"The leading tone", th:"Here's the first real tension. The leading tone sits just a semitone from home: it won't sit still, it presses, it pulls upward, it begs to discharge onto the tonic. After all the floating of the pentatonic, for the first time you feel a note that does NOT want to stay put: it's what makes the return home inevitable. The sensation shifts: now there's a pull."},
+   {name:"The full scale", th:"The last note closes the circle: all seven degrees. The subdominant opens the first step of the harmonic journey and, with the leading tone, forms the hidden tritone (fa-ti), the secret engine of every closure. Now the scale has full gravity: every tension knows where to go. This is the sensation of major: affirmation, arrival, home."}]}},
  TH:[
   "The resting point. Everything is measured from here and everything, sooner or later, returns here. When the melody lands on the tonic, the phrase closes.",
   "A semitone above home: it creeps, it presses, it will not sit still. Pure chromatic tension, the dark color of the Phrygian mode.",
@@ -540,9 +530,11 @@ const C=[
  {h:'hsl(285,55%,49%)',ic:'flower'},
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
 const ink=k=>C[k].ink||'#fff';
-const CWADD={maj:[[0,7],[4],[2],[9],[11],[5]], min:[[0,7],[3],[2],[10],[8],[5]]};
-const COURSE_IDS=['maj'];
-let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'maj';
+// CBASE = note sempre presenti nel corso (la base da cui si parte). CWADD = note aggiunte livello per livello.
+const CBASE={pent:[], maj:[0,2,4,7,9]};
+const CWADD={pent:[[0,7],[4],[2],[9]], maj:[[11],[5]]};
+const COURSE_IDS=['pent','maj'];
+let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
 const STAR1=5, STAR2=8;
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
@@ -562,7 +554,14 @@ function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
 function worldUnlocked(c,i){return unlockAll()||i===0||starsOf(c,i-1,1)>=2;}
 function modeUnlocked(c,w,m){return unlockAll()||(m===0?worldUnlocked(c,w):starsOf(c,w,m-1)>=1);}
-function cumSet(c,wi){let s=[]; for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return s.sort((a,b)=>a-b);}
+function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
+function courseUnlocked(c){
+ if(unlockAll()) return true;
+ const idx=COURSE_IDS.indexOf(c);
+ if(idx<=0) return true;
+ const prev=COURSE_IDS[idx-1];
+ return S9.courses[prev].levels.every((_,i)=>levelStars(prev,i)>=1);
+}
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
 function activeSet(){if(game.kind==='tut')return[0,7]; return game.kind==='free'?SCALES[scale]:cumSet(game.c,game.w);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
@@ -747,15 +746,18 @@ function renderCoursePick(){
  box.hidden=false;
  COURSE_IDS.forEach(c=>{
   const b=document.createElement('button'); b.className='pill';
+  const open=courseUnlocked(c);
   if(c===curCourse) b.setAttribute('aria-pressed','true');
   const cs=courseStars(c);
-  b.innerHTML=S9.courses[c].title+(cs>0?' <span style="color:var(--gold)">'+cs+'★</span>':'');
-  b.addEventListener('click',()=>{curCourse=c; localStorage.setItem('hm_course',c); showLevels();});
+  if(!open){ b.innerHTML='<i class="ti ti-lock" style="font-size:13px"></i> '+S9.courses[c].title; b.style.opacity='.5'; b.title=S9.courseLocked; }
+  else b.innerHTML=S9.courses[c].title+(cs>0?' <span style="color:var(--gold)">'+cs+'★</span>':'');
+  b.addEventListener('click',()=>{ if(!courseUnlocked(c)){setStatus('');} else {curCourse=c; localStorage.setItem('hm_course',c); showLevels();} });
   box.appendChild(b);
  });
 }
 function showLevels(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
+ if(!courseUnlocked(curCourse)) curCourse='pent';
  setView('levels');
  $('coursedesc').textContent=S9.courses[curCourse].desc;
  $('coursetitle').textContent=S9.courses[curCourse].title;
@@ -921,15 +923,20 @@ function finishLevel(){
  const completed=seq.length, st=usedRehear?2:3;
  const before=starsOf(game.c,game.w,game.m);
  const wBefore=CWADD[game.c].map((_,i)=>worldUnlocked(game.c,i));
+ const nextCourse=COURSE_IDS[COURSE_IDS.indexOf(game.c)+1];
+ const courseBefore=nextCourse?courseUnlocked(nextCourse):true;
  saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
  loadBest();
  const newW=CWADD[game.c].findIndex((_,i)=>worldUnlocked(game.c,i)&&!wBefore[i]);
- showLevelWin(game.c,game.w,Math.max(st,before),newW);
+ let unlockMsg=null;
+ if(nextCourse&&!courseBefore&&courseUnlocked(nextCourse)) unlockMsg=S9.winCourse(S9.courses[nextCourse].title);
+ else if(newW>=0) unlockMsg=S9.winUnlock;
+ showLevelWin(game.c,game.w,Math.max(st,before),unlockMsg);
 }
-function showLevelWin(c,w,st,newW){
+function showLevelWin(c,w,st,unlockMsg){
  celIcons(c,w);
  $('celtitle').textContent=S9.winTitle;
- $('celname').innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b> &nbsp; <span style="color:var(--gold);letter-spacing:2px;font-size:21px">'+starsStr(st)+'</span>'+(newW>=0?'<br><span style="color:var(--gold);font-size:14px">'+S9.winUnlock+'</span>':'');
+ $('celname').innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b> &nbsp; <span style="color:var(--gold);letter-spacing:2px;font-size:21px">'+starsStr(st)+'</span>'+(unlockMsg?'<br><span style="color:var(--gold);font-size:14px">'+unlockMsg+'</span>':'');
  $('celtap').textContent=S9.unlockTap;
  celebrateCb=()=>showLevelDetail(c,w);
  $('celebrate').hidden=false;
