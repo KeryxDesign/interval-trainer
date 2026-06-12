@@ -167,10 +167,10 @@ button.levelcard:active{transform:scale(0.99);}
 
   <nav class="tabs" id="tabs" hidden>
     <button class="tab" id="tab-home"><i class="ti ti-home"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-levels"><i class="ti ti-route"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-free"><i class="ti ti-music"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-theory"><i class="ti ti-book"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-guide"><i class="ti ti-help"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-theory"><i class="ti ti-book"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-profile"><i class="ti ti-user"></i><span class="tablbl"></span></button>
   </nav>
 
   <div id="view-levels" hidden>
@@ -291,7 +291,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home",
+ tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo",
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
@@ -304,7 +304,7 @@ it:{
  modeDesc:["vedi i colori e ascolti","solo a orecchio, niente colori","la tonica cambia ogni volta"],
  ldLearn:"Cosa stai per imparare", ldDif:"Scegli la difficoltà",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)",
- play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo", mic:"Canta",
+ play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Canta",
  speeds:["Lento","Normale","Veloce","Turbo"],
  scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
  grpScales:"Altre scale", grpModes:"La maggiore e i suoi modi",
@@ -415,7 +415,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home",
+ tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile",
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
@@ -428,7 +428,7 @@ en:{
  modeDesc:["see the colors and listen","by ear only, no colors","the tonic changes every time"],
  ldLearn:"What you'll learn", ldDif:"Choose difficulty",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)",
- play:"Play", rehear:"Replay", rhythm:"Rhythm", mic:"Sing",
+ play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Sing",
  speeds:["Slow","Normal","Fast","Turbo"],
  scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
  grpScales:"Other scales", grpModes:"The major scale and its modes",
@@ -577,7 +577,7 @@ let game={kind:'free'};
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2].includes(speed))speed=1;
-let rhythm=localStorage.getItem('it_rhythm')==='1';
+let rhythm=localStorage.getItem('it_rhythm')!=='0';
 const $=id=>document.getElementById(id);
 
 function prog(c){try{return JSON.parse(localStorage.getItem('it_prog_'+c)||'{}')}catch(e){return{}}}
@@ -604,8 +604,11 @@ function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
 
 function applyStatic(){
- ['levels','free','theory','guide'].forEach((t,i)=>{$('tab-'+t).querySelector('.tablbl').textContent=S9.tabs[i];});
  $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
+ $('tab-free').querySelector('.tablbl').textContent=S9.tabs[1];
+ $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
+ $('tab-theory').querySelector('.tablbl').textContent=S9.tabs[2];
+ $('tab-profile').querySelector('.tablbl').textContent=S9.tabProfile;
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
@@ -692,8 +695,10 @@ function setView(name){
  $('tabs').hidden=false;
  ['levels','theory','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
- const ta=(name==='leveldetail')?'levels':name;
- ['home','levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ // mappa vista -> tab da evidenziare: Home=livelli, Profilo=dashboard
+ const tabFor={levels:'home', leveldetail:'home', free:'free', guide:'guide', theory:'theory', home:'profile'};
+ const ta=tabFor[name]||name;
+ ['home','free','guide','theory','profile'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
 }
 function showHome(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
@@ -837,7 +842,7 @@ function startLevel(c,w,m){
  clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=0;
  const lv=S9.courses[c].levels[w];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false;
  $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
  $('rowsetup').hidden=true;
@@ -854,14 +859,14 @@ function setStatus(txt,cls){
  st.hidden=!txt;
  if(typeof txt==='string'&&txt.indexOf('<')<0) st.textContent=txt; else st.innerHTML=txt;
 }
-$('tab-home').addEventListener('click',showHome);
-$('tab-levels').addEventListener('click',showLevels);
+$('tab-home').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
 $('tab-guide').addEventListener('click',showGuide);
+$('tab-profile').addEventListener('click',showHome);
 $('backbtn').addEventListener('click',function(){ if(game.kind==='level') showLevelDetail(game.c,game.w); else showLevels(); });
 $('ld-back').addEventListener('click',showLevels);
-$('brand').addEventListener('click',showHome);
+$('brand').addEventListener('click',showLevels);
 $('hplay').addEventListener('click',()=>{
  if(totalStars()===0&&!localStorage.getItem('hm_tut_done')) startTutorial(); else showLevels();
 });
@@ -1463,7 +1468,7 @@ $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(sta
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
-$('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.setItem('it_rhythm','1'); else localStorage.removeItem('it_rhythm');});
+$('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.removeItem('it_rhythm'); else localStorage.setItem('it_rhythm','0');});
 $('miccb').addEventListener('click',function(){if(micOn) stopMic(); else startMic();});
 $('rhythmcb').setAttribute('aria-pressed',String(rhythm));
 $('unlockall').addEventListener('change',e=>{
@@ -1482,7 +1487,7 @@ document.addEventListener('keydown',e=>{
  if(key in KEYMAP){const k=KEYMAP[key]; if(activeSet().includes(k)) press(k);}
 });
 applyStatic();
-setView('home');
+showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
 if('serviceWorker' in navigator){
  let reloaded=false;
