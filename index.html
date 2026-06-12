@@ -379,13 +379,13 @@ en:{
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
  NOTE:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
- IV:['R','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
+ IV:['T','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
  DEG:['tonic','supertonic','supertonic','mediant','mediant','subdominant','tritone','dominant','submediant','submediant','subtonic','leading tone'],
  NM:['home','flame','sun','star','leaf','tree','wave','sky','anchor','moon','flower','lightning'],
  courses:{
   maj:{title:"The major scale", desc:"The most used scale in Western music: seven degrees that sound 'at home', bright and stable, where every tension knows where to resolve. It's the alphabet that modes, chords and almost every melody you know are built on.",
    levels:[
-   {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (R) and when you are on the springboard (P5)."},
+   {name:"The two poles", th:"Tonic and dominant: home and its pillar. This is the interval that holds up all tonal music, and every melody orients itself between these two points like north and south. Before anything else, learn to feel when you are at rest (T) and when you are on the springboard (P5)."},
    {name:"The major arpeggio", th:"Enter the mediant: with tonic and dominant it forms the major triad, C-E-G, the identity of the mode. It is the note that brightens. Melodies live inside these three notes: most memorable themes start or land on the arpeggio."},
    {name:"The step", th:"The supertonic is the passing note par excellence: it connects tonic and mediant by stepwise motion. On its own it is neither rest nor tension: it is movement. With it, melodies stop leaping and start walking."},
    {name:"The pentatonic", th:"The submediant completes the major pentatonic: five notes with no semitones, hence no tension. It is the fail-safe scale of half the world's music, from blues to folk songs. In here any sequence sounds good: enjoy it."},
