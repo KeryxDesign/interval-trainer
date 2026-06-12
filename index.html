@@ -83,6 +83,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .mapdot{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
 .mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
 .world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
+.gcard{background:var(--surface); border-radius:14px; padding:16px 16px 18px; margin-bottom:10px; border:1px solid var(--line);}
+.ghead{display:flex; align-items:center; gap:10px; margin:0 0 10px;}
+.ghead i{font-size:19px; color:var(--gold); flex:0 0 auto;}
+.ghead span{font-size:15px; font-weight:500; color:var(--text); letter-spacing:-.01em;}
+.gbody{font-size:13px; line-height:1.6; margin:0; color:var(--muted);}
+.gbody b{color:var(--text); font-weight:500;}
 .world.locked .wint{opacity:.4; filter:saturate(.4);}
 .world.locked .wname{color:var(--muted);}
 .whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
@@ -175,7 +181,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <div id="reveal"></div>
     <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
     <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
-    <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><p id="lvltheorytext" style="font-size:13px; line-height:1.6; color:var(--text); margin:8px 0 10px;"></p><button class="btn" id="lvltheoryplay" style="padding:8px 14px;"><i class="ti ti-volume"></i><span id="lvltheoryplaytxt"></span></button></details>
+    <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><div id="lvltheorybody" style="margin-top:8px;"></div></details>
     <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
 
@@ -491,7 +497,6 @@ function applyStatic(){
  $('wel-body').innerHTML=S9.welBody;
  $('wel-start').textContent=S9.welStart;
  $('pr-heartxt').textContent=S9.prHear;
- $('lvltheoryplaytxt').textContent=S9.prHear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('roundlbl').textContent=S9.round;
@@ -551,8 +556,9 @@ function applyStatic(){
   thBox.appendChild(d);});
  thBox.querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); if(b.dataset.iv!=null) playInterval(+b.dataset.iv); else playScaleAsc(b.dataset.mode);}));
  const gd=$('guide'); gd.innerHTML='';
- S9.GUIDE.forEach(s=>{const d=document.createElement('div'); d.className='world'; d.style.padding='14px 16px';
-  d.innerHTML='<p style="font-size:15px;font-weight:600;margin:0 0 6px">'+s.h+'</p><p style="font-size:13px;line-height:1.6;margin:0;color:var(--text)">'+s.p+'</p>';
+ const GIC=['eye','player-play','stairs-up','book-2','microphone-2','keyboard','device-mobile','bulb'];
+ S9.GUIDE.forEach((s,i)=>{const d=document.createElement('div'); d.className='gcard';
+  d.innerHTML='<div class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span></div><p class="gbody">'+s.p+'</p>';
   gd.appendChild(d);});
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
@@ -635,9 +641,22 @@ function startLevel(c,w,m){
  $('bestlbl').textContent=S9.bestLevel;
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
- $('lvltheorybox').hidden=false;
+ $('lvltheorybox').hidden=false; $('lvltheorybox').open=false;
  $('lvltheorysum').textContent=S9.optTheory;
- $('lvltheorytext').textContent=lv.th;
+ let body='<p style="font-size:13px; line-height:1.6; color:var(--text); margin:0 0 14px;">'+lv.th+'</p>';
+ CWADD[c][w].forEach(k=>{
+  body+='<div style="border-top:0.5px solid var(--line); padding-top:12px; margin-top:12px;">'+
+   '<div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">'+
+    '<span style="width:34px;height:34px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-'+C[k].ic+'" style="font-size:17px"></i></span>'+
+    '<span style="font-size:15px;font-weight:600;flex:1">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+'</span></span>'+
+    '<button class="pbtn" data-iv="'+k+'" aria-label="play"><i class="ti ti-volume"></i></button>'+
+   '</div>'+
+   '<p style="margin:0 0 6px 44px; font-size:12px; color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
+   '<p style="margin:0 0 0 44px; font-size:13px; line-height:1.55; color:var(--text)">'+S9.TH[k]+'</p>'+
+  '</div>';
+ });
+ $('lvltheorybody').innerHTML=body;
+ $('lvltheorybody').querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); playInterval(+b.dataset.iv);}));
  render(); loadBest();
  showPreroll(beginGame);
 }
@@ -1149,7 +1168,6 @@ $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
 $('wel-start').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();});
-$('lvltheoryplay').addEventListener('click',function(e){e.preventDefault(); if(game.kind==='level'){const nn=CWADD[game.c][game.w]; playInterval(nn[nn.length-1]);}});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
