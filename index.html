@@ -56,6 +56,10 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #pe-avatars button{border:2px solid transparent; background:none; border-radius:50%; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
 #pe-avatars button.sel{border-color:var(--gold);}
 #pe-name{width:100%; background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:13px 14px; font-size:16px; margin:0 0 18px;}
+.fs-lbl{display:block; font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px;}
+#freesetup select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:12px; appearance:none;}
+.fsnote{display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:52px; height:52px; border-radius:50%; cursor:pointer; color:#fff;}
+.fsnote span{font-size:12px; font-weight:600; line-height:1;}
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 #scsel{flex:1 1 auto; min-width:0;}
@@ -216,13 +220,13 @@ button.levelcard:active{transform:scale(0.99);}
         <select id="scsel" aria-label="Scale"></select>
         <span id="modechip" hidden style="flex:0 0 auto;"></span>
         <select id="rootsel" aria-label="Tonic"></select>
+        <button class="btn" id="fs-reopen"><i class="ti ti-adjustments-horizontal"></i><span id="fs-reopentxt"></span></button>
         <button class="btn" id="tastebtn"><i class="ti ti-music"></i><span id="tastetxt"></span></button>
         <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
       <div class="crow options">
         <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
         <span style="display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-gauge" style="font-size:16px; color:var(--muted);"></i><select id="spdsel" aria-label="Speed"></select></span>
-        <button class="tgl" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool"></i><span id="rhythmtxt"></span><span class="track"><span class="knob"></span></span></button>
         <button class="tgl" id="miccb" aria-pressed="false"><i class="ti ti-microphone"></i><span id="mictxt"></span><span class="track"><span class="knob"></span></span></button>
       </div>
     </div>
@@ -257,6 +261,20 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="fi-title" style="font-size:22px; font-weight:700; margin:0 0 16px;"></p>
   <p id="fi-body" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 26px;"></p>
   <button class="btn primary" id="fi-close" style="justify-content:center; padding:13px;"></button>
+</div>
+<div id="freesetup" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; justify-content:center; z-index:47; padding:28px 24px calc(96px + env(safe-area-inset-bottom)); max-width:480px; margin:0 auto; overflow-y:auto;">
+  <p id="fs-title" style="font-size:24px; font-weight:800; letter-spacing:-.02em; margin:0 0 6px;"></p>
+  <p id="fs-sub" style="font-size:15px; line-height:1.5; color:var(--muted); margin:0 0 22px;"></p>
+  <label class="fs-lbl" id="fs-scalelbl"></label>
+  <select id="fs-scale" style="width:100%; margin:0 0 16px; padding:13px 14px; font-size:16px;"></select>
+  <label class="fs-lbl" id="fs-toniclbl"></label>
+  <select id="fs-tonic" style="width:100%; margin:0 0 20px; padding:13px 14px; font-size:16px;"></select>
+  <p class="fs-lbl" id="fs-noteslbl"></p>
+  <div id="fs-preview" style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 26px;"></div>
+  <div style="display:flex; gap:10px;">
+    <button class="btn" id="fs-taste" style="flex:1; justify-content:center; padding:14px;"><i class="ti ti-music"></i><span id="fs-tastetxt"></span></button>
+    <button class="btn primary" id="fs-play" style="flex:1.4; justify-content:center; padding:14px; font-size:16px;"><i class="ti ti-player-play"></i><span id="fs-playtxt"></span></button>
+  </div>
 </div>
 <div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
   <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 28px;"></p>
@@ -343,6 +361,7 @@ it:{
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
+ fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
  modesTitle:"I modi: la luce del viaggio",
@@ -467,6 +486,7 @@ en:{
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
+ fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
  modesTitle:"The modes: the light of the journey",
@@ -612,7 +632,6 @@ function applyStatic(){
  $('tab-profile').querySelector('.tablbl').textContent=S9.tabProfile;
  $('unlocktxt').textContent=S9.unlock;
  $('wel-skip').textContent=S9.welSkip;
- $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('rehtxt').textContent=S9.rehear;
  $('roundlbl').textContent=S9.round;
@@ -620,6 +639,7 @@ function applyStatic(){
  setStatus('');
  $('tutbtntxt').textContent=S9.tutBtn;
  $('tastetxt').textContent=S9.tasteBtn;
+ $('fs-reopentxt').textContent=S9.fsChange;
  $('celtitle').textContent=S9.unlockTitle;
  $('celtap').textContent=S9.unlockTap;
  $('legsum').textContent=S9.legsum;
@@ -687,7 +707,7 @@ function applyStatic(){
 }
 
 function setView(name){
- $('preroll').hidden=true; $('freeintro').hidden=true;
+ $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail');
@@ -800,15 +820,52 @@ function showLevels(){
  renderPath();
 }
 function showFree(){
- saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; game={kind:'free'};
- root=+$('rootsel').value;
+ saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); game={kind:'free'};
  setView('free');
  $('gametop').hidden=true; $('goalbar').hidden=true;
- $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
+ openFreeSetup();
+}
+function openFreeSetup(){
+ $('fs-title').textContent=S9.fsTitle;
+ $('fs-sub').textContent=S9.fsSub;
+ $('fs-scalelbl').textContent=S9.fsScale;
+ $('fs-toniclbl').textContent=S9.fsTonic;
+ $('fs-noteslbl').textContent=S9.fsNotes;
+ $('fs-tastetxt').textContent=S9.fsTaste;
+ $('fs-playtxt').textContent=S9.fsPlay;
+ if(!$('fs-scale').options.length){
+  const fsc=$('fs-scale');
+  const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
+  [['lyd',5],['maj',0],['mixo',6],['dor',7],['min',1],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
+  const g2=document.createElement('optgroup'); g2.label=S9.grpScales;
+  [['pmaj',2],['pmin',3],['blM',10],['blm',11],['chrom',4]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g2.appendChild(o);});
+  fsc.appendChild(g1); fsc.appendChild(g2);
+  const ft=$('fs-tonic'); NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; ft.appendChild(o);});
+ }
+ $('fs-scale').value=scale; $('fs-tonic').value=String(root);
+ renderFsPreview();
+ $('freesetup').hidden=false;
+}
+function renderFsPreview(){
+ const sc=$('fs-scale').value, rt=+$('fs-tonic').value, box=$('fs-preview');
+ box.innerHTML='';
+ SCALES[sc].forEach(k=>{
+  const d=document.createElement('div'); d.className='fsnote';
+  d.style.background=C[k].h; d.style.color=ink(k);
+  d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:18px"></i><span>'+NOTE[(rt+k)%12]+'</span>';
+  d.addEventListener('click',()=>{ensureCtx(); tone(60+rt+k,0.5);});
+  box.appendChild(d);
+ });
+}
+function startFreeGame(){
+ scale=$('fs-scale').value; root=+$('fs-tonic').value;
+ $('scsel').value=scale; $('rootsel').value=String(root);
+ $('freesetup').hidden=true;
+ clearTimers(); state='idle'; seq=[];
+ $('rowsetup').hidden=false; $('scsel').hidden=true; $('rootsel').hidden=true; $('tastebtn').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
  render(); renderSig(); renderChords(); loadBest();
- if(!localStorage.getItem('hm_free_seen')) openFreeIntro();
 }
 function openFreeIntro(){
  $('fi-title').textContent=S9.fiTitle;
@@ -1465,15 +1522,18 @@ function hit(k,fromMic){
 $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
+$('fs-reopen').addEventListener('click',function(){this.blur(); openFreeSetup();});
+$('fs-scale').addEventListener('change',renderFsPreview);
+$('fs-tonic').addEventListener('change',renderFsPreview);
+$('fs-taste').addEventListener('click',function(){this.blur(); ensureCtx(); const sc=$('fs-scale').value, rt=+$('fs-tonic').value; SCALES[sc].concat([12]).forEach((k,i)=>timers.push(setTimeout(()=>tone(60+rt+k,0.34),i*300)));});
+$('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{if(welStep<S9.welSteps.length-1){welStep++; renderWelStep();} else {localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();}});
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); $('welcome').hidden=true; showLevels();});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
-$('rhythmcb').addEventListener('click',function(){rhythm=!rhythm; this.setAttribute('aria-pressed',String(rhythm)); if(rhythm)localStorage.removeItem('it_rhythm'); else localStorage.setItem('it_rhythm','0');});
 $('miccb').addEventListener('click',function(){if(micOn) stopMic(); else startMic();});
-$('rhythmcb').setAttribute('aria-pressed',String(rhythm));
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
