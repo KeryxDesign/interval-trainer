@@ -108,6 +108,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .mapdot{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
 .mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
 .world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
+.secname{font-size:25px; font-weight:800; letter-spacing:-.02em; margin:22px 0 8px; color:var(--text);}
+.pathsec:first-child .secname{margin-top:4px;}
+.secdesc{font-size:15px; line-height:1.6; color:var(--muted); margin:0 0 16px;}
+.seclock{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--gold); margin:0 0 14px;}
+.pathsec.locked .secname{color:var(--muted);}
+.world.courselock{opacity:.45;}
 button.levelcard{display:block; width:100%; text-align:left; border:1px solid var(--line); color:var(--text); cursor:pointer; font:inherit;}
 button.levelcard:active{transform:scale(0.99);}
 .gcard{background:var(--surface); border-radius:14px; padding:16px 16px 18px; margin-bottom:10px; border:1px solid var(--line);}
@@ -174,12 +180,7 @@ button.levelcard:active{transform:scale(0.99);}
   </nav>
 
   <div id="view-levels" hidden>
-    <div id="coursepick" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:0 0 12px;"></div>
-    <p id="coursetitle" style="font-size:18px; font-weight:700; text-align:center; margin:0 0 6px;"></p>
-    <p id="coursedesc" style="font-size:16px; line-height:1.6; color:var(--text); background:var(--surface); border-radius:12px; padding:13px 15px; margin:0 0 6px;"></p>
-    <p id="coursesub" style="font-size:13px; color:var(--muted); text-align:center; margin:0 0 10px;"></p>
-    <p id="starsline" style="font-size:13px; color:var(--muted); text-align:center; margin:0 0 16px;"></p>
-    <div id="worlds"></div>
+    <div id="path"></div>
     <label id="unlockrow"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
   </div>
 
@@ -338,7 +339,7 @@ it:{
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
- courseLocked:"Completa prima il corso precedente", winCourse:t=>"Nuovo corso sbloccato: "+t,
+ courseLocked:"Completa prima il corso precedente", lockCourse:t=>"Completa «"+t+"» per sbloccarla", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
@@ -462,7 +463,7 @@ en:{
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
- courseLocked:"Finish the previous course first", winCourse:t=>"New course unlocked: "+t,
+ courseLocked:"Finish the previous course first", lockCourse:t=>"Finish «"+t+"» to unlock it", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
@@ -609,8 +610,6 @@ function applyStatic(){
  $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
  $('tab-theory').querySelector('.tablbl').textContent=S9.tabs[2];
  $('tab-profile').querySelector('.tablbl').textContent=S9.tabProfile;
- $('coursesub').textContent=S9.coursesub;
- $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
  $('wel-skip').textContent=S9.welSkip;
  $('rhythmtxt').textContent=S9.rhythm;
@@ -796,12 +795,9 @@ function renderCoursePick(){
 }
 function showLevels(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
- if(!courseUnlocked(curCourse)) curCourse='pent';
  setView('levels');
- $('coursedesc').textContent=S9.courses[curCourse].desc;
- $('coursetitle').textContent=S9.courses[curCourse].title;
  $('unlockall').checked=unlockAll();
- renderCoursePick(); renderWorlds();
+ renderPath();
 }
 function showFree(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; game={kind:'free'};
@@ -1006,24 +1002,31 @@ function saveCurrentGameProgress(){
  let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
  saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
 }
-function renderWorlds(){
- const box=$('worlds'); box.innerHTML='';
- S9.courses[curCourse].levels.forEach((w,i)=>{
-  const unlocked=worldUnlocked(curCourse,i);
-  const card=document.createElement(unlocked?'button':'div'); card.className='world levelcard'+(unlocked?'':' locked');
-  let ints='';
-  CWADD[curCourse][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
-  let h='<div class="whead"><span class="wname">'+(i+1)+'. '+plainNames(curCourse,i)+'</span><span class="wints">'+ints+'</span></div>';
-  if(!unlocked){
-   h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
-   card.innerHTML=h;
-  } else {
-   const ts=levelStars(curCourse,i);
-   h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:8px;"><span style="color:'+(ts>0?'var(--gold)':'var(--muted)')+'; font-size:14px;">★ '+ts+'/9</span><i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
-   card.innerHTML=h;
-   card.addEventListener('click',()=>showLevelDetail(curCourse,i));
-  }
-  box.appendChild(card);
+function renderPath(){
+ const box=$('path'); box.innerHTML='';
+ COURSE_IDS.forEach((c,ci)=>{
+  const cOpen=courseUnlocked(c);
+  const sec=document.createElement('div'); sec.className='pathsec'+(cOpen?'':' locked');
+  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2><p class="secdesc">'+S9.courses[c].desc+'</p>';
+  if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
+  sec.innerHTML=sh; box.appendChild(sec);
+  S9.courses[c].levels.forEach((lv,i)=>{
+   const lvOpen=worldUnlocked(c,i);
+   const open=cOpen&&lvOpen;
+   const card=document.createElement(open?'button':'div'); card.className='world levelcard'+(open?'':' locked')+(cOpen?'':' courselock');
+   let ints=''; CWADD[c][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+   let h='<div class="whead"><span class="wname">'+(i+1)+'. '+plainNames(c,i)+'</span><span class="wints">'+ints+'</span></div>';
+   if(!open){
+    if(cOpen) h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
+    card.innerHTML=h;
+   } else {
+    const ts=levelStars(c,i);
+    h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:8px;"><span style="color:'+(ts>0?'var(--gold)':'var(--muted)')+'; font-size:14px;">★ '+ts+'/9</span><i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
+    card.innerHTML=h;
+    card.addEventListener('click',()=>showLevelDetail(c,i));
+   }
+   box.appendChild(card);
+  });
  });
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
@@ -1474,7 +1477,7 @@ $('rhythmcb').setAttribute('aria-pressed',String(rhythm));
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
- renderWorlds();
+ renderPath();
 });
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
