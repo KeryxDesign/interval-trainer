@@ -78,6 +78,14 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .pbtn:active{transform:scale(0.94);}
 .swt{border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:999px; padding:8px 13px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
 .swt[aria-pressed="true"]{background:var(--gold); color:#14151a; border-color:var(--gold);}
+.tgl{display:inline-flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:7px 11px; font-size:13px; font-weight:600; color:var(--text); cursor:pointer;}
+.tgl i{font-size:15px; color:var(--muted);}
+.tgl .track{position:relative; width:34px; height:20px; border-radius:999px; background:var(--line); transition:background .15s; flex:0 0 auto;}
+.tgl .knob{position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.4);}
+.tgl[aria-pressed="true"]{border-color:var(--gold);}
+.tgl[aria-pressed="true"] .track{background:var(--gold);}
+.tgl[aria-pressed="true"] .track .knob{transform:translateX(14px);}
+.tgl[aria-pressed="true"] i{color:var(--text);}
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
@@ -192,9 +200,9 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-game" hidden>
-    <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 10px;">
+    <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 16px; background:var(--surface2); border-radius:12px; padding:9px 12px; border-left:3px solid var(--gold);">
       <button class="btn" id="backbtn" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
-      <span id="gametitle" style="font-size:13px; color:var(--muted); font-weight:600;"></span>
+      <span id="gametitle" style="font-size:14px; color:var(--text); font-weight:700;"></span>
     </div>
     <div class="controls">
       <div class="crow" id="rowsetup">
@@ -207,8 +215,8 @@ button.levelcard:active{transform:scale(0.99);}
       <div class="crow options">
         <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
         <span style="display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-gauge" style="font-size:16px; color:var(--muted);"></i><select id="spdsel" aria-label="Speed"></select></span>
-        <button class="swt" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool" style="font-size:14px"></i><span id="rhythmtxt"></span></button>
-        <button class="swt" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
+        <button class="tgl" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool"></i><span id="rhythmtxt"></span><span class="track"><span class="knob"></span></span></button>
+        <button class="tgl" id="miccb" aria-pressed="false"><i class="ti ti-microphone"></i><span id="mictxt"></span><span class="track"><span class="knob"></span></span></button>
       </div>
     </div>
 
@@ -294,7 +302,7 @@ it:{
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
  optTheory:"Teoria del livello",
  welTitle:"Che cos'è Huermony",
- welBody:"<p>Allena l'orecchio <b>giocando</b>: impari a riconoscere le canzoni e a <b>cantare più intonato</b>. Niente spartiti, niente teoria: solo colori e suoni.</p><p>Ogni suono ha un colore. Tu ascolti e ripeti, e piano piano l'orecchio impara da solo.</p><p>Funziona anche se pensi di <b>non avere orecchio</b>: si parte dal primo passo, uno alla volta.</p>",
+ welBody:"<p>Quasi tutti affrontano la musica partendo dalle note e dalle forme fisse, ma non imparano mai a <b>sentire</b> l'effetto della musica: perché due suoni vicini emozionano in un modo e due lontani in un altro.</p><p>Huermony allena proprio questo, <b>giocando</b>. Ti accorgi di costruire melodie tue, che puoi riusare nella tua musica. E senza forzarlo smetti di pensare \"Do, Sol\" e inizi a pensare alla nota da cui parti e a quella che chiude: il nome coincide con la <b>sensazione</b> che cercavi. È lì che inizi a parlare musica.</p><p>Ogni intervallo ha sempre la stessa <b>forma e lo stesso colore</b>: l'associazione visiva lo rende molto più veloce da memorizzare. È questo il cuore di Huermony.</p><p>Si gioca come il vecchio <b>Simon</b>, solo con più colori e più note. E puoi giocarci con il tuo <b>strumento in mano</b>: riconosce anche la voce, perfetto per imparare dove stanno le note sullo strumento.</p>",
  welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  welSteps:[{ic:'palette',t:"Ogni suono ha il suo colore. Imparerai a riconoscerli a orecchio."},{ic:'player-play',t:"Si gioca così: ascolti una melodia e la ripeti. Niente spartiti, niente teoria."},{ic:'heart',t:"Funziona anche se pensi di non avere orecchio. Si parte dal primo passo, con calma."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
@@ -402,7 +410,7 @@ en:{
  prTap:"tap to start", prNew:"this level's new note",
  optTheory:"Level theory",
  welTitle:"What is Huermony",
- welBody:"<p>Train your ear by <b>playing</b>: you learn to recognize songs and <b>sing more in tune</b>. No sheet music, no theory: just colors and sounds.</p><p>Every sound has a color. You listen and repeat, and little by little your ear learns on its own.</p><p>It works even if you think you <b>have no ear</b>: you start from the first step, one at a time.</p>",
+ welBody:"<p>Almost everyone approaches music starting from notes and fixed shapes, but never learns to <b>feel</b> what music does: why two close sounds move you one way and two far apart another.</p><p>Huermony trains exactly that, by <b>playing</b>. You notice you're building your own melodies, ones you can reuse in your music. And without forcing it you stop thinking \"C, G\" and start thinking of the note you start from and the one that closes: the name matches the <b>feeling</b> you were after. That's when you start to speak music.</p><p>Every interval always has the same <b>shape and color</b>: the visual association makes it far faster to memorize. That's the heart of Huermony.</p><p>It plays like the old <b>Simon</b> game, just with more colors and more notes. And you can play with your <b>instrument in hand</b>: it hears your voice too, perfect for learning where the notes live on your instrument.</p>",
  welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  welSteps:[{ic:'palette',t:"Every sound has its own color. You'll learn to recognize them by ear."},{ic:'player-play',t:"Here's how you play: you hear a melody and repeat it. No sheet music, no theory."},{ic:'heart',t:"It works even if you think you have no ear. You start from the first step, take it easy."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
