@@ -47,11 +47,11 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #streak i{color:#f59e0b; font-size:18px;}
 .profrow{display:flex; align-items:center; gap:14px; background:var(--surface); border-radius:16px; padding:14px; margin:0 0 18px; cursor:pointer;}
 .profrow .pedit{margin-left:auto; color:var(--muted); font-size:18px;}
-#guide-intro h2{font-size:18px; font-weight:700; margin:0 0 10px;}
-#guide-intro .gbody{margin:0 0 20px;}
-#guide-intro .gbody p{font-size:13px; line-height:1.7; color:var(--muted); margin:0 0 12px;}
+#guide-intro h2{font-size:22px; line-height:1.3; font-weight:700; margin:0 0 12px;}
+#guide-intro .gbody{margin:0 0 22px;}
+#guide-intro .gbody p{font-size:16px; line-height:1.6; color:var(--text); margin:0 0 14px;}
 #guide-intro .gbody p:last-child{margin-bottom:0;}
-#guide-intro .gbody b{color:var(--text); font-weight:600;}
+#guide-intro .gbody b{color:var(--text); font-weight:700;}
 #pe-avatars{display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:0 0 18px;}
 #pe-avatars button{border:2px solid transparent; background:none; border-radius:50%; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
 #pe-avatars button.sel{border-color:var(--gold);}
@@ -113,9 +113,9 @@ button.levelcard:active{transform:scale(0.99);}
 .gcard{background:var(--surface); border-radius:14px; padding:16px 16px 18px; margin-bottom:10px; border:1px solid var(--line);}
 .ghead{display:flex; align-items:center; gap:10px; margin:0 0 10px;}
 .ghead i{font-size:19px; color:var(--gold); flex:0 0 auto;}
-.ghead span{font-size:15px; font-weight:500; color:var(--text); letter-spacing:-.01em;}
-.gbody{font-size:13px; line-height:1.6; margin:0; color:var(--muted);}
-.gbody b{color:var(--text); font-weight:500;}
+.ghead span{font-size:17px; font-weight:600; color:var(--text); letter-spacing:-.01em;}
+.gbody{font-size:16px; line-height:1.6; margin:0; color:var(--text);}
+.gbody b{color:var(--text); font-weight:700;}
 .world.locked .wint{opacity:.4; filter:saturate(.4);}
 .world.locked .wname{color:var(--muted);}
 .whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
@@ -176,7 +176,7 @@ button.levelcard:active{transform:scale(0.99);}
   <div id="view-levels" hidden>
     <div id="coursepick" style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:0 0 12px;"></div>
     <p id="coursetitle" style="font-size:15px; font-weight:600; text-align:center; margin:0 0 4px;"></p>
-    <p id="coursedesc" style="font-size:13px; line-height:1.55; color:var(--text); background:var(--surface); border-radius:12px; padding:11px 14px; margin:0 0 6px;"></p>
+    <p id="coursedesc" style="font-size:16px; line-height:1.6; color:var(--text); background:var(--surface); border-radius:12px; padding:13px 15px; margin:0 0 6px;"></p>
     <p id="coursesub" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 10px;"></p>
     <p id="starsline" style="font-size:12px; color:var(--muted); text-align:center; margin:0 0 16px;"></p>
     <div id="worlds"></div>
@@ -240,7 +240,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-theory" hidden>
-    <p id="thintro" style="font-size:13px; color:var(--muted); margin:0 0 12px;"></p>
+    <p id="thintro" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 14px;"></p>
     <div id="theory"></div>
   </div>
 </div>
@@ -607,18 +607,18 @@ function applyStatic(){
  C.forEach((c,k)=>{const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
    '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
-   '<span style="font-size:15px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
+   '<span style="font-size:17px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
    '<button class="pbtn" data-iv="'+k+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
-   '<p style="margin:8px 0 6px 44px;font-size:12px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
-   '<p style="margin:0 0 0 44px;font-size:13px;line-height:1.55;color:var(--text)">'+S9.TH[k]+'</p>';
+   '<p style="margin:8px 0 6px 44px;font-size:13px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
+   '<p style="margin:0 0 0 44px;font-size:16px;line-height:1.6;color:var(--text)">'+S9.TH[k]+'</p>';
   thBox.appendChild(d);});
  const NAMEIDX={maj:0,min:1,lyd:5,mixo:6,dor:7,phr:8,loc:9};
  const mt=document.createElement('p');
- mt.style.cssText='font-size:14px;font-weight:600;margin:20px 0 2px';
+ mt.style.cssText='font-size:17px;font-weight:700;margin:22px 0 4px';
  mt.textContent=S9.modesTitle; thBox.appendChild(mt);
  const mi=document.createElement('p');
- mi.style.cssText='font-size:12px;color:var(--muted);margin:0 0 10px';
+ mi.style.cssText='font-size:15px;line-height:1.6;color:var(--text);margin:0 0 12px';
  mi.textContent=S9.modesIntro; thBox.appendChild(mi);
  LIGHTORDER.forEach((mk,idx)=>{
   const m=S9.MODETH[mk];
@@ -626,10 +626,10 @@ function applyStatic(){
   const cons=consChips(mk,20);
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
    '<span style="width:34px;height:34px;border-radius:50%;background:'+LIGHTSW[idx]+';display:flex;align-items:center;justify-content:center;color:'+inkSW(idx)+';flex-shrink:0"><i class="ti ti-'+MODEIC[mk]+'" style="font-size:17px"></i></span>'+
-   '<span style="font-size:15px;font-weight:600">'+S9.scales[NAMEIDX[mk]]+' <span style="color:var(--muted);font-weight:400">· '+m.nick+'</span></span>'+
+   '<span style="font-size:17px;font-weight:600">'+S9.scales[NAMEIDX[mk]]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+m.nick+'</span></span>'+
    '<button class="pbtn" data-mode="'+mk+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
-   '<p style="margin:8px 0 8px 44px;font-size:13px;line-height:1.55;color:var(--text)">'+m.desc+'</p>'+
+   '<p style="margin:8px 0 8px 44px;font-size:16px;line-height:1.6;color:var(--text)">'+m.desc+'</p>'+
    '<div style="display:flex;gap:4px;margin:0 0 8px 44px;flex-wrap:wrap;align-items:center">'+cons+'<span style="font-size:11px;color:var(--muted);margin-left:4px">'+(S9.SIG[mk]||'')+'</span></div>'+
    '<p style="margin:0 0 0 44px;font-size:12px;color:var(--muted)"><b style="color:var(--text)">'+S9.compLabel+'</b> '+SCALES[mk].map(k=>IV[k]).join(' · ')+'</p>';
   thBox.appendChild(d);});
@@ -957,20 +957,20 @@ function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.l
 function buildTheoryBody(c,w){
  const lv=S9.courses[c].levels[w];
  // Teoria IN CHIARO: cosa impari + il ruolo di ogni suono, con ascolto
- let body='<p style="font-size:13px; line-height:1.6; color:var(--muted); margin:0 0 16px;">'+lv.th+'</p>';
+ let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+lv.th+'</p>';
  CWADD[c][w].forEach(k=>{
-  body+='<div style="margin:0 0 16px;">'+
-   '<div style="display:flex; align-items:center; gap:11px; margin-bottom:6px;">'+
+  body+='<div style="margin:0 0 18px;">'+
+   '<div style="display:flex; align-items:center; gap:11px; margin-bottom:7px;">'+
     '<span style="width:40px;height:40px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-'+C[k].ic+'" style="font-size:19px"></i></span>'+
-    '<span style="flex:1; font-size:15px; font-weight:600;">'+cap(S9.NM[k])+' <span style="color:var(--muted); font-weight:400; font-size:13px">· '+DEG[k]+'</span></span>'+
+    '<span style="flex:1; font-size:17px; font-weight:600;">'+cap(S9.NM[k])+' <span style="color:var(--muted); font-weight:400; font-size:14px">· '+DEG[k]+'</span></span>'+
     '<button class="pbtn" data-iv="'+k+'" aria-label="play"><i class="ti ti-volume"></i></button>'+
    '</div>'+
-   '<p style="margin:0 0 0 51px; font-size:13px; line-height:1.55; color:var(--text)">'+S9.TH[k]+'</p>'+
+   '<p style="margin:0 0 0 51px; font-size:16px; line-height:1.6; color:var(--text)">'+S9.TH[k]+'</p>'+
   '</div>';
  });
  // dettaglio tecnico facoltativo (intervalli/semitoni)
- body+='<details class="legbox" style="margin:0;"><summary style="font-size:12px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
- CWADD[c][w].forEach(k=>{body+='<p style="margin:8px 0 0; font-size:12px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
+ body+='<details class="legbox" style="margin:0;"><summary style="font-size:14px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
+ CWADD[c][w].forEach(k=>{body+='<p style="margin:8px 0 0; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
  body+='</details>';
  return body;
 }
