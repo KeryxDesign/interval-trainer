@@ -42,6 +42,17 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #hplay:active{transform:scale(0.99);}
 #hprog{display:none;}
 #hguide{display:block; width:100%; text-align:center; font-size:14px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:14px; cursor:pointer; margin-top:6px;}
+#streak{display:inline-flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:14px; font-weight:700; margin:0 0 16px;}
+#streak i{color:#f59e0b; font-size:18px;}
+#home-intro{margin-top:26px;}
+#home-intro h2{font-size:17px; font-weight:700; margin:0 0 10px;}
+#home-intro .gbody p{font-size:13px; line-height:1.7; color:var(--muted); margin:0 0 12px;}
+#home-intro .gbody p:last-child{margin-bottom:0;}
+#home-intro .gbody b{color:var(--text); font-weight:600;}
+#home-steps{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
+.hstep{display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:12px; padding:12px 14px;}
+.hstep i{font-size:20px; color:var(--gold); flex:0 0 auto;}
+.hstep span{font-size:13px; line-height:1.5; color:var(--text);}
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 #scsel{flex:1 1 auto; min-width:0;}
@@ -129,6 +140,7 @@ button.levelcard:active{transform:scale(0.99);}
       <div class="lang" id="hlang"><button data-l="it">IT</button><button data-l="en">EN</button></div>
     </div>
     <p id="htag"></p>
+    <div id="streak" hidden></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-levels">0</div><div class="ml" id="m-levels-l"></div></div>
@@ -138,6 +150,7 @@ button.levelcard:active{transform:scale(0.99);}
     <button id="hplay"><i class="ti ti-player-play"></i><span id="hplaytxt"></span></button>
     <p id="hprog"></p>
     <button id="hguide"></button>
+    <div id="home-intro"></div>
   </div>
 
   <nav class="tabs" id="tabs" hidden>
@@ -167,9 +180,9 @@ button.levelcard:active{transform:scale(0.99);}
       </div>
       <span id="ld-stars" style="color:var(--gold); font-size:14px; white-space:nowrap;"></span>
     </div>
-    <p id="ld-learnhead" style="font-size:13px; font-weight:600; color:var(--gold); margin:0 0 8px;"></p>
-    <div id="ld-theory" style="margin:0 0 22px;"></div>
-    <p id="ld-difhead" style="font-size:13px; font-weight:600; color:var(--gold); margin:0 0 10px;"></p>
+    <p id="ld-learnhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 12px;"></p>
+    <div id="ld-theory" style="margin:0 0 26px;"></div>
+    <p id="ld-difhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 12px;"></p>
     <div id="ld-modes"></div>
   </div>
 
@@ -192,7 +205,7 @@ button.levelcard:active{transform:scale(0.99);}
         <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
       <div class="crow options">
-        <button class="btn" id="rehear" style="flex:0 0 auto;" aria-label="replay"><i class="ti ti-refresh"></i></button>
+        <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
         <span style="display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-gauge" style="font-size:16px; color:var(--muted);"></i><select id="spdsel" aria-label="Speed"></select></span>
         <button class="swt" id="rhythmcb" aria-pressed="false"><i class="ti ti-wave-saw-tool" style="font-size:14px"></i><span id="rhythmtxt"></span></button>
         <button class="swt" id="miccb" aria-pressed="false"><i class="ti ti-microphone" style="font-size:14px"></i><span id="mictxt"></span></button>
@@ -285,6 +298,7 @@ it:{
  welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  welSteps:[{ic:'palette',t:"Ogni suono ha il suo colore. Imparerai a riconoscerli a orecchio."},{ic:'player-play',t:"Si gioca così: ascolti una melodia e la ripeti. Niente spartiti, niente teoria."},{ic:'heart',t:"Funziona anche se pensi di non avere orecchio. Si parte dal primo passo, con calma."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
+ streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
@@ -392,6 +406,7 @@ en:{
  welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  welSteps:[{ic:'palette',t:"Every sound has its own color. You'll learn to recognize them by ear."},{ic:'player-play',t:"Here's how you play: you hear a melody and repeat it. No sheet music, no theory."},{ic:'heart',t:"It works even if you think you have no ear. You start from the first step, take it easy."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
+ streak:n=>n+(n===1?" day streak":" days streak"),
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
@@ -499,14 +514,15 @@ const C=[
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
 const ink=k=>C[k].ink||'#fff';
 const CWADD={maj:[[0,7],[4],[2],[9],[11],[5]], min:[[0,7],[3],[2],[10],[8],[5]]};
-const COURSE_IDS=['maj','min'];
-let curCourse=(localStorage.getItem('hm_course')&&['maj','min'].includes(localStorage.getItem('hm_course')))?localStorage.getItem('hm_course'):'maj';
+const COURSE_IDS=['maj'];
+let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'maj';
 const STAR1=5, STAR2=8;
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
 let game={kind:'free'};
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
+if(![0.5,1,1.5,2].includes(speed))speed=1;
 let rhythm=localStorage.getItem('it_rhythm')==='1';
 const $=id=>document.getElementById(id);
 
@@ -536,6 +552,7 @@ function applyStatic(){
  $('pr-heartxt').textContent=S9.prHear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
+ $('rehtxt').textContent=S9.rehear;
  $('roundlbl').textContent=S9.round;
  $('bestlbl').textContent=S9.bestScale;
  setStatus('');
@@ -555,7 +572,7 @@ function applyStatic(){
  const rs=$('rootsel'); rs.innerHTML='';
  NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
  const sp=$('spdsel'); sp.innerHTML='';
- [['0.75',0],['1',1],['1.3',2],['1.6',3]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.speeds[i]; sp.appendChild(o);});
+ [['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].forEach(([v,t])=>{const o=document.createElement('option'); o.value=v; o.textContent=t; sp.appendChild(o);});
  sp.value=String(speed);
  const lg=$('legend'); lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
@@ -608,6 +625,8 @@ function applyStatic(){
  $('htag').textContent=S9.dashTag;
  $('m-stars-l').textContent=S9.mStars; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
  $('hguide').textContent=S9.dashGuide;
+ let steps=''; S9.welSteps.forEach(s=>{steps+='<div class="hstep"><i class="ti ti-'+s.ic+'"></i><span>'+s.t+'</span></div>';});
+ $('home-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="gbody">'+S9.welBody+'</div><div id="home-steps">'+steps+'</div>';
  renderDashboard();
 }
 
@@ -625,6 +644,23 @@ function setView(name){
 function showHome(){clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
 function nameForId(id){return COURSE_IDS.includes(id)?S9.courses[id].title:(S9.scales[SCIDX[id]]||id);}
+function dayStr(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
+function getStreak(){
+ const last=localStorage.getItem('hm_lastplay');
+ const s=parseInt(localStorage.getItem('hm_streak')||'0',10)||0;
+ if(!last||!s) return 0;
+ const y=new Date(); y.setDate(y.getDate()-1);
+ return (last===dayStr(new Date())||last===dayStr(y))?s:0;
+}
+function bumpStreak(){
+ const t=dayStr(new Date());
+ const last=localStorage.getItem('hm_lastplay');
+ if(last===t) return;
+ const y=new Date(); y.setDate(y.getDate()-1);
+ const s=(last===dayStr(y))?getStreak()+1:1;
+ localStorage.setItem('hm_streak',String(s));
+ localStorage.setItem('hm_lastplay',t);
+}
 function getPlays(){try{return JSON.parse(localStorage.getItem('hm_plays')||'{}')}catch(e){return{}}}
 function bumpPlays(id){const p=getPlays(); p[id]=(p[id]||0)+1; localStorage.setItem('hm_plays',JSON.stringify(p));}
 function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; return t;}
@@ -634,6 +670,9 @@ function renderDashboard(){
  $('m-stars').textContent=totalStars();
  $('m-levels').textContent=completedLevels();
  $('m-games').textContent=totalGames();
+ const stk=getStreak(); const sd=$('streak');
+ if(stk>0){sd.hidden=false; sd.innerHTML='<i class="ti ti-flame"></i> '+S9.streak(stk);}
+ else sd.hidden=true;
  const ms=mostStudied();
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
@@ -642,6 +681,8 @@ function renderDashboard(){
 }
 function renderCoursePick(){
  const box=$('coursepick'); box.innerHTML='';
+ if(COURSE_IDS.length<2){box.hidden=true; return;}
+ box.hidden=false;
  COURSE_IDS.forEach(c=>{
   const b=document.createElement('button'); b.className='pill';
   if(c===curCourse) b.setAttribute('aria-pressed','true');
@@ -821,7 +862,7 @@ function renderWorlds(){
    card.innerHTML=h;
   } else {
    const ts=levelStars(curCourse,i);
-   h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:8px;">'+(ts>0?'<span style="color:var(--gold); font-size:13px;">★ '+ts+'</span>':'')+'<i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
+   h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:8px;"><span style="color:'+(ts>0?'var(--gold)':'var(--muted)')+'; font-size:13px;">★ '+ts+'/9</span><i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
    card.innerHTML=h;
    card.addEventListener('click',()=>showLevelDetail(curCourse,i));
   }
@@ -856,7 +897,7 @@ function showLevelDetail(c,w){
  const lv=S9.courses[c].levels[w];
  $('ld-title').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
  $('ld-subtitle').textContent=CWADD[c][w].map(k=>DEG[k]).join(S9.and);
- const ts=levelStars(c,w); $('ld-stars').textContent=ts>0?('★ '+ts):'';
+ const ts=levelStars(c,w); $('ld-stars').textContent='★ '+ts+'/9';
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
  $('ld-theory').innerHTML=buildTheoryBody(c,w);
@@ -1029,6 +1070,7 @@ function showPreroll(cb){
 function beginGame(){
  ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote();
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
+ bumpStreak();
  clearCenter(); $('round').textContent=seq.length; playSeq();
 }
 let chordSeq=[];
