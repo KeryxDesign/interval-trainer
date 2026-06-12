@@ -328,7 +328,7 @@ it:{
  modes:["Facile","Normale","Difficile"],
  modeDesc:["vedi i colori e ascolti","solo a orecchio, niente colori","la tonica cambia ogni volta"],
  ldLearn:"Cosa stai per imparare", ldDif:"Scegli la difficoltà",
- ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)",
+ ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  speeds:["Lento","Normale","Veloce","Turbo"],
  scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
@@ -453,7 +453,7 @@ en:{
  modes:["Easy","Normal","Hard"],
  modeDesc:["see the colors and listen","by ear only, no colors","the tonic changes every time"],
  ldLearn:"What you'll learn", ldDif:"Choose difficulty",
- ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)",
+ ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  speeds:["Slow","Normal","Fast","Turbo"],
  scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
@@ -1099,12 +1099,14 @@ function renderPath(){
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
-function buildTheoryBody(c,w){
+function buildTheoryBody(c,w,collapsed){
  const lv=S9.courses[c].levels[w];
  // Teoria IN CHIARO: cosa impari + il ruolo di ogni suono, con ascolto
+ // La intro (sensazione) resta SEMPRE visibile; i blocchi-suono si collassano dopo la 1a visita.
  let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+lv.th+'</p>';
+ let blocks='';
  CWADD[c][w].forEach(k=>{
-  body+='<div style="margin:0 0 18px;">'+
+  blocks+='<div style="margin:0 0 18px;">'+
    '<div style="display:flex; align-items:center; gap:11px; margin-bottom:7px;">'+
     '<span style="width:40px;height:40px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-'+C[k].ic+'" style="font-size:19px"></i></span>'+
     '<span style="flex:1; font-size:17px; font-weight:600;">'+cap(S9.NM[k])+' <span style="color:var(--muted); font-weight:400; font-size:14px">· '+DEG[k]+'</span></span>'+
@@ -1113,6 +1115,8 @@ function buildTheoryBody(c,w){
    '<p style="margin:0 0 0 51px; font-size:16px; line-height:1.6; color:var(--text)">'+S9.TH[k]+'</p>'+
   '</div>';
  });
+ if(collapsed) body+='<details style="margin:0 0 4px;"><summary style="font-size:15px;font-weight:600;color:var(--gold);cursor:pointer;list-style-position:inside;padding:4px 0;">'+S9.ldReview+'</summary><div style="margin-top:12px;">'+blocks+'</div></details>';
+ else body+=blocks;
  // dettaglio tecnico facoltativo (intervalli/semitoni)
  body+='<details class="legbox" style="margin:0;"><summary style="font-size:14px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
  CWADD[c][w].forEach(k=>{body+='<p style="margin:8px 0 0; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
@@ -1128,7 +1132,9 @@ function showLevelDetail(c,w){
  const ts=levelStars(c,w); $('ld-stars').textContent='★ '+ts+'/9';
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
- $('ld-theory').innerHTML=buildTheoryBody(c,w);
+ const seenKey='hm_seen_theory_'+c+'_'+w, seen=!!localStorage.getItem(seenKey);
+ $('ld-theory').innerHTML=buildTheoryBody(c,w,seen);
+ localStorage.setItem(seenKey,'1');
  $('ld-theory').querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); playInterval(+b.dataset.iv);}));
  const md=$('ld-modes'); md.innerHTML='';
  MODES.forEach((mn,m)=>{
