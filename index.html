@@ -268,7 +268,7 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="fi-body" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 26px;"></p>
   <button class="btn primary" id="fi-close" style="justify-content:center; padding:13px;"></button>
 </div>
-<div id="freesetup" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; justify-content:center; z-index:47; padding:28px 24px calc(96px + env(safe-area-inset-bottom)); max-width:480px; margin:0 auto; overflow-y:auto;">
+<div id="freesetup" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; justify-content:center; z-index:20; padding:28px 24px calc(96px + env(safe-area-inset-bottom)); max-width:480px; margin:0 auto; overflow-y:auto;">
   <p id="fs-title" style="font-size:24px; font-weight:800; letter-spacing:-.02em; margin:0 0 6px;"></p>
   <p id="fs-sub" style="font-size:15px; line-height:1.5; color:var(--muted); margin:0 0 22px;"></p>
   <label class="fs-lbl" id="fs-scalelbl"></label>
@@ -1173,16 +1173,8 @@ function renderSig(){
 function render(){
  layout();
  const wb=$('wheelbox');
- wb.style.background=(game.kind==='free'&&SCENE[scale])?SCENE[scale]:'transparent';
+ wb.style.background='transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
- if(game.kind==='free'&&MODEIC[scale]){
-  const mli2=LIGHTORDER.indexOf(scale);
-  const wm=document.createElement('i');
-  wm.className='ti ti-'+MODEIC[scale];
-  wm.setAttribute('aria-hidden','true');
-  wm.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:'+Math.round(S*0.48)+'px;color:'+WMSW[mli2]+';opacity:0.16;pointer-events:none;';
-  w.appendChild(wm);
- }
  const cs=Math.round(S*0.36);
  const ctr=document.createElement('div'); ctr.id='ctr';
  ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
