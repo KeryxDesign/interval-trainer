@@ -129,9 +129,15 @@ button.levelcard:active{transform:scale(0.99);}
 .world.locked .wint{opacity:.4; filter:saturate(.4);}
 .world.locked .wname{color:var(--muted);}
 .whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
-.wname{font-size:16px; font-weight:600;}
-.wints{display:flex; gap:4px;}
+.wname{font-size:16px; font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.wints{display:flex; gap:4px; flex-shrink:0;}
 .wint{width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.scalerow{display:flex; align-items:center; gap:6px; flex-wrap:wrap; background:rgba(255,255,255,.035); border-radius:12px; padding:9px 11px; margin:0 0 14px;}
+.scalerow .srlbl{color:var(--muted); font-size:16px; display:inline-flex; align-items:center; margin-right:2px;}
+.snote{width:28px; height:28px; border-radius:50%; border:none; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:0;}
+.snote:active{transform:scale(.92);}
+.scalerow.locked{opacity:.4; filter:saturate(.4);}
+.scalerow.locked .snote{cursor:default;}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface2); border:none; border-radius:10px; padding:10px 12px; margin-top:8px; width:100%; color:var(--text); font-size:14px; cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; color:var(--muted);}
@@ -1064,9 +1070,14 @@ function renderPath(){
  COURSE_IDS.forEach((c,ci)=>{
   const cOpen=courseUnlocked(c);
   const sec=document.createElement('div'); sec.className='pathsec'+(cOpen?'':' locked');
-  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2><p class="secdesc">'+S9.courses[c].desc+'</p>';
+  const allNotes=[...new Set((CBASE[c]||[]).concat(...CWADD[c]))].sort((a,b)=>a-b);
+  let srow='<div class="scalerow'+(cOpen?'':' locked')+'"><span class="srlbl"><i class="ti ti-volume"></i></span>';
+  allNotes.forEach(k=>{srow+='<button class="snote" data-iv="'+k+'"'+(cOpen?' aria-label="'+NOTE[k]+'"':' disabled')+' style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:14px"></i></button>';});
+  srow+='</div>';
+  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+srow+'<p class="secdesc">'+S9.courses[c].desc+'</p>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   sec.innerHTML=sh; box.appendChild(sec);
+  if(cOpen) sec.querySelectorAll('.snote').forEach(b=>b.addEventListener('click',()=>{ensureCtx(); tone(60+ +b.dataset.iv,0.5);}));
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
    const open=cOpen&&lvOpen;
