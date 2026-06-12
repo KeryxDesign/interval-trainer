@@ -141,6 +141,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <nav class="tabs" id="tabs" hidden>
+    <button class="tab" id="tab-home"><i class="ti ti-home"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-levels"><i class="ti ti-route"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-free"><i class="ti ti-music"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-theory"><i class="ti ti-book"></i><span class="tablbl"></span></button>
@@ -160,7 +161,11 @@ button.levelcard:active{transform:scale(0.99);}
   <div id="view-leveldetail" hidden>
     <div style="display:flex; align-items:center; gap:10px; margin:0 0 16px;">
       <button class="btn" id="ld-back" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
-      <span id="ld-title" style="font-size:15px; font-weight:600;"></span>
+      <div style="flex:1; min-width:0;">
+        <div id="ld-title" style="font-size:16px; font-weight:600; line-height:1.2;"></div>
+        <div id="ld-subtitle" style="font-size:12px; color:var(--muted);"></div>
+      </div>
+      <span id="ld-stars" style="color:var(--gold); font-size:14px; white-space:nowrap;"></span>
     </div>
     <p id="ld-learnhead" style="font-size:13px; font-weight:600; color:var(--gold); margin:0 0 8px;"></p>
     <div id="ld-theory" style="margin:0 0 22px;"></div>
@@ -253,7 +258,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"],
+ tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home",
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
@@ -360,7 +365,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"],
+ tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home",
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
@@ -523,6 +528,7 @@ function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return 
 
 function applyStatic(){
  ['levels','free','theory','guide'].forEach((t,i)=>{$('tab-'+t).querySelector('.tablbl').textContent=S9.tabs[i];});
+ $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
@@ -614,7 +620,7 @@ function setView(name){
  ['levels','theory','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
  const ta=(name==='leveldetail')?'levels':name;
- ['levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ ['home','levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
 }
 function showHome(){clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
@@ -709,6 +715,7 @@ function setStatus(txt,cls){
  st.hidden=!txt;
  if(typeof txt==='string'&&txt.indexOf('<')<0) st.textContent=txt; else st.innerHTML=txt;
 }
+$('tab-home').addEventListener('click',showHome);
 $('tab-levels').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
@@ -825,26 +832,21 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
 function buildTheoryBody(c,w){
  const lv=S9.courses[c].levels[w];
- // BEGINNER: ascolto grande in chiaro
- let body='<p style="font-size:13px; color:var(--muted); margin:0 0 12px;">'+S9.ldListen+'</p>';
- body+='<div style="display:flex; gap:16px; flex-wrap:wrap; margin:0 0 20px;">';
+ // Teoria IN CHIARO: cosa impari + il ruolo di ogni suono, con ascolto
+ let body='<p style="font-size:13px; line-height:1.6; color:var(--muted); margin:0 0 16px;">'+lv.th+'</p>';
  CWADD[c][w].forEach(k=>{
-  body+='<button class="pbtn" data-iv="'+k+'" style="width:auto;height:auto;border:none;background:none;border-radius:0;display:flex;flex-direction:column;align-items:center;gap:7px;padding:0;">'+
-   '<span style="width:66px;height:66px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;position:relative;"><i class="ti ti-'+C[k].ic+'" style="font-size:27px"></i><span style="position:absolute;bottom:-3px;right:-3px;width:24px;height:24px;border-radius:50%;background:var(--surface2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--text)"><i class="ti ti-volume" style="font-size:13px"></i></span></span>'+
-   '<span style="font-size:13px;font-weight:600;color:var(--text)">'+cap(S9.NM[k])+'</span>'+
-  '</button>';
- });
- body+='</div>';
- // TEORIA tecnica, facoltativa e nascosta
- body+='<details class="legbox" style="margin:0;"><summary style="font-size:13px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
- body+='<p style="font-size:14px; font-weight:600; margin:10px 0 4px;">'+lv.name+'</p>';
- body+='<p style="font-size:13px; line-height:1.6; color:var(--text); margin:0 0 6px;">'+lv.th+'</p>';
- CWADD[c][w].forEach(k=>{
-  body+='<div style="border-top:0.5px solid var(--line); padding-top:10px; margin-top:10px;">'+
-   '<p style="margin:0 0 4px; font-size:14px; font-weight:600;">'+IV[k]+' <span style="color:var(--muted);font-weight:400">· '+DEG[k]+' · '+S9.semis(k)+S9.tones(k)+'</span></p>'+
-   '<p style="margin:0; font-size:13px; line-height:1.55; color:var(--muted)">'+S9.TH[k]+'</p>'+
+  body+='<div style="margin:0 0 16px;">'+
+   '<div style="display:flex; align-items:center; gap:11px; margin-bottom:6px;">'+
+    '<span style="width:40px;height:40px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-'+C[k].ic+'" style="font-size:19px"></i></span>'+
+    '<span style="flex:1; font-size:15px; font-weight:600;">'+cap(S9.NM[k])+' <span style="color:var(--muted); font-weight:400; font-size:13px">· '+DEG[k]+'</span></span>'+
+    '<button class="pbtn" data-iv="'+k+'" aria-label="play"><i class="ti ti-volume"></i></button>'+
+   '</div>'+
+   '<p style="margin:0 0 0 51px; font-size:13px; line-height:1.55; color:var(--text)">'+S9.TH[k]+'</p>'+
   '</div>';
  });
+ // dettaglio tecnico facoltativo (intervalli/semitoni)
+ body+='<details class="legbox" style="margin:0;"><summary style="font-size:12px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
+ CWADD[c][w].forEach(k=>{body+='<p style="margin:8px 0 0; font-size:12px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
  body+='</details>';
  return body;
 }
@@ -853,6 +855,8 @@ function showLevelDetail(c,w){
  setView('leveldetail');
  const lv=S9.courses[c].levels[w];
  $('ld-title').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
+ $('ld-subtitle').textContent=CWADD[c][w].map(k=>DEG[k]).join(S9.and);
+ const ts=levelStars(c,w); $('ld-stars').textContent=ts>0?('★ '+ts):'';
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
  $('ld-theory').innerHTML=buildTheoryBody(c,w);
