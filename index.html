@@ -41,18 +41,21 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #hplay{width:100%; min-height:54px; border:none; border-radius:14px; background:var(--text); color:var(--bg); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;}
 #hplay:active{transform:scale(0.99);}
 #hprog{display:none;}
-#hguide{display:block; width:100%; text-align:center; font-size:14px; color:var(--muted); text-decoration:underline; background:none; border:none; padding:14px; cursor:pointer; margin-top:6px;}
+#hguide{display:block; width:100%; text-align:center; font-size:15px; font-weight:600; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:15px; cursor:pointer; margin-top:10px;}
+#htut{width:100%; justify-content:center; margin-top:14px;}
 #streak{display:inline-flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:8px 14px; font-size:14px; font-weight:700; margin:0 0 16px;}
 #streak i{color:#f59e0b; font-size:18px;}
-#home-intro{margin-top:26px;}
-#home-intro h2{font-size:17px; font-weight:700; margin:0 0 10px;}
-#home-intro .gbody p{font-size:13px; line-height:1.7; color:var(--muted); margin:0 0 12px;}
-#home-intro .gbody p:last-child{margin-bottom:0;}
-#home-intro .gbody b{color:var(--text); font-weight:600;}
-#home-steps{display:flex; flex-direction:column; gap:10px; margin-top:16px;}
-.hstep{display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:12px; padding:12px 14px;}
-.hstep i{font-size:20px; color:var(--gold); flex:0 0 auto;}
-.hstep span{font-size:13px; line-height:1.5; color:var(--text);}
+.profrow{display:flex; align-items:center; gap:14px; background:var(--surface); border-radius:16px; padding:14px; margin:0 0 18px; cursor:pointer;}
+.profrow .pedit{margin-left:auto; color:var(--muted); font-size:18px;}
+#guide-intro h2{font-size:18px; font-weight:700; margin:0 0 10px;}
+#guide-intro .gbody{margin:0 0 20px;}
+#guide-intro .gbody p{font-size:13px; line-height:1.7; color:var(--muted); margin:0 0 12px;}
+#guide-intro .gbody p:last-child{margin-bottom:0;}
+#guide-intro .gbody b{color:var(--text); font-weight:600;}
+#pe-avatars{display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:0 0 18px;}
+#pe-avatars button{border:2px solid transparent; background:none; border-radius:50%; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+#pe-avatars button.sel{border-color:var(--gold);}
+#pe-name{width:100%; background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:13px 14px; font-size:16px; margin:0 0 18px;}
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 #scsel{flex:1 1 auto; min-width:0;}
@@ -143,8 +146,9 @@ button.levelcard:active{transform:scale(0.99);}
 
   <div id="view-home">
     <div class="dashhead">
-      <div id="emblem" aria-hidden="true"></div>
-      <p id="hname">Huermony</p>
+      <div id="emblem" aria-hidden="true" style="cursor:pointer"></div>
+      <p id="hname" style="cursor:pointer">Huermony</p>
+      <i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer; margin-right:6px;"></i>
       <div class="lang" id="hlang"><button data-l="it">IT</button><button data-l="en">EN</button></div>
     </div>
     <p id="htag"></p>
@@ -157,8 +161,8 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="dash-studied" hidden></div>
     <button id="hplay"><i class="ti ti-player-play"></i><span id="hplaytxt"></span></button>
     <p id="hprog"></p>
+    <button class="btn" id="htut"><i class="ti ti-school"></i><span id="htuttxt"></span></button>
     <button id="hguide"></button>
-    <div id="home-intro"></div>
   </div>
 
   <nav class="tabs" id="tabs" hidden>
@@ -195,15 +199,17 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-guide" hidden>
+    <div id="guide-intro"></div>
     <button class="btn" id="tutbtn" style="width:100%; justify-content:center; margin-bottom:12px;"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
     <div id="guide"></div>
   </div>
 
   <div id="view-game" hidden>
-    <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 16px; background:var(--surface2); border-radius:12px; padding:9px 12px; border-left:3px solid var(--gold);">
+    <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 12px; background:var(--surface2); border-radius:12px; padding:9px 12px; border-left:3px solid var(--gold);">
       <button class="btn" id="backbtn" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
       <span id="gametitle" style="font-size:14px; color:var(--text); font-weight:700;"></span>
     </div>
+    <div id="goalbar" hidden style="font-size:12px; text-align:center; margin:0 0 12px; background:var(--surface); border-radius:10px; padding:9px 10px;"></div>
     <div class="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
@@ -266,6 +272,13 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="celname" style="font-size:16px; color:var(--muted); margin:0 0 28px;"></p>
   <p id="celtap" style="font-size:13px; color:var(--muted); margin:0;"></p>
 </div>
+<div id="profedit" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:62; padding:32px 24px; max-width:480px; margin:0 auto;">
+  <p id="pe-title" style="font-size:20px; font-weight:700; margin:0 0 18px;"></p>
+  <div id="pe-avatars"></div>
+  <input id="pe-name" type="text" maxlength="20" autocomplete="off">
+  <button class="btn primary" id="pe-save" style="justify-content:center; padding:14px; font-size:16px;"></button>
+  <button id="pe-cancel" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; margin-top:4px;"></button>
+</div>
 
 <script>
 const lang=(function(){
@@ -307,6 +320,8 @@ it:{
  welSteps:[{ic:'palette',t:"Ogni suono ha il suo colore. Imparerai a riconoscerli a orecchio."},{ic:'player-play',t:"Si gioca così: ascolti una melodia e la ripeti. Niente spartiti, niente teoria."},{ic:'heart',t:"Funziona anche se pensi di non avere orecchio. Si parte dal primo passo, con calma."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
+ profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
+ goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
@@ -375,7 +390,7 @@ it:{
   "Il colore del blues e del mixolidio, la settima dell'accordo di dominante. Tensione morbida che scende verso la mediante.",
   "Il fulmine: a un semitono da casa, carica massima verso l'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
  GUIDE:[
-  {h:"Cos'è", p:"Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze."},
+  {h:"Colori, simboli e distanze", p:"Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze."},
   {h:"Come si gioca", p:"1. Premi <b>Gioca</b>: parte una breve melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più. Fin dove arrivi?<br><br>Non serve sapere la teoria: colori e simboli ti guidano. Se sbagli vedi la sequenza giusta, ed è lì che si impara. <b>Velocità</b> e <b>Ritmo</b> li regoli quando vuoi (il ritmo è solo da ascoltare: rispondi nell'ordine giusto, senza durate)."},
   {h:"Livelli e stelle", p:"Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 8 · <span style='color:var(--gold)'>★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo."},
   {h:"Libero e Teoria", p:"<b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni."},
@@ -415,6 +430,8 @@ en:{
  welSteps:[{ic:'palette',t:"Every sound has its own color. You'll learn to recognize them by ear."},{ic:'player-play',t:"Here's how you play: you hear a melody and repeat it. No sheet music, no theory."},{ic:'heart',t:"It works even if you think you have no ear. You start from the first step, take it easy."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
+ profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
+ goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
@@ -483,7 +500,7 @@ en:{
   "The color of blues and Mixolydian, the seventh of the dominant chord. Soft tension drifting down toward the mediant.",
   "The lightning: a semitone from home, maximum upward charge. It is the leading tone, the note that makes the return to the tonic inevitable."],
  GUIDE:[
-  {h:"What it is", p:"Huermony trains your relative ear by building a synesthesia: every interval from the tonic always has the same color, the same symbol and the same place on the wheel, whatever the starting note. The tonic always sits at the top. You do not learn notes: you learn distances."},
+  {h:"Colors, symbols and distances", p:"Huermony trains your relative ear by building a synesthesia: every interval from the tonic always has the same color, the same symbol and the same place on the wheel, whatever the starting note. The tonic always sits at the top. You do not learn notes: you learn distances."},
   {h:"How to play", p:"1. Press <b>Play</b>: a short melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Got it right? It restarts with one more note. How far can you go?<br><br>No theory needed: colors and symbols guide you. If you make a mistake you see the right sequence, and that is where you learn. Adjust <b>Speed</b> and <b>Rhythm</b> anytime (rhythm is listen-only: answer in the right order, no durations)."},
   {h:"Levels and stars", p:"A course on the major scale: you start from two notes (tonic and dominant) and add one degree at a time, in order of melodic importance, up to the full scale. Each level explains the role of the new degree. Each level has three modes: <b>See & hear</b> (the sequence lights up), <b>Ear only</b> (it plays in the dark: answer with the color in your head), <b>Wandering tonic</b> (the tonic changes every round).<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 8 · <span style='color:var(--gold)'>★★★</span> round 8 without ever using Replay.<br><br>Each mode unlocks with 1★ in the previous one. The next level opens with 2★ in Ear only: the game asks you to have the association in your head, not on the screen."},
   {h:"Free play and Theory", p:"<b>Free play</b>: the same game on a scale and tonic of your choice, with a separate best score per scale. <b>Theory</b>: the musical function of every interval, with its distance in semitones and tones."},
@@ -624,17 +641,11 @@ function applyStatic(){
   gd.appendChild(d);});
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
- const em=$('emblem'); em.innerHTML='';
- for(let k=0;k<12;k++){
-  const a=(-90+k*30)*Math.PI/180, x=23+19*Math.cos(a), y=23+19*Math.sin(a);
-  const d=document.createElement('div'); d.className='edot';
-  d.style.cssText='left:'+(x-2.5)+'px;top:'+(y-2.5)+'px;width:5px;height:5px;background:'+C[k].h;
-  em.appendChild(d);}
  $('htag').textContent=S9.dashTag;
  $('m-stars-l').textContent=S9.mStars; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
  $('hguide').textContent=S9.dashGuide;
- let steps=''; S9.welSteps.forEach(s=>{steps+='<div class="hstep"><i class="ti ti-'+s.ic+'"></i><span>'+s.t+'</span></div>';});
- $('home-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="gbody">'+S9.welBody+'</div><div id="home-steps">'+steps+'</div>';
+ $('htuttxt').textContent=S9.tutBtn;
+ $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="gbody">'+S9.welBody+'</div>';
  renderDashboard();
 }
 
@@ -649,7 +660,7 @@ function setView(name){
  const ta=(name==='leveldetail')?'levels':name;
  ['home','levels','free','theory','guide'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
 }
-function showHome(){clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
+function showHome(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
 function nameForId(id){return COURSE_IDS.includes(id)?S9.courses[id].title:(S9.scales[SCIDX[id]]||id);}
 function dayStr(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
@@ -669,12 +680,53 @@ function bumpStreak(){
  localStorage.setItem('hm_streak',String(s));
  localStorage.setItem('hm_lastplay',t);
 }
+const AVATARS=[null,{ic:'home',k:0},{ic:'sun',k:2},{ic:'leaf',k:4},{ic:'cloud',k:7},{ic:'moon',k:9},{ic:'flower',k:10},{ic:'bolt',k:11},{ic:'music',h:'#64748b'},{ic:'microphone-2',h:'#0ea5e9'}];
+function getAvatar(){const n=parseInt(localStorage.getItem('hm_avatar')||'0',10); return (n>=0&&n<AVATARS.length)?n:0;}
+function getName(){return localStorage.getItem('hm_name')||'';}
+function paintAvatar(el,idx,size){
+ const a=AVATARS[idx];
+ if(!a){ // emblema arcobaleno
+  el.style.cssText='position:relative;width:'+size+'px;height:'+size+'px;flex:0 0 auto;';
+  el.innerHTML=''; const r=size/2-3, cx=size/2, ds=Math.max(4,size*0.11);
+  for(let k=0;k<12;k++){const an=(-90+k*30)*Math.PI/180,x=cx+r*Math.cos(an),y=cx+r*Math.sin(an);
+   const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-ds/2)+'px;top:'+(y-ds/2)+'px;width:'+ds+'px;height:'+ds+'px;border-radius:50%;background:'+C[k].h; el.appendChild(d);}
+ } else {
+  const bg=a.h||C[a.k].h, fg=a.k!=null?ink(a.k):'#fff';
+  el.style.cssText='width:'+size+'px;height:'+size+'px;flex:0 0 auto;border-radius:50%;background:'+bg+';display:flex;align-items:center;justify-content:center;color:'+fg+';';
+  el.innerHTML='<i class="ti ti-'+a.ic+'" style="font-size:'+Math.round(size*0.5)+'px"></i>';
+ }
+}
+let peSel=0;
+function openProfile(){
+ peSel=getAvatar();
+ $('pe-title').textContent=S9.profTitle;
+ $('pe-name').placeholder=S9.profName; $('pe-name').value=getName();
+ $('pe-save').textContent=S9.profSave; $('pe-cancel').textContent=S9.profCancel;
+ renderPeAvatars();
+ $('profedit').hidden=false;
+}
+function renderPeAvatars(){
+ const box=$('pe-avatars'); box.innerHTML='';
+ AVATARS.forEach((_,i)=>{
+  const b=document.createElement('button'); if(i===peSel)b.className='sel';
+  const c=document.createElement('div'); paintAvatar(c,i,46); b.appendChild(c);
+  b.addEventListener('click',()=>{peSel=i; renderPeAvatars();});
+  box.appendChild(b);
+ });
+}
+function saveProfile(){
+ localStorage.setItem('hm_avatar',String(peSel));
+ localStorage.setItem('hm_name',$('pe-name').value.trim());
+ $('profedit').hidden=true; renderDashboard();
+}
 function getPlays(){try{return JSON.parse(localStorage.getItem('hm_plays')||'{}')}catch(e){return{}}}
 function bumpPlays(id){const p=getPlays(); p[id]=(p[id]||0)+1; localStorage.setItem('hm_plays',JSON.stringify(p));}
 function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; return t;}
 function mostStudied(){const p=getPlays(); let best=null,bv=0; for(const k in p){if(p[k]>bv){bv=p[k];best=k;}} return best;}
 function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{S9.courses[c].levels.forEach((_,i)=>{if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;});}); return n;}
 function renderDashboard(){
+ paintAvatar($('emblem'),getAvatar(),46);
+ const nm=getName(); $('hname').textContent=nm||S9.defaultName;
  $('m-stars').textContent=totalStars();
  $('m-levels').textContent=completedLevels();
  $('m-games').textContent=totalGames();
@@ -701,7 +753,7 @@ function renderCoursePick(){
  });
 }
 function showLevels(){
- clearTimers(); state='idle'; seq=[]; stopMic();
+ saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
  setView('levels');
  $('coursedesc').textContent=S9.courses[curCourse].desc;
  $('coursetitle').textContent=S9.courses[curCourse].title;
@@ -709,10 +761,10 @@ function showLevels(){
  renderCoursePick(); renderWorlds();
 }
 function showFree(){
- clearTimers(); state='idle'; seq=[]; game={kind:'free'};
+ saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; game={kind:'free'};
  root=+$('rootsel').value;
  setView('free');
- $('gametop').hidden=true;
+ $('gametop').hidden=true; $('goalbar').hidden=true;
  $('rowsetup').hidden=false; $('scsel').hidden=false; $('rootsel').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
@@ -741,8 +793,8 @@ function renderWelStep(){
  $('wel-dots').innerHTML=dots;
  $('wel-next').textContent=(welStep<steps.length-1)?S9.welNext:S9.welStart;
 }
-function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
-function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
+function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
+function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
 function startLevel(c,w,m){
  clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=0;
  const lv=S9.courses[c].levels[w];
@@ -776,6 +828,12 @@ $('hplay').addEventListener('click',()=>{
  if(totalStars()===0&&!localStorage.getItem('hm_tut_done')) startTutorial(); else showLevels();
 });
 $('hguide').addEventListener('click',showGuide);
+$('htut').addEventListener('click',startTutorial);
+$('emblem').addEventListener('click',openProfile);
+$('hname').addEventListener('click',openProfile);
+$('hedit').addEventListener('click',openProfile);
+$('pe-save').addEventListener('click',saveProfile);
+$('pe-cancel').addEventListener('click',()=>{$('profedit').hidden=true;});
 $('tutbtn').addEventListener('click',startTutorial);
 $('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; showLevels();});
 
@@ -788,7 +846,7 @@ function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.tutLabel;
+ $('gametop').hidden=false; $('gametitle').textContent=S9.tutLabel; $('goalbar').hidden=true;
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
@@ -857,6 +915,23 @@ function loadBest(){
 }
 
 function levelStars(c,i){let t=0; for(let m=0;m<3;m++)t+=starsOf(c,i,m); return t;}
+function updateGoal(){
+ const g=$('goalbar'); if(!g) return;
+ if(game.kind!=='level'){g.hidden=true; return;}
+ const r=seq.length;
+ const on='color:var(--gold);font-weight:700', off='color:var(--muted)';
+ const m=(lit,t)=>'<span style="'+(lit?on:off)+'">'+t+'</span>';
+ g.innerHTML='<span style="color:var(--muted);margin-right:6px">'+S9.goalLabel+'</span>'+m(r>=STAR1,'★ '+S9.roundW+' '+STAR1)+' &nbsp; '+m(r>=STAR2,'★★ '+STAR2)+' &nbsp; '+m(r>=STAR2&&!usedRehear,'★★★ '+S9.goalNoReh);
+ g.hidden=false;
+}
+function saveCurrentGameProgress(){
+ if(game.kind!=='level') return;
+ if(state!=='play'&&state!=='input'&&state!=='wait') return;
+ const completed=(state==='wait')?seq.length:seq.length-1;
+ if(completed<1) return;
+ let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
+ saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
+}
 function renderWorlds(){
  const box=$('worlds'); box.innerHTML='';
  S9.courses[curCourse].levels.forEach((w,i)=>{
@@ -900,7 +975,7 @@ function buildTheoryBody(c,w){
  return body;
 }
 function showLevelDetail(c,w){
- clearTimers(); stopMic(); state='idle'; seq=[]; curCourse=c;
+ saveCurrentGameProgress(); clearTimers(); stopMic(); state='idle'; seq=[]; curCourse=c;
  setView('leveldetail');
  const lv=S9.courses[c].levels[w];
  $('ld-title').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
@@ -1033,7 +1108,7 @@ function centerPlay(){
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 function playSeq(){
- state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML='';
+ state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML=''; updateGoal();
  if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12); updateNotes();}
  const silent=game.kind==='level'&&game.m===1;
  const base=Math.max(420,660-seq.length*18)/speed;
@@ -1269,7 +1344,13 @@ function hit(k,fromMic){
  if(correct){
   step++;
   if(step===seq.length){
-   setStatus(S9.correct,'ok');
+   let cm=S9.correct;
+   if(game.kind==='level'){
+    const done=seq.length;
+    if(done===STAR1){cm+=' · ★ '+S9.starGot; chime();}
+    else if(done===STAR2){cm+=' · '+(usedRehear?'★★':'★★★')+' '+S9.starGot; chime();}
+   }
+   setStatus(cm,'ok');
    if(game.kind==='free'){
     const b=+(localStorage.getItem(bestKey())||0);
     if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
@@ -1309,7 +1390,7 @@ $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();}
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
 $('wel-next').addEventListener('click',()=>{if(welStep<S9.welSteps.length-1){welStep++; renderWelStep();} else {localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();}});
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); $('welcome').hidden=true; showLevels();});
-$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
+$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
