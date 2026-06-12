@@ -351,6 +351,7 @@ it:{
  tutRetry:"quasi! La prima era casa, la rossa. Riprova, con calma.",
  tutDone:"Bravissima, è tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
  unlockTitle:"Nuovo livello sbloccato!",
+ winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
  unlockTap:"tocca per continuare",
  legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha. La sensazione vale ovunque; il ruolo descritto è quello nel contesto maggiore/minore: dentro ogni modo lo stesso intervallo può cambiare mestiere (la 2m nel frigio non è una tensione da risolvere, è il colore di casa).",
  semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
@@ -461,6 +462,7 @@ en:{
  tutRetry:"almost! The first one was home, the red one. Try again, take your time.",
  tutDone:"Well done, that's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
  unlockTitle:"New level unlocked!",
+ winTitle:"Level complete!", winUnlock:"Next level unlocked!",
  unlockTap:"tap to continue",
  legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has. The sensation holds everywhere; the role described is its job in a major/minor context: inside each mode the same interval can change jobs (the m2 in Phrygian is not a tension to resolve, it is the color of home).",
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
@@ -801,7 +803,7 @@ function startLevel(c,w,m){
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-levels').classList.add('on');
  $('gametop').hidden=false;
- $('gametitle').textContent=S9.level+' '+(w+1)+' · '+lv.name+' · '+MODES[m];
+ $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel;
@@ -835,7 +837,7 @@ $('hedit').addEventListener('click',openProfile);
 $('pe-save').addEventListener('click',saveProfile);
 $('pe-cancel').addEventListener('click',()=>{$('profedit').hidden=true;});
 $('tutbtn').addEventListener('click',startTutorial);
-$('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; showLevels();});
+$('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; const cb=celebrateCb; celebrateCb=null; if(cb)cb(); else showLevels();});
 
 let tut={step:0,allowed:[],expect:[],pos:0};
 function tutAllow(arr){
@@ -896,16 +898,42 @@ function tutPress(k){
   }
  }
 }
-function showCelebrate(c,i){
+let celebrateCb=null;
+function celIcons(c,i){
  const ico=$('celico'); ico.innerHTML='';
  CWADD[c][i].forEach(k=>{
   const d=document.createElement('div');
   d.style.cssText='width:64px;height:64px;border-radius:50%;background:'+C[k].h+';display:flex;align-items:center;justify-content:center;color:'+ink(k);
   d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:30px"></i>';
   ico.appendChild(d);});
- $('celname').textContent=(i+1)+'. '+S9.courses[c].levels[i].name;
+}
+function showCelebrate(c,i){
+ celebrateCb=null;
+ celIcons(c,i);
+ $('celtitle').textContent=S9.unlockTitle;
+ $('celname').textContent=(i+1)+'. '+plainNames(c,i);
+ $('celtap').textContent=S9.unlockTap;
  $('celebrate').hidden=false;
  chime(); setTimeout(chime,400);
+}
+function finishLevel(){
+ clearTimers(); state='over';
+ const completed=seq.length, st=usedRehear?2:3;
+ const before=starsOf(game.c,game.w,game.m);
+ const wBefore=CWADD[game.c].map((_,i)=>worldUnlocked(game.c,i));
+ saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
+ loadBest();
+ const newW=CWADD[game.c].findIndex((_,i)=>worldUnlocked(game.c,i)&&!wBefore[i]);
+ showLevelWin(game.c,game.w,Math.max(st,before),newW);
+}
+function showLevelWin(c,w,st,newW){
+ celIcons(c,w);
+ $('celtitle').textContent=S9.winTitle;
+ $('celname').innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b> &nbsp; <span style="color:var(--gold);letter-spacing:2px;font-size:21px">'+starsStr(st)+'</span>'+(newW>=0?'<br><span style="color:var(--gold);font-size:14px">'+S9.winUnlock+'</span>':'');
+ $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevelDetail(c,w);
+ $('celebrate').hidden=false;
+ chime(); setTimeout(chime,260); setTimeout(chime,520);
 }
 
 function bestKey(){return 'it_best_'+scale;}
@@ -1133,7 +1161,7 @@ function addNote(){
 }
 function showPreroll(cb){
  const c=game.c, w=game.w, lv=S9.courses[c].levels[w], nn=CWADD[c][w];
- $('pr-level').textContent=S9.level+' '+(w+1)+' · '+lv.name;
+ $('pr-level').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w);
  let chips=''; nn.forEach(k=>{chips+='<span style="width:56px;height:56px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px"><i class="ti ti-'+C[k].ic+'" style="font-size:23px"></i><span style="font-size:11px;font-weight:600">'+IV[k]+'</span></span>';});
  $('pr-chips').innerHTML=chips;
  $('pr-iv').textContent=nn.length===1?(IV[nn[0]]+' · '+DEG[nn[0]]):nn.map(k=>DEG[k]).join(' + ');
@@ -1344,12 +1372,9 @@ function hit(k,fromMic){
  if(correct){
   step++;
   if(step===seq.length){
+   if(game.kind==='level'&&seq.length>=STAR2){ finishLevel(); return; }
    let cm=S9.correct;
-   if(game.kind==='level'){
-    const done=seq.length;
-    if(done===STAR1){cm+=' · ★ '+S9.starGot; chime();}
-    else if(done===STAR2){cm+=' · '+(usedRehear?'★★':'★★★')+' '+S9.starGot; chime();}
-   }
+   if(game.kind==='level'&&seq.length===STAR1){cm+=' · ★ '+S9.starGot; chime();}
    setStatus(cm,'ok');
    if(game.kind==='free'){
     const b=+(localStorage.getItem(bestKey())||0);
