@@ -175,7 +175,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <div id="reveal"></div>
     <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
     <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
-    <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><p id="lvltheorytext" style="font-size:13px; line-height:1.6; color:var(--text); margin:8px 0 0;"></p></details>
+    <details class="legbox" id="lvltheorybox" hidden><summary id="lvltheorysum"></summary><p id="lvltheorytext" style="font-size:13px; line-height:1.6; color:var(--text); margin:8px 0 10px;"></p><button class="btn" id="lvltheoryplay" style="padding:8px 14px;"><i class="ti ti-volume"></i><span id="lvltheoryplaytxt"></span></button></details>
     <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
   </div>
 
@@ -183,6 +183,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
     <p id="thintro" style="font-size:13px; color:var(--muted); margin:0 0 12px;"></p>
     <div id="theory"></div>
   </div>
+</div>
+<div id="welcome" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:60; text-align:left; padding:32px 24px; max-width:480px; margin:0 auto; overflow:auto;">
+  <div id="wel-emblem" aria-hidden="true" style="align-self:center; margin-bottom:22px;"></div>
+  <p id="wel-title" style="font-size:24px; font-weight:700; margin:0 0 18px;"></p>
+  <div id="wel-body" style="font-size:15px; line-height:1.65; color:var(--text); margin:0 0 28px;"></div>
+  <button class="btn primary" id="wel-start" style="justify-content:center; padding:14px; font-size:16px;"></button>
 </div>
 <div id="freeintro" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:46; text-align:left; padding:32px 22px; max-width:480px; margin:0 auto;">
   <p id="fi-title" style="font-size:22px; font-weight:700; margin:0 0 16px;"></p>
@@ -192,7 +198,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 <div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:28px; cursor:pointer;">
   <p id="pr-level" style="font-size:13px; color:var(--muted); margin:0 0 18px;"></p>
   <div id="pr-chips" style="display:flex; gap:12px; margin:0 0 16px;"></div>
-  <p id="pr-iv" style="font-size:21px; font-weight:700; margin:0 0 10px;"></p>
+  <p id="pr-iv" style="font-size:21px; font-weight:700; margin:0 0 12px;"></p>
+  <button class="btn" id="pr-hear" style="margin:0 0 18px; padding:9px 16px;"><i class="ti ti-volume"></i><span id="pr-heartxt"></span></button>
   <p id="pr-essence" style="font-size:15px; line-height:1.55; color:var(--text); max-width:320px; margin:0 0 24px;"></p>
   <div style="width:170px; height:3px; background:var(--line); border-radius:2px; overflow:hidden;"><div id="pr-bar" style="height:100%; width:0; background:var(--text);"></div></div>
   <p id="pr-skip" style="font-size:12px; color:var(--muted); margin:14px 0 0;"></p>
@@ -235,6 +242,9 @@ it:{
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
  optTheory:"Teoria del livello",
+ welTitle:"Che cos'è Huermony",
+ welBody:"<p>La musica non vive nella singola nota, ma nel <b>rapporto tra una nota e la successiva</b>. È lì che nasce ogni emozione.</p><p>Imparare solo i nomi delle note ti dà un sistema limitato, che può bloccarti per anni. Qui impari le <b>relazioni</b> tra i suoni e la <b>sensazione</b> che ognuna ti dà.</p><p>Si impara <b>giocando e ascoltando</b>: alleni l'orecchio a riconoscere ogni distanza tra le note tramite colore, simbolo e suono. Perfetto se parti da zero.</p>",
+ welStart:"Iniziamo", prHear:"Riascolta",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
@@ -333,6 +343,9 @@ en:{
  tasteBtn:"Taste", tasting:"tasting the scale…",
  prTap:"tap to start", prNew:"this level's new note",
  optTheory:"Level theory",
+ welTitle:"What is Huermony",
+ welBody:"<p>Music doesn't live in the single note, but in the <b>relationship between one note and the next</b>. That's where every emotion is born.</p><p>Learning only the note names gives you a limited system that can hold you back for years. Here you learn the <b>relationships</b> between sounds and the <b>feeling</b> each one gives you.</p><p>You learn by <b>playing and listening</b>: you train your ear to recognize every distance between notes through color, symbol and sound. Perfect if you start from zero.</p>",
+ welStart:"Let's start", prHear:"Replay",
  fiTitle:"Free play", fiClose:"Start",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
@@ -474,6 +487,11 @@ function applyStatic(){
  $('coursesub').textContent=S9.coursesub;
  $('starsline').innerHTML=S9.stars;
  $('unlocktxt').textContent=S9.unlock;
+ $('wel-title').textContent=S9.welTitle;
+ $('wel-body').innerHTML=S9.welBody;
+ $('wel-start').textContent=S9.welStart;
+ $('pr-heartxt').textContent=S9.prHear;
+ $('lvltheoryplaytxt').textContent=S9.prHear;
  $('rhythmtxt').textContent=S9.rhythm;
  $('mictxt').textContent=S9.mic;
  $('roundlbl').textContent=S9.round;
@@ -550,6 +568,7 @@ function applyStatic(){
 
 function setView(name){
  $('preroll').hidden=true; $('freeintro').hidden=true;
+ const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free');
  $('tabs').hidden=name==='home';
@@ -595,6 +614,12 @@ function openFreeIntro(){
  $('fi-body').innerHTML=S9.fiBody;
  $('fi-close').textContent=S9.fiClose;
  $('freeintro').hidden=false;
+}
+function showWelcome(){
+ const em=$('wel-emblem'); em.style.cssText='position:relative;width:120px;height:120px;'; em.innerHTML='';
+ for(let k=0;k<12;k++){const a=(-90+k*30)*Math.PI/180, x=60+50*Math.cos(a), y=60+50*Math.sin(a);
+  const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-5)+'px;top:'+(y-5)+'px;width:10px;height:10px;border-radius:50%;background:'+C[k].h; em.appendChild(d);}
+ $('welcome').hidden=false;
 }
 function showTheory(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
@@ -882,9 +907,12 @@ function showPreroll(cb){
  $('pr-iv').textContent=nn.length===1?(IV[nn[0]]+' · '+DEG[nn[0]]):nn.map(k=>DEG[k]).join(' + ');
  $('pr-essence').textContent=lv.th.split('. ')[0]+'.';
  $('pr-skip').textContent=S9.prTap;
+ const focus=nn[nn.length-1];
+ const hear=$('pr-hear'); hear.onclick=(e)=>{e.stopPropagation(); playInterval(focus);};
  const pr=$('preroll'); pr.hidden=false;
  const bar=$('pr-bar'); bar.style.transition='none'; bar.style.width='0';
  requestAnimationFrame(()=>{bar.style.transition='width 5s linear'; bar.style.width='100%';});
+ timers.push(setTimeout(()=>playInterval(focus),500));
  let done=false;
  const go=()=>{if(done)return; done=true; pr.hidden=true; pr.onclick=null; cb();};
  timers.push(setTimeout(go,5000));
@@ -1120,6 +1148,8 @@ function hit(k,fromMic){
 $('tastebtn').addEventListener('click',function(){this.blur(); tasteMelody();});
 $('freeinfo').addEventListener('click',function(){this.blur(); openFreeIntro();});
 $('fi-close').addEventListener('click',()=>{localStorage.setItem('hm_free_seen','1'); $('freeintro').hidden=true;});
+$('wel-start').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();});
+$('lvltheoryplay').addEventListener('click',function(e){e.preventDefault(); if(game.kind==='level'){const nn=CWADD[game.c][game.w]; playInterval(nn[nn.length-1]);}});
 $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
@@ -1144,6 +1174,7 @@ document.addEventListener('keydown',e=>{
 });
 applyStatic();
 setView('home');
+if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
