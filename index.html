@@ -1522,26 +1522,26 @@ function autoCorrelate(buf,sr){
  let SIZE=buf.length, rms=0;
  for(let i=0;i<SIZE;i++){const v=buf[i]; rms+=v*v;}
  rms=Math.sqrt(rms/SIZE);
- if(rms<0.015) return -1;
+ if(rms<0.01) return -1;
+ // ritaglia i bordi silenziosi
  let r1=0,r2=SIZE-1;
  for(let i=0;i<SIZE/2;i++) if(Math.abs(buf[i])<0.2){r1=i;break;}
  for(let i=1;i<SIZE/2;i++) if(Math.abs(buf[SIZE-i])<0.2){r2=SIZE-i;break;}
  buf=buf.slice(r1,r2); SIZE=buf.length;
- if(SIZE<128) return -1;
- const c=new Float32Array(SIZE);
- for(let i=0;i<SIZE;i++) for(let j=0;j<SIZE-i;j++) c[i]+=buf[j]*buf[j+i];
- let d=0; while(d<SIZE-1&&c[d]>c[d+1]) d++;
+ if(SIZE<256) return -1;
+ // calcola l'autocorrelazione SOLO per i lag musicali utili (60..1600 Hz)
+ const minLag=Math.max(2,Math.floor(sr/1600)), maxLag=Math.min(SIZE-1,Math.ceil(sr/60));
+ const c=new Float32Array(maxLag+1);
+ for(let i=0;i<=maxLag;i++){let s=0; for(let j=0;j<SIZE-i;j++) s+=buf[j]*buf[j+i]; c[i]=s;}
+ // salta la discesa iniziale, poi prendi il primo picco forte (la fondamentale)
+ let d=minLag; while(d<maxLag&&c[d]>c[d+1]) d++;
  let maxval=-1,maxpos=-1;
- for(let i=d;i<SIZE;i++){if(c[i]>maxval){maxval=c[i];maxpos=i;}}
+ for(let i=d;i<=maxLag;i++){if(c[i]>maxval){maxval=c[i];maxpos=i;}}
  if(maxpos<1) return -1;
- if(c[0]>0&&maxval/c[0]<0.5) return -1;
- let best=maxpos;
- for(const m of [2,3]){
-  const i2=Math.round(maxpos*m);
-  if(i2<SIZE-1&&c[i2]>=0.8*maxval) best=i2;
- }
- let T0=best;
- const x1=c[T0-1],x2=c[T0],x3=(T0+1<SIZE)?c[T0+1]:x2;
+ if(c[0]>0&&maxval/c[0]<0.4) return -1; // poca periodicita' = non e' una nota
+ // interpolazione parabolica per affinare il periodo
+ let T0=maxpos;
+ const x1=c[T0-1],x2=c[T0],x3=(T0+1<=maxLag)?c[T0+1]:x2;
  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
  if(a) T0=T0-b/(2*a);
  const f=sr/T0;
@@ -1567,7 +1567,7 @@ function micLoop(){
  const pcAbs=((Math.round(midi))%12+12)%12;
  const k=(pcAbs-(root%12)+12)%12;
  micGlow(k);
- $('micline').innerHTML='♪ '+NOTE[pcAbs]+' · <b>'+IV[k]+'</b> ('+DEG[k]+')';
+ $('micline').innerHTML='♪ '+NOTE[pcAbs]+' · <b>'+IV[k]+'</b> ('+DEG[k]+') · '+Math.round(f)+' Hz';
  if(state!=='input') return;
  if(det.pc===k) det.count++; else {det.pc=k; det.count=1;}
  if(det.locked&&k!==det.lockedPc) det.locked=false;
@@ -1579,9 +1579,9 @@ function micLoop(){
 async function startMic(){
  try{
   ensureCtx();
-  micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+  micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
   const src=ctx.createMediaStreamSource(micStream);
-  micAn=ctx.createAnalyser(); micAn.fftSize=4096;
+  micAn=ctx.createAnalyser(); micAn.fftSize=2048;
   micBuf=new Float32Array(micAn.fftSize);
   src.connect(micAn);
   micTimer=setInterval(micLoop,50);
