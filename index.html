@@ -364,6 +364,8 @@ it:{
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
  tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo",
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
+ famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
+ famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
@@ -495,6 +497,8 @@ en:{
  playCta:"Play", guideCta:"First time? See how it works",
  tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile",
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
+ famNames:{p:"Pillar",c:"Color",t:"Tension"},
+ famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
@@ -650,6 +654,10 @@ const C=[
  {h:'hsl(285,55%,49%)',ic:'flower'},
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
 const ink=k=>C[k].ink||'#fff';
+// famiglie acustiche (ruolo invariante): p=pilastro (stabile), c=colore (chiaro/scuro), t=tensione (spinge)
+const FAM={0:'p',5:'p',7:'p',3:'c',4:'c',8:'c',9:'c',1:'t',2:'t',6:'t',10:'t',11:'t'};
+// il CONTORNO codifica la famiglia: anello pieno=pilastro, niente=colore, alone=tensione
+function ring(k){const f=FAM[k]; if(f==='p')return ';box-shadow:0 0 0 2.5px rgba(255,255,255,.72)'; if(f==='t')return ';box-shadow:0 0 0 1px rgba(255,255,255,.3),0 0 8px 1px rgba(255,255,255,.4)'; return '';}
 // CBASE = note sempre presenti nel corso (la base da cui si parte). CWADD = note aggiunte livello per livello.
 const CBASE={pent:[], maj:[0,2,4,7,9]};
 const CWADD={pent:[[0,7],[4],[2],[9]], maj:[[11],[5]]};
@@ -724,13 +732,14 @@ function applyStatic(){
  sp.value=String(speed);
  const lg=$('legend'); lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
-  d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
+  d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+' · '+S9.famNames[FAM[k]]+'</span></small>';
   lg.appendChild(d);});
  const thBox=$('theory'); thBox.innerHTML='';
+ const fi=document.createElement('p'); fi.style.cssText='font-size:14px;line-height:1.55;color:var(--muted);background:var(--surface);border-radius:12px;padding:13px 15px;margin:0 0 16px'; fi.innerHTML=S9.famIntro; thBox.appendChild(fi);
  C.forEach((c,k)=>{const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
-   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
-   '<span style="font-size:17px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
+   '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+ring(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
+   '<span style="font-size:17px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+DEG[k]+' · '+S9.famNames[FAM[k]]+'</span></span>'+
    '<button class="pbtn" data-iv="'+k+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 6px 44px;font-size:13px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
@@ -929,8 +938,7 @@ function renderFsPreview(){
  const sc=$('fs-scale').value, rt=+$('fs-tonic').value, box=$('fs-preview');
  box.innerHTML='';
  SCALES[sc].forEach(k=>{
-  const d=document.createElement('div'); d.className='fsnote';
-  d.style.background=C[k].h; d.style.color=ink(k);
+  const d=document.createElement('div'); d.className='fsnote'; d.style.cssText='background:'+C[k].h+';color:'+ink(k)+ring(k);
   d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:18px"></i><span>'+NOTE[(rt+k)%12]+'</span>';
   d.addEventListener('click',()=>{ensureCtx(); tone(60+rt+k,0.5);});
   box.appendChild(d);
@@ -1159,7 +1167,7 @@ function renderPath(){
    const lvOpen=worldUnlocked(c,i);
    const open=cOpen&&lvOpen;
    const card=document.createElement(open?'button':'div'); card.className='world levelcard'+(open?'':' locked')+(cOpen?'':' courselock');
-   let ints=''; CWADD[c][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
+   let ints=''; CWADD[c][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
    let h='<div class="whead"><span class="wname">'+(i+1)+'. '+plainNames(c,i)+'</span><span class="wints">'+ints+'</span></div>';
    h+='<p class="wsub">'+CWADD[c][i].map(k=>'<b>'+IV[k]+'</b> '+DEG[k]).join(' · ')+'</p>';
    if(!open){
@@ -1264,7 +1272,7 @@ function render(){
   if(sc.includes(k)){
    const free=game.kind==='free';
    const b=document.createElement('button'); b.className='key'; b.id='b'+k;
-   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+';color:'+ink(k)+(k===0?';border:2.5px solid #fff':'');
+   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+';color:'+ink(k)+ring(k);
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]);
    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*(free?0.28:0.32))+'px"></i><span style="font-size:'+(KEY*(free?0.2:0.24))+'px;line-height:1.15">'+IV[k]+'</span>'+(free?'<span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||state==='input'){press(k);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}});
@@ -1374,7 +1382,7 @@ function miniWheel(box,notes,size){
   const a=(-90+k*30)*Math.PI/180, x=cx+r*Math.cos(a), y=cx+r*Math.sin(a);
   if(notes.includes(k)){
    const b=document.createElement('button'); b.className='mwk'; b.dataset.iv=k; b.setAttribute('aria-label',NOTE[k]);
-   b.style.cssText='left:'+(x-key/2)+'px;top:'+(y-key/2)+'px;width:'+key+'px;height:'+key+'px;background:'+C[k].h+';color:'+ink(k)+(k===0?';box-shadow:0 0 0 2.5px #fff':'');
+   b.style.cssText='left:'+(x-key/2)+'px;top:'+(y-key/2)+'px;width:'+key+'px;height:'+key+'px;background:'+C[k].h+';color:'+ink(k)+ring(k);
    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(key*0.42)+'px"></i>';
    box.appendChild(b);
   } else {
