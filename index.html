@@ -752,6 +752,7 @@ function applyStatic(){
 }
 
 function setView(name){
+ if(ctx) stopAllHeld();
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1246,7 +1247,10 @@ function render(){
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+';color:'+ink(k)+(k===0?';border:2.5px solid #fff':'');
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]);
    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*(free?0.28:0.32))+'px"></i><span style="font-size:'+(KEY*(free?0.2:0.24))+'px;line-height:1.15">'+IV[k]+'</span>'+(free?'<span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
-   b.addEventListener('click',()=>press(k));
+   b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||state==='input'){press(k);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}});
+   b.addEventListener('pointerup',()=>stopHold(k));
+   b.addEventListener('pointerleave',()=>stopHold(k));
+   b.addEventListener('pointercancel',()=>stopHold(k));
    w.appendChild(b);
   } else {
    const d=document.createElement('div'); d.className='dot';
@@ -1301,6 +1305,38 @@ function tone(midi,durS){
   o.connect(g); o.start(t0); o.stop(t0+durS);
  }
 }
+// note tenute: durano finche' il tasto resta premuto (suono "strumento")
+let held={};
+function startHold(k){
+ stopHold(k);
+ const f=440*Math.pow(2,(60+root+k-69)/12), t0=ctx.currentTime;
+ const g=ctx.createGain(); g.connect(ctx.destination);
+ let oscs=[], lfo=null, peak=0.25;
+ if(timbre==='corda'){
+  const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=Math.min(6000,f*6);
+  o.connect(lp); lp.connect(g); oscs=[o]; peak=0.30;
+ } else if(timbre==='pad'){
+  [-7,0,7].forEach(c=>{const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f; o.detune.value=c; o.connect(g); oscs.push(o);}); peak=0.10;
+ } else if(timbre==='voce'){
+  const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; o.connect(g); oscs.push(o);
+  lfo=ctx.createOscillator(); lfo.frequency.value=5.5; const lg=ctx.createGain(); lg.gain.value=f*0.012; lfo.connect(lg); lg.connect(o.frequency);
+  const o2=ctx.createOscillator(); o2.type='triangle'; o2.frequency.value=f; const g2=ctx.createGain(); g2.gain.value=0.12; o2.connect(g2); g2.connect(g); oscs.push(o2); peak=0.26;
+ } else {
+  const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f; o.connect(g); oscs=[o]; peak=0.25;
+ }
+ g.gain.setValueAtTime(0.0001,t0); g.gain.linearRampToValueAtTime(peak,t0+0.02);
+ oscs.forEach(o=>o.start(t0)); if(lfo)lfo.start(t0);
+ held[k]={oscs,gain:g,lfo,peak};
+}
+function stopHold(k){
+ const h=held[k]; if(!h) return; delete held[k];
+ const t=ctx.currentTime;
+ try{h.gain.gain.cancelScheduledValues(t); h.gain.gain.setValueAtTime(h.peak,t); h.gain.gain.linearRampToValueAtTime(0.0001,t+0.12);}catch(e){}
+ h.oscs.forEach(o=>{try{o.stop(t+0.15)}catch(e){}});
+ if(h.lfo){try{h.lfo.stop(t+0.15)}catch(e){}}
+}
+function stopAllHeld(){Object.keys(held).forEach(k=>stopHold(+k));}
 function buzz(){
  const o=ctx.createOscillator(), g=ctx.createGain(), t0=ctx.currentTime+0.02;
  o.type='sawtooth'; o.frequency.value=98;
@@ -1379,7 +1415,7 @@ function showLoading(cb){
  pr.onclick=go;
 }
 function beginGame(){
- ensureCtx(); clearTimers(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
+ ensureCtx(); clearTimers(); stopAllHeld(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
  bumpStreak();
  clearCenter(); $('round').textContent=seq.length; playSeq();
