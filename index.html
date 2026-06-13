@@ -160,8 +160,8 @@ button.levelcard:active{transform:scale(0.99);}
 .scalerow.locked{opacity:.4; filter:saturate(.4);}
 .scalerow.locked .snote{cursor:default;}
 #ld-head{display:flex; align-items:center; gap:10px; margin:0 0 22px; background:var(--surface2); border-radius:12px; padding:11px 13px; border-left:4px solid var(--lc,var(--gold));}
-.ldsec{background:var(--surface); border-radius:14px; padding:16px; margin:0 0 14px;}
-#ld-difhead{font-size:28px; font-weight:800; letter-spacing:-.01em; color:var(--lc,var(--gold)); margin:6px 0 18px; text-align:center;}
+.ldsec{background:var(--surface); border-radius:14px; padding:18px 16px; margin:30px 0 14px;}
+#ld-difhead{font-size:28px; font-weight:800; letter-spacing:-.01em; color:var(--gold); margin:6px 0 18px; text-align:center;}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:block; background:var(--surface2); border:none; border-left:4px solid var(--lc,var(--gold)); border-radius:12px; padding:15px 16px; margin-bottom:11px; width:100%; color:var(--text); cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; border-left-color:var(--line); opacity:.55;}
@@ -246,7 +246,7 @@ button.levelcard:active{transform:scale(0.99);}
     <p id="ld-difhead"></p>
     <div id="ld-modes"></div>
     <div class="ldsec">
-      <p id="ld-learnhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 14px;"></p>
+      <p id="ld-learnhead" style="font-size:24px; font-weight:800; color:var(--text); margin:0 0 16px; text-align:center;"></p>
       <div id="ld-wheel" class="mwbox"></div>
       <div id="ld-listen" class="mwctrl"></div>
       <div id="ld-theory"></div>
@@ -1576,11 +1576,13 @@ function autoCorrelate(buf,sr){
  for(let i=d;i<=maxLag;i++){if(c[i]>maxval){maxval=c[i];maxpos=i;}}
  if(maxpos<1) return -1;
  if(c[0]>0&&maxval/c[0]<0.4) return -1; // poca periodicita' = non e' una nota
- // interpolazione parabolica per affinare il periodo
- let T0=maxpos;
- const x1=c[T0-1],x2=c[T0],x3=(T0+1<=maxLag)?c[T0+1]:x2;
- const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
- if(a) T0=T0-b/(2*a);
+ // affinamento del picco a lag FRAZIONARI (autocorrelazione interpolata): risoluzione molto piu' fine = note acute piu' precise
+ const corrAt=(lag)=>{const i0=Math.floor(lag),fr=lag-i0,lim=SIZE-i0-1; let s=0; for(let j=0;j<lim;j++)s+=buf[j]*(buf[j+i0]*(1-fr)+buf[j+i0+1]*fr); return s;};
+ let T0=maxpos, bv=maxval;
+ for(let lag=maxpos-1; lag<=maxpos+1; lag+=0.2){ if(lag<minLag||lag>=SIZE-1) continue; const v=corrAt(lag); if(v>bv){bv=v; T0=lag;} }
+ const dx=0.2, y1=corrAt(T0-dx), y2=corrAt(T0), y3=corrAt(T0+dx);
+ const a=(y1+y3-2*y2)/2, b=(y3-y1)/2;
+ if(a) T0=T0-(b/(2*a))*dx;
  const f=sr/T0;
  return (f>60&&f<1600)?f:-1;
 }
@@ -1595,16 +1597,20 @@ function micLoop(){
  micAn.getFloatTimeDomainData(micBuf);
  const f=autoCorrelate(micBuf,ctx.sampleRate);
  if(f<0){
-  det.count=0; det.silence++;
+  det.count=0; det.silence++; det.fbuf=[];
   if(det.silence>=2){det.locked=false; det.pc=-1; micGlow(-1); $('micline').textContent=S9.micListen;}
   return;
  }
  det.silence=0;
- const midi=69+12*Math.log2(f/440);
+ // media (mediana) su 3 frame: toglie il tremolio della stima, soprattutto sulle acute
+ if(!det.fbuf) det.fbuf=[];
+ det.fbuf.push(f); if(det.fbuf.length>3) det.fbuf.shift();
+ const fs=det.fbuf.slice().sort((a,b)=>a-b); const fmed=fs[(fs.length-1)>>1];
+ const midi=69+12*Math.log2(fmed/440);
  const pcAbs=((Math.round(midi))%12+12)%12;
  const k=(pcAbs-(root%12)+12)%12;
  micGlow(k);
- $('micline').innerHTML='♪ '+NOTE[pcAbs]+' · <b>'+IV[k]+'</b> ('+DEG[k]+') · '+Math.round(f)+' Hz';
+ $('micline').innerHTML='♪ '+NOTE[pcAbs]+' · <b>'+IV[k]+'</b> ('+DEG[k]+') · '+Math.round(fmed)+' Hz';
  if(state!=='input') return;
  if(det.pc===k) det.count++; else {det.pc=k; det.count=1;}
  if(det.locked&&k!==det.lockedPc) det.locked=false;
