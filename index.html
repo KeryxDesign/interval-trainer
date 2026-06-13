@@ -654,10 +654,8 @@ const C=[
  {h:'hsl(285,55%,49%)',ic:'flower'},
  {h:'hsl(320,70%,48%)',ic:'bolt'}];
 const ink=k=>C[k].ink||'#fff';
-// famiglie acustiche (ruolo invariante): p=pilastro (stabile), c=colore (chiaro/scuro), t=tensione (spinge)
-const FAM={0:'p',5:'p',7:'p',3:'c',4:'c',8:'c',9:'c',1:'t',2:'t',6:'t',10:'t',11:'t'};
-// il CONTORNO codifica la famiglia: anello pieno=pilastro, niente=colore, alone=tensione
-function ring(k){const f=FAM[k]; if(f==='p')return ';box-shadow:0 0 0 2.5px rgba(255,255,255,.72)'; if(f==='t')return ';box-shadow:0 0 0 1px rgba(255,255,255,.3),0 0 8px 1px rgba(255,255,255,.4)'; return '';}
+// contorni famiglie rimossi per ora (da ristudiare): solo la tonica resta cerchiata come "casa"
+function ring(k){return k===0?';box-shadow:0 0 0 2.5px rgba(255,255,255,.72)':'';}
 // CBASE = note sempre presenti nel corso (la base da cui si parte). CWADD = note aggiunte livello per livello.
 const CBASE={pent:[], maj:[0,2,4,7,9]};
 const CWADD={pent:[[0,7],[4],[2],[9]], maj:[[11],[5]]};
@@ -732,14 +730,13 @@ function applyStatic(){
  sp.value=String(speed);
  const lg=$('legend'); lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
-  d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+' · '+S9.famNames[FAM[k]]+'</span></small>';
+  d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
   lg.appendChild(d);});
  const thBox=$('theory'); thBox.innerHTML='';
- const fi=document.createElement('p'); fi.style.cssText='font-size:14px;line-height:1.55;color:var(--muted);background:var(--surface);border-radius:12px;padding:13px 15px;margin:0 0 16px'; fi.innerHTML=S9.famIntro; thBox.appendChild(fi);
  C.forEach((c,k)=>{const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
    '<span class="sw" style="width:34px;height:34px;border-radius:50%;background:'+c.h+';display:flex;align-items:center;justify-content:center;color:'+ink(k)+ring(k)+';flex-shrink:0"><i class="ti ti-'+c.ic+'" style="font-size:17px"></i></span>'+
-   '<span style="font-size:17px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+DEG[k]+' · '+S9.famNames[FAM[k]]+'</span></span>'+
+   '<span style="font-size:17px;font-weight:600">'+IV[k]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+DEG[k]+' · '+S9.NM[k]+'</span></span>'+
    '<button class="pbtn" data-iv="'+k+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 6px 44px;font-size:13px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
@@ -1161,7 +1158,7 @@ function renderPath(){
   miniWheel(sec.querySelector('.mwbox'), allNotes, 230);
   if(cOpen){
    const sp=sec.querySelector('.srplay');
-   sp.addEventListener('click',()=>playTasteNotes(allNotes));
+   sp.addEventListener('click',()=>playTasteNotes(allNotes, sec.querySelector('.mwbox')));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1220,8 +1217,8 @@ function showLevelDetail(c,w){
  const lnotes=cumSet(c,w);
  miniWheel($('ld-wheel'), lnotes, 230);
  $('ld-listen').innerHTML='<button class="btn" id="ld-taste"><i class="ti ti-music"></i><span>'+S9.fsTaste+'</span></button><button class="btn" id="ld-seq"><i class="ti ti-volume"></i><span>'+S9.ldSeq+'</span></button>';
- $('ld-taste').addEventListener('click',()=>playTasteNotes(lnotes));
- $('ld-seq').addEventListener('click',()=>playNotesSeq(lnotes));
+ $('ld-taste').addEventListener('click',()=>playTasteNotes(lnotes, $('ld-wheel')));
+ $('ld-seq').addEventListener('click',()=>playNotesSeq(lnotes, $('ld-wheel')));
  $('ld-theory').innerHTML=buildTheoryBody(c,w);
  $('ld-theory').querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); playInterval(+b.dataset.iv);}));
  const md=$('ld-modes'); md.innerHTML='';
@@ -1392,12 +1389,13 @@ function miniWheel(box,notes,size){
  }
  box.querySelectorAll('.mwk').forEach(b=>b.addEventListener('click',()=>{ensureCtx(); tone(60+ +b.dataset.iv,0.6);}));
 }
-function playNotesSeq(arr){ensureCtx(); const ns=arr.slice().sort((a,b)=>a-b).concat([12]); ns.forEach((k,i)=>timers.push(setTimeout(()=>tone(60+k,0.34),i*300)));}
-function playTasteNotes(arr){
+function flashMwk(box,k,ms){if(!box)return; const b=box.querySelector('.mwk[data-iv="'+(((k%12)+12)%12)+'"]'); if(b){b.style.transition='transform .09s'; b.style.transform='scale(1.34)'; setTimeout(()=>{if(b)b.style.transform='scale(1)';},ms||240);}}
+function playNotesSeq(arr,box){ensureCtx(); const ns=arr.slice().sort((a,b)=>a-b).concat([12]); ns.forEach((k,i)=>timers.push(setTimeout(()=>{tone(60+k,0.34); flashMwk(box,k,260);},i*300)));}
+function playTasteNotes(arr,box){
  ensureCtx(); const ext=arr.slice().sort((a,b)=>a-b).concat([12]); let idx=0; const mel=[0];
  for(let i=0;i<5;i++){idx=Math.max(0,Math.min(ext.length-1,idx+(Math.random()<0.5?-1:1)*(Math.random()<0.75?1:2))); mel.push(ext[idx]);}
  mel.push(0);
- let t=120, base=360; mel.forEach((k,i)=>{const df=i===mel.length-1?1.7:[0.7,1,1,1.4][Math.floor(Math.random()*4)]; timers.push(setTimeout(()=>tone(60+k,Math.max(0.25,base*df*0.85/1000)),t)); t+=base*df;});
+ let t=120, base=360; mel.forEach((k,i)=>{const df=i===mel.length-1?1.7:[0.7,1,1,1.4][Math.floor(Math.random()*4)]; const ms=base*df; timers.push(setTimeout(()=>{tone(60+k,Math.max(0.25,ms*0.85/1000)); flashMwk(box,k,ms-40);},t)); t+=ms;});
 }
 function flash(k,ms,skipCenter){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
