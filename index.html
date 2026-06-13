@@ -47,13 +47,14 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #streak i{color:#f59e0b; font-size:18px;}
 .profrow{display:flex; align-items:center; gap:14px; background:var(--surface); border-radius:16px; padding:14px; margin:0 0 18px; cursor:pointer;}
 .profrow .pedit{margin-left:auto; color:var(--muted); font-size:18px;}
-#guide-intro h2{font-size:26px; line-height:1.25; font-weight:800; letter-spacing:-.02em; margin:0 0 14px;}
-#guide-intro .gbody{margin:0 0 14px;}
-#guide-intro .gbody p{font-size:16px; line-height:1.62; color:var(--muted); margin:0 0 14px;}
-#guide-intro .gbody p:first-child{font-size:18px; line-height:1.5; color:var(--text); margin:0 0 18px;}
-#guide-intro .gbody p:last-child{margin-bottom:0;}
-#guide-intro .gbody b{color:var(--text); font-weight:700;}
-#tutbtn{width:100%; min-height:52px; justify-content:center; margin:0 0 22px; background:var(--gold); color:#14151a; font-size:16px; font-weight:700; border:none; border-radius:14px;}
+#guide-intro h2{font-size:26px; line-height:1.25; font-weight:800; letter-spacing:-.02em; margin:0 0 16px;}
+.heroq{font-size:21px; line-height:1.4; font-weight:700; color:var(--text); margin:0 0 22px; padding:18px 18px 18px 20px; background:var(--surface2); border-radius:16px; border-left:4px solid var(--gold);}
+.heropts{display:flex; flex-direction:column; gap:14px; margin:0 0 8px;}
+.hp{display:flex; align-items:center; gap:13px;}
+.hp i{font-size:20px; color:var(--gold); width:40px; height:40px; flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; background:rgba(234,179,8,.12); border-radius:12px;}
+.hp span{font-size:16px; line-height:1.4; color:var(--text);}
+.hp b{font-weight:700;}
+#tutbtn{width:100%; min-height:52px; justify-content:center; margin:22px 0; background:var(--gold); color:#14151a; font-size:16px; font-weight:700; border:none; border-radius:14px;}
 #pe-avatars{display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:0 0 18px;}
 #pe-avatars button{border:2px solid transparent; background:none; border-radius:50%; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
 #pe-avatars button.sel{border-color:var(--gold);}
@@ -388,7 +389,9 @@ it:{
  ],
  optTheory:"Teoria del livello",
  welTitle:"Che cos'è Huermony",
- welBody:"<p>Tutto parte da una domanda: <b>perché certe note insieme mi fanno sentire felice, e altre triste?</b></p><p>Quasi tutti affrontano la musica partendo dalle note e dalle forme fisse, ma non imparano mai a <b>sentire</b> quell'effetto: perché due suoni vicini emozionano in un modo e due lontani in un altro.</p><p>Huermony allena proprio questo, <b>giocando</b>. Ti accorgi di costruire melodie tue, che puoi riusare nella tua musica. E senza forzarlo smetti di pensare \"Do, Sol\" e inizi a pensare alla nota da cui parti e a quella che chiude: il nome coincide con la <b>sensazione</b> che cercavi. È lì che inizi a parlare musica.</p><p>Ogni intervallo ha sempre la stessa <b>forma e lo stesso colore</b>: l'associazione visiva lo rende molto più veloce da memorizzare. È questo il cuore di Huermony.</p><p>Si gioca come il vecchio <b>Simon Says</b>, solo con più colori e più note. E puoi giocarci con il tuo <b>strumento in mano</b>: riconosce anche la voce, perfetto per imparare dove stanno le note sullo strumento.</p>",
+ guideQ:"Perché certe note insieme mi fanno sentire felice, e altre triste?",
+ guidePts:[{ic:'palette',t:"Ogni suono ha sempre il suo <b>colore</b>"},{ic:'ear',t:"Impari a <b>sentire</b> la musica, non a memorizzarla"},{ic:'player-play',t:"Si impara <b>giocando</b>, come a Simon"}],
+ welBody:"",
  welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  welSteps:[{ic:'palette',t:"Ogni suono ha il suo colore. Imparerai a riconoscerli a orecchio."},{ic:'player-play',t:"Si gioca così: ascolti una melodia e la ripeti. Niente spartiti, niente teoria."},{ic:'heart',t:"Funziona anche se pensi di non avere orecchio. Si parte dal primo passo, con calma."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
@@ -516,7 +519,9 @@ en:{
  ],
  optTheory:"Level theory",
  welTitle:"What is Huermony",
- welBody:"<p>It all starts with one question: <b>why do some notes together make me feel happy, and others sad?</b></p><p>Almost everyone approaches music starting from notes and fixed shapes, but never learns to <b>feel</b> that effect: why two close sounds move you one way and two far apart another.</p><p>Huermony trains exactly that, by <b>playing</b>. You notice you're building your own melodies, ones you can reuse in your music. And without forcing it you stop thinking \"C, G\" and start thinking of the note you start from and the one that closes: the name matches the <b>feeling</b> you were after. That's when you start to speak music.</p><p>Every interval always has the same <b>shape and color</b>: the visual association makes it far faster to memorize. That's the heart of Huermony.</p><p>It plays like the old <b>Simon Says</b> game, just with more colors and more notes. And you can play with your <b>instrument in hand</b>: it hears your voice too, perfect for learning where the notes live on your instrument.</p>",
+ guideQ:"Why do some notes together make me feel happy, and others sad?",
+ guidePts:[{ic:'palette',t:"Every sound always has its own <b>color</b>"},{ic:'ear',t:"You learn to <b>feel</b> music, not memorize it"},{ic:'player-play',t:"You learn by <b>playing</b>, like Simon"}],
+ welBody:"",
  welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  welSteps:[{ic:'palette',t:"Every sound has its own color. You'll learn to recognize them by ear."},{ic:'player-play',t:"Here's how you play: you hear a melody and repeat it. No sheet music, no theory."},{ic:'heart',t:"It works even if you think you have no ear. You start from the first step, take it easy."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
@@ -747,7 +752,7 @@ function applyStatic(){
  $('m-stars-l').textContent=S9.mStars; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
  $('hguide').textContent=S9.dashGuide;
  $('htuttxt').textContent=S9.tutBtn;
- $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="gbody">'+S9.welBody+'</div>';
+ $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="heroq">'+S9.guideQ+'</div><div class="heropts">'+S9.guidePts.map(p=>'<div class="hp"><i class="ti ti-'+p.ic+'"></i><span>'+p.t+'</span></div>').join('')+'</div>';
  renderDashboard();
 }
 
