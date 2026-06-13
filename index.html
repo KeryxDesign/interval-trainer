@@ -163,6 +163,8 @@ button.levelcard:active{transform:scale(0.99);}
 .ldsec{background:var(--surface); border-radius:14px; padding:18px 16px; margin:30px 0 14px;}
 #ld-difhead{font-size:28px; font-weight:800; letter-spacing:-.01em; color:var(--gold); margin:6px 0 18px; text-align:center;}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
+.wsub{font-size:13px; color:var(--muted); margin:5px 0 0;}
+.wsub b{color:var(--text); font-weight:700;}
 .mrow{display:block; background:var(--surface2); border:none; border-left:4px solid var(--lc,var(--gold)); border-radius:12px; padding:15px 16px; margin-bottom:11px; width:100%; color:var(--text); cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; border-left-color:var(--line); opacity:.55;}
 .mrow .mtop{display:flex; align-items:center; justify-content:space-between; gap:8px;}
@@ -1159,6 +1161,7 @@ function renderPath(){
    const card=document.createElement(open?'button':'div'); card.className='world levelcard'+(open?'':' locked')+(cOpen?'':' courselock');
    let ints=''; CWADD[c][i].forEach(k=>{ints+='<span class="wint" style="background:'+C[k].h+';color:'+ink(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:13px"></i></span>';});
    let h='<div class="whead"><span class="wname">'+(i+1)+'. '+plainNames(c,i)+'</span><span class="wints">'+ints+'</span></div>';
+   h+='<p class="wsub">'+CWADD[c][i].map(k=>'<b>'+IV[k]+'</b> '+DEG[k]).join(' · ')+'</p>';
    if(!open){
     if(cOpen) h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
     card.innerHTML=h;
