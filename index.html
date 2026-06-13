@@ -151,6 +151,9 @@ button.levelcard:active{transform:scale(0.99);}
 .scalerow.locked .snote{cursor:default;}
 #ld-head{display:flex; align-items:center; gap:10px; margin:0 0 16px; background:var(--surface2); border-radius:12px; padding:11px 13px; border-left:4px solid var(--gold);}
 .ldsec{background:var(--surface); border-radius:14px; padding:16px; margin:0 0 14px;}
+.ldsec.play{background:rgba(234,179,8,.09); border:1px solid rgba(234,179,8,.30);}
+.ldsec.play #ld-difhead{color:var(--gold);}
+.ldsec.play .mrow{background:var(--surface);}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--surface2); border:none; border-radius:10px; padding:10px 12px; margin-top:8px; width:100%; color:var(--text); font-size:14px; cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; color:var(--muted);}
@@ -227,8 +230,8 @@ button.levelcard:active{transform:scale(0.99);}
       </div>
       <span id="ld-stars" style="color:var(--gold); font-size:14px; white-space:nowrap;"></span>
     </div>
-    <div class="ldsec">
-      <p id="ld-difhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 14px;"></p>
+    <div class="ldsec play">
+      <p id="ld-difhead" style="font-size:19px; font-weight:700; margin:0 0 14px;"></p>
       <div id="ld-modes"></div>
     </div>
     <div class="ldsec">
