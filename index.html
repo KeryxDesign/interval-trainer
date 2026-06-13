@@ -47,11 +47,13 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #streak i{color:#f59e0b; font-size:18px;}
 .profrow{display:flex; align-items:center; gap:14px; background:var(--surface); border-radius:16px; padding:14px; margin:0 0 18px; cursor:pointer;}
 .profrow .pedit{margin-left:auto; color:var(--muted); font-size:18px;}
-#guide-intro h2{font-size:22px; line-height:1.3; font-weight:700; margin:0 0 12px;}
-#guide-intro .gbody{margin:0 0 22px;}
-#guide-intro .gbody p{font-size:16px; line-height:1.6; color:var(--text); margin:0 0 14px;}
+#guide-intro h2{font-size:26px; line-height:1.25; font-weight:800; letter-spacing:-.02em; margin:0 0 14px;}
+#guide-intro .gbody{margin:0 0 14px;}
+#guide-intro .gbody p{font-size:16px; line-height:1.62; color:var(--muted); margin:0 0 14px;}
+#guide-intro .gbody p:first-child{font-size:18px; line-height:1.5; color:var(--text); margin:0 0 18px;}
 #guide-intro .gbody p:last-child{margin-bottom:0;}
 #guide-intro .gbody b{color:var(--text); font-weight:700;}
+#tutbtn{width:100%; min-height:52px; justify-content:center; margin:0 0 22px; background:var(--gold); color:#14151a; font-size:16px; font-weight:700; border:none; border-radius:14px;}
 #pe-avatars{display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin:0 0 18px;}
 #pe-avatars button{border:2px solid transparent; background:none; border-radius:50%; padding:2px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
 #pe-avatars button.sel{border-color:var(--gold);}
@@ -120,12 +122,19 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .world.courselock{opacity:.45;}
 button.levelcard{display:block; width:100%; text-align:left; border:1px solid var(--line); color:var(--text); cursor:pointer; font:inherit;}
 button.levelcard:active{transform:scale(0.99);}
-.gcard{background:var(--surface); border-radius:14px; padding:16px 16px 18px; margin-bottom:10px; border:1px solid var(--line);}
-.ghead{display:flex; align-items:center; gap:10px; margin:0 0 10px;}
-.ghead i{font-size:19px; color:var(--gold); flex:0 0 auto;}
-.ghead span{font-size:17px; font-weight:600; color:var(--text); letter-spacing:-.01em;}
-.gbody{font-size:16px; line-height:1.6; margin:0; color:var(--text);}
+.gcard{background:var(--surface); border-radius:16px; padding:18px 18px 20px; margin-bottom:14px; border:1px solid var(--line);}
+.ghead{display:flex; align-items:center; gap:11px; margin:0 0 12px;}
+.ghead i{font-size:18px; color:var(--gold); flex:0 0 auto; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; background:rgba(234,179,8,.12); border-radius:10px;}
+.ghead span{font-size:18px; font-weight:700; color:var(--text); letter-spacing:-.01em;}
+.gbody{font-size:16px; line-height:1.62; margin:0; color:var(--text);}
 .gbody b{color:var(--text); font-weight:700;}
+.gcard.do{border-left:3px solid var(--gold); background:var(--surface2);}
+.gcard.key{background:var(--bg);}
+.gcard.key .ghead i{background:rgba(154,160,173,.14); color:var(--muted);}
+.gcard.key .gbody{font-size:15px; color:var(--muted);}
+.gcard.tip{background:rgba(234,179,8,.07); border:1px solid rgba(234,179,8,.25);}
+.gcard.tip .ghead i{background:rgba(234,179,8,.18);}
+@media (pointer:coarse){.gcard.key{display:none;}}
 .world.locked .wint{opacity:.4; filter:saturate(.4);}
 .world.locked .wname{color:var(--muted);}
 .whead{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px;}
@@ -219,7 +228,7 @@ button.levelcard:active{transform:scale(0.99);}
 
   <div id="view-guide" hidden>
     <div id="guide-intro"></div>
-    <button class="btn" id="tutbtn" style="width:100%; justify-content:center; margin-bottom:12px;"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
+    <button class="btn" id="tutbtn"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
     <div id="guide"></div>
   </div>
 
@@ -437,14 +446,16 @@ it:{
   "Il colore del blues e del mixolidio, la settima dell'accordo di dominante. Tensione morbida che scende verso la mediante.",
   "Il fulmine: a un semitono da casa, carica massima verso l'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
  GUIDE:[
-  {h:"Colori, simboli e distanze", p:"Huermony allena l'orecchio relativo costruendo una sinestesia: ogni intervallo dalla tonica ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota, qualunque sia la nota di partenza. La tonica sta sempre in alto. Non impari le note: impari le distanze."},
-  {h:"Come si gioca", p:"1. Premi <b>Gioca</b>: parte una breve melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più. Fin dove arrivi?<br><br>Non serve sapere la teoria: colori e simboli ti guidano. Se sbagli vedi la sequenza giusta, ed è lì che si impara. <b>Velocità</b> e <b>Ritmo</b> li regoli quando vuoi (il ritmo è solo da ascoltare: rispondi nell'ordine giusto, senza durate)."},
-  {h:"Livelli e stelle", p:"Un corso sulla scala maggiore: si parte da due note (tonica e dominante) e si aggiunge un grado alla volta, in ordine di importanza melodica, fino alla scala completa. Ogni livello spiega il ruolo del grado nuovo. Ogni livello ha tre modalità: <b>Vedi e senti</b> (la sequenza si illumina), <b>Solo orecchio</b> (suona al buio: rispondi col colore che hai in testa), <b>Tonica vagabonda</b> (ogni round cambia tonica).<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 8 · <span style='color:var(--gold)'>★★★</span> al round 8 senza mai usare Riascolta.<br><br>Ogni modalità si sblocca con 1★ nella precedente. Il livello successivo si apre con 2★ in Solo orecchio: il gioco ti chiede di avere l'associazione in testa, non sullo schermo."},
-  {h:"Libero e Teoria", p:"<b>Libero</b>: stessa partita ma su una scala e tonica a tua scelta, con record separato per scala. <b>Teoria</b>: la funzione musicale di ogni intervallo, con la distanza in semitoni e in toni."},
-  {h:"Canta", p:"Attiva <b>Canta</b> e rispondi con la voce (o fischiando, o con uno strumento monofonico) invece di toccare i tasti. Vale qualsiasi ottava: conta la nota, non il registro. Una nota viene registrata quando la tieni intonata per circa 150 ms; per ripetere due note uguali di fila, staccale con una pausa. Le note fuori dal livello vengono ignorate. Mentre canti, la ruota si illumina su quello che stai intonando."},
-  {h:"Da computer", p:"A = tonica, poi W S E D F T G Y H U J salendo per semitoni, come una tastiera piano (la scala maggiore è la fila di mezzo: A S D F G H J). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi: usali per esplorare i colori."},
-  {h:"Come app sul telefono", p:"Huermony si installa senza store: aprila nel browser e poi <b>Condividi → \"Aggiungi alla schermata Home\"</b> su iPhone, oppure <b>menu → \"Installa app\"</b> su Android. Da lì in poi si apre a tutto schermo con la sua icona e funziona anche offline."},
-  {h:"Un consiglio", p:"Meglio 5 minuti al giorno che un'ora la domenica. La sinestesia si costruisce con la ripetizione frequente, non con lo sforzo. Quando ti accorgi di \"vedere\" il colore di un intervallo prima di pensarci, sta funzionando."}]
+  {h:"Cosa alleni qui", p:"Huermony allena l'orecchio relativo con una piccola sinestesia: ogni suono, rispetto alla tonica (la nota di casa), ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota. Cambi la nota di partenza e i colori restano gli stessi. Non impari le note a memoria: impari le distanze."},
+  {h:"Il percorso", p:"Nella <b>Home</b> trovi i corsi uno sotto l'altro, come un sentiero. Si parte dalla <b>pentatonica</b>: 5 note, nessuna tensione, facili da cantare. La costruisci un suono alla volta (Casa e Cielo, poi Foglia, Sole, Luna). Quando la finisci si sblocca la <b>scala maggiore</b>: prendi la pentatonica e aggiungi le 2 note che creano la tensione. Sotto a ogni scala c'è una riga di cerchi colorati: toccali per sentire le note, tocca l'altoparlante per sentire tutta la scala."},
+  {h:"Come si gioca", t:"do", p:"È come Simon: ascolta e ripeti.<br>1. Premi <b>Gioca</b> (o il grande tasto Play al centro della ruota): parte una breve melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più.<br><br>Si sale fino al <b>round 8</b>: lì hai superato il livello. Se sbagli vedi la sequenza giusta, ed è lì che si impara. Il ritmo cambia da solo: le note hanno durate diverse, ma a te basta l'ordine. La <b>velocità</b> la regoli come in un video: 0.5x, 1x, 1.5x, 2x."},
+  {h:"Difficoltà e stelle", p:"Apri un livello e in cima trovi <b>Inizia a giocare</b> con tre difficoltà:<br><b>Facile</b>: vedi i colori e ascolti.<br><b>Normale</b>: solo a orecchio, niente colori.<br><b>Difficile</b>: la tonica cambia a ogni round.<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 8 · <span style='color:var(--gold)'>★★★</span> al round 8 senza usare Riascolta. Fino a 9 stelle per livello. Ogni difficoltà si sblocca con 1★ nella precedente. Più in basso, in <b>Cosa imparerai</b>, trovi il ruolo di ogni suono da ascoltare con calma."},
+  {h:"Rispondi con la voce o lo strumento", p:"Attiva il <b>microfono</b> e invece di toccare lo schermo puoi rispondere cantando, fischiando o suonando uno strumento a una nota per volta. Vale qualsiasi ottava: conta la nota, non se è acuta o grave. Mentre fai il suono, la ruota si illumina su quello che stai intonando, così vedi se sei centrato."},
+  {h:"Libero", p:"In <b>Libero</b> esplori senza punteggio. Prima scegli scala e tonica, poi senti le note. Usa <b>Assaggia</b> per sentire il sapore della scala, tocca gli accordi del modo per costruirti un giro, e premi <b>Cambia</b> quando vuoi ripartire da un'altra scala. È lo spazio per le idee, non per i record."},
+  {h:"Teoria", p:"In <b>Teoria</b> trovi il carattere di ogni suono: dove tira, che sapore ha, quanto è lontano dalla tonica. Ci sono anche i <b>modi</b>, cioè le diverse atmosfere che nascono spostando il centro della scala. Tutto si può ascoltare, non solo leggere."},
+  {h:"Mettila sul telefono", p:"Huermony si installa senza nessuno store. Aprila nel browser, poi su iPhone fai <b>Condividi → \"Aggiungi a Home\"</b>, su Android <b>menu → \"Installa app\"</b>. Da lì si apre a tutto schermo con la sua icona e funziona anche <b>offline</b>."},
+  {h:"Da computer", t:"key", p:"Puoi giocare con la tastiera. <b>A</b> = tonica, poi <b>W S E D F T G Y H U J</b> salendo per semitoni, come i tasti di un pianoforte. <b>R</b> = riascolta, <b>Invio</b> = gioca. Fuori dalla partita i tasti suonano liberi: usali per esplorare i colori."},
+  {h:"Un consiglio", t:"tip", p:"Meglio <b>5 minuti al giorno</b> che un'ora alla domenica. L'orecchio si forma con la ripetizione frequente, non con lo sforzo di una volta sola. Tieni d'occhio la <b>streak</b> nel Profilo: ti aiuta a non saltare i giorni. Quando ti accorgi di \"vedere\" il colore di un suono prima ancora di pensarci, sta funzionando."}]
 },
 en:{
  tag:"Train your ear: every interval always has the same color.",
@@ -562,14 +573,16 @@ en:{
   "The color of blues and Mixolydian, the seventh of the dominant chord. Soft tension drifting down toward the mediant.",
   "The lightning: a semitone from home, maximum upward charge. It is the leading tone, the note that makes the return to the tonic inevitable."],
  GUIDE:[
-  {h:"Colors, symbols and distances", p:"Huermony trains your relative ear by building a synesthesia: every interval from the tonic always has the same color, the same symbol and the same place on the wheel, whatever the starting note. The tonic always sits at the top. You do not learn notes: you learn distances."},
-  {h:"How to play", p:"1. Press <b>Play</b>: a short melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Got it right? It restarts with one more note. How far can you go?<br><br>No theory needed: colors and symbols guide you. If you make a mistake you see the right sequence, and that is where you learn. Adjust <b>Speed</b> and <b>Rhythm</b> anytime (rhythm is listen-only: answer in the right order, no durations)."},
-  {h:"Levels and stars", p:"A course on the major scale: you start from two notes (tonic and dominant) and add one degree at a time, in order of melodic importance, up to the full scale. Each level explains the role of the new degree. Each level has three modes: <b>See & hear</b> (the sequence lights up), <b>Ear only</b> (it plays in the dark: answer with the color in your head), <b>Wandering tonic</b> (the tonic changes every round).<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 8 · <span style='color:var(--gold)'>★★★</span> round 8 without ever using Replay.<br><br>Each mode unlocks with 1★ in the previous one. The next level opens with 2★ in Ear only: the game asks you to have the association in your head, not on the screen."},
-  {h:"Free play and Theory", p:"<b>Free play</b>: the same game on a scale and tonic of your choice, with a separate best score per scale. <b>Theory</b>: the musical function of every interval, with its distance in semitones and tones."},
-  {h:"Sing", p:"Turn on <b>Sing</b> and answer with your voice (or whistling, or a monophonic instrument) instead of tapping. Any octave works: the note matters, not the register. A note registers when you hold it in tune for about 150 ms; to repeat the same note twice, separate the two with a short pause. Notes outside the level are ignored. While you sing, the wheel lights up on what you are producing."},
-  {h:"On a computer", p:"A = tonic, then W S E D F T G Y H U J going up by semitones, like a piano keyboard (the major scale is the home row: A S D F G H J). R = replay, Enter = play. Outside a game the keys play freely: use them to explore the colors."},
-  {h:"As an app on your phone", p:"Huermony installs without any store: open it in your browser, then <b>Share → \"Add to Home Screen\"</b> on iPhone, or <b>menu → \"Install app\"</b> on Android. From then on it opens full screen with its own icon and works offline too."},
-  {h:"One piece of advice", p:"Five minutes a day beats an hour on Sunday. Synesthesia is built by frequent repetition, not by effort. When you catch yourself \"seeing\" the color of an interval before thinking about it, it is working."}]
+  {h:"What you're training", p:"Huermony trains your relative ear with a little synesthesia: every sound, compared to the tonic (the home note), always has the same color, the same symbol and the same place on the wheel. Change the starting note and the colors stay the same. You don't memorize notes: you learn distances."},
+  {h:"The path", p:"On the <b>Home</b> screen the courses sit one below the other, like a trail. You start with the <b>pentatonic</b>: 5 notes, no tension, easy to sing. You build it one sound at a time (Home and Sky, then Leaf, Sun, Moon). Finish it and the <b>major scale</b> unlocks: you take the pentatonic and add the 2 notes that create the tension. Under each scale there's a row of colored circles: tap them to hear the notes, tap the speaker to hear the whole scale."},
+  {h:"How to play", t:"do", p:"It's like Simon: listen and repeat.<br>1. Press <b>Play</b> (or the big Play button in the center of the wheel): a short melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Right? It restarts with one more note.<br><br>You climb up to <b>round 8</b>: that's when you clear the level. If you make a mistake you see the right sequence, and that's where you learn. The rhythm changes on its own: notes have different lengths, but you only need the order. <b>Speed</b> works like a video player: 0.5x, 1x, 1.5x, 2x."},
+  {h:"Difficulty and stars", p:"Open a level and at the top you'll find <b>Start playing</b> with three difficulties:<br><b>Easy</b>: see the colors and listen.<br><b>Normal</b>: by ear only, no colors.<br><b>Hard</b>: the tonic changes every round.<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 8 · <span style='color:var(--gold)'>★★★</span> round 8 without using Replay. Up to 9 stars per level. Each difficulty unlocks with 1★ in the previous one. Further down, in <b>What you'll learn</b>, you'll find the role of each sound to listen to at your own pace."},
+  {h:"Answer with your voice or instrument", p:"Turn on the <b>microphone</b> and instead of tapping the screen you can answer by singing, whistling or playing one note at a time on an instrument. Any octave works: the note is what counts, not whether it's high or low. While you make the sound, the wheel lights up on what you're producing, so you can see if you're on target."},
+  {h:"Free play", p:"In <b>Free play</b> you explore with no score. First pick a scale and a tonic, then hear the notes. Use <b>Taste it</b> to feel the flavor of the scale, tap the chords of the mode to build a little progression, and press <b>Change</b> whenever you want to start over with another scale. This is the space for ideas, not for records."},
+  {h:"Theory", p:"In <b>Theory</b> you'll find the character of each sound: where it pulls, what it tastes like, how far it sits from the tonic. There are also the <b>modes</b>, the different moods you get by shifting the center of the scale. Everything can be listened to, not just read."},
+  {h:"Put it on your phone", p:"Huermony installs without any store. Open it in your browser, then on iPhone tap <b>Share → \"Add to Home Screen\"</b>, on Android <b>menu → \"Install app\"</b>. From there it opens full screen with its own icon and works <b>offline</b> too."},
+  {h:"On a computer", t:"key", p:"You can play with the keyboard. <b>A</b> = tonic, then <b>W S E D F T G Y H U J</b> going up by semitones, like piano keys. <b>R</b> = replay, <b>Enter</b> = play. Outside a game the keys play freely: use them to explore the colors."},
+  {h:"One piece of advice", t:"tip", p:"<b>Five minutes a day</b> beats an hour on Sunday. Your ear is built by frequent repetition, not by one big effort. Keep an eye on your <b>streak</b> in the Profile: it helps you not skip days. When you catch yourself \"seeing\" the color of a sound before you even think about it, it's working."}]
 }};
 const S9=STR[lang];
 const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
@@ -706,8 +719,8 @@ function applyStatic(){
   thBox.appendChild(d);});
  thBox.querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); if(b.dataset.iv!=null) playInterval(+b.dataset.iv); else playScaleAsc(b.dataset.mode);}));
  const gd=$('guide'); gd.innerHTML='';
- const GIC=['eye','player-play','stairs-up','book-2','microphone-2','keyboard','device-mobile','bulb'];
- S9.GUIDE.forEach((s,i)=>{const d=document.createElement('div'); d.className='gcard';
+ const GIC=['eye','route','player-play','star','microphone-2','music','book-2','device-mobile','keyboard','bulb'];
+ S9.GUIDE.forEach((s,i)=>{const d=document.createElement('div'); d.className='gcard'+(s.t?' '+s.t:'');
   d.innerHTML='<div class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span></div><p class="gbody">'+s.p+'</p>';
   gd.appendChild(d);});
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
