@@ -118,9 +118,15 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .secname{font-size:28px; font-weight:800; letter-spacing:-.02em; margin:32px 0 12px; color:var(--text); text-align:center;}
 .pathsec:first-child .secname{margin-top:16px;}
 .scalerow{justify-content:center;}
-.secbox{background:var(--surface); border-radius:14px; padding:14px 16px; margin:0 0 16px;}
-.secboxlbl{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--gold); margin:0 0 8px;}
-.secdesc{font-size:15px; line-height:1.6; color:var(--muted); margin:0;}
+.secacc{background:var(--surface); border-radius:14px; margin:0 0 16px; overflow:hidden;}
+.secacc summary{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); cursor:pointer; padding:14px 16px; list-style:none; display:flex; align-items:center; justify-content:space-between;}
+.secacc summary::-webkit-details-marker{display:none;}
+.secacc summary i{color:var(--muted); font-size:18px; transition:transform .15s;}
+.secacc[open] summary i{transform:rotate(180deg);}
+.secacc .secdesc{padding:0 16px 16px; font-size:15px; line-height:1.6; color:var(--muted); margin:0;}
+.mwk{position:absolute; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:0;}
+.mwk:active{transform:scale(.92);}
+.mwctrl{display:flex; gap:8px; justify-content:center; margin:0 0 18px; flex-wrap:wrap;}
 .seclock{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--gold); margin:0 0 14px;}
 .pathsec.locked .secname{color:var(--muted);}
 .world.courselock{opacity:.45;}
@@ -155,7 +161,7 @@ button.levelcard:active{transform:scale(0.99);}
 .scalerow.locked .snote{cursor:default;}
 #ld-head{display:flex; align-items:center; gap:10px; margin:0 0 22px; background:var(--surface2); border-radius:12px; padding:11px 13px; border-left:4px solid var(--lc,var(--gold));}
 .ldsec{background:var(--surface); border-radius:14px; padding:16px; margin:0 0 14px;}
-#ld-difhead{font-size:24px; font-weight:800; letter-spacing:-.01em; color:var(--lc,var(--gold)); margin:0 0 14px;}
+#ld-difhead{font-size:28px; font-weight:800; letter-spacing:-.01em; color:var(--lc,var(--gold)); margin:6px 0 18px; text-align:center;}
 .wreq{font-size:14px; color:var(--muted); margin:4px 0 0;}
 .mrow{display:block; background:var(--surface2); border:none; border-left:4px solid var(--lc,var(--gold)); border-radius:12px; padding:15px 16px; margin-bottom:11px; width:100%; color:var(--text); cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; border-left-color:var(--line); opacity:.55;}
@@ -241,6 +247,8 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="ld-modes"></div>
     <div class="ldsec">
       <p id="ld-learnhead" style="font-size:19px; font-weight:700; color:var(--text); margin:0 0 14px;"></p>
+      <div id="ld-wheel" class="mwbox"></div>
+      <div id="ld-listen" class="mwctrl"></div>
       <div id="ld-theory"></div>
     </div>
   </div>
@@ -353,6 +361,7 @@ it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
  tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo",
+ whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 senza Riascolta',
@@ -406,7 +415,7 @@ it:{
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
- fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia",
+ fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia", ldSeq:"In sequenza",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
  modesTitle:"I modi: la luce del viaggio",
@@ -483,6 +492,7 @@ en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
  tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile",
+ whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 8 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 8 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 8 · <span style="color:var(--gold)">★★★</span> round 8 without Replay',
@@ -536,7 +546,7 @@ en:{
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
- fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change",
+ fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change", ldSeq:"In sequence",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
  modesTitle:"The modes: the light of the journey",
@@ -1132,18 +1142,16 @@ function renderPath(){
   const cOpen=courseUnlocked(c);
   const sec=document.createElement('div'); sec.className='pathsec'+(cOpen?'':' locked');
   const allNotes=[...new Set((CBASE[c]||[]).concat(...CWADD[c]))].sort((a,b)=>a-b);
-  const noteBtn=(dk,vk)=>'<button class="snote" data-iv="'+vk+'"'+(cOpen?' aria-label="'+NOTE[dk]+'"':' disabled')+' style="background:'+C[dk].h+';color:'+ink(dk)+'"><i class="ti ti-'+C[dk].ic+'" style="font-size:14px"></i></button>';
-  let srow='<div class="scalerow'+(cOpen?'':' locked')+'"><button class="srplay"'+(cOpen?' aria-label="play scale"':' disabled')+'><i class="ti ti-volume"></i></button>';
-  allNotes.forEach(k=>{srow+=noteBtn(k,k);});
-  srow+=noteBtn(0,12); // tonica un'ottava sopra a chiusura della scala
-  srow+='</div>';
-  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+srow+'<div class="secbox"><p class="secboxlbl">'+S9.tabs[2]+'</p><p class="secdesc">'+S9.courses[c].desc+'</p></div>';
+  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+
+   '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
+   (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
+   '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+S9.courses[c].desc+'</p></details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   sec.innerHTML=sh; box.appendChild(sec);
+  miniWheel(sec.querySelector('.mwbox'), allNotes, 230);
   if(cOpen){
-   sec.querySelectorAll('.snote').forEach(b=>b.addEventListener('click',()=>{ensureCtx(); tone(60+ +b.dataset.iv,0.5);}));
-   const sp=sec.querySelector('.srplay'); const seq2=allNotes.concat([12]);
-   sp.addEventListener('click',()=>{ensureCtx(); seq2.forEach((k,i)=>timers.push(setTimeout(()=>tone(60+k,0.34),i*320)));});
+   const sp=sec.querySelector('.srplay');
+   sp.addEventListener('click',()=>playTasteNotes(allNotes));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1166,10 +1174,9 @@ function renderPath(){
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
-function buildTheoryBody(c,w,collapsed){
+function buildTheoryBody(c,w){
  const lv=S9.courses[c].levels[w];
- // Teoria IN CHIARO: cosa impari + il ruolo di ogni suono, con ascolto
- // La intro (sensazione) resta SEMPRE visibile; i blocchi-suono si collassano dopo la 1a visita.
+ // Teoria IN CHIARO sempre aperta: intro + ruolo di ogni suono (con ascolto) + dettaglio semitoni
  let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+lv.th+'</p>';
  let blocks='';
  CWADD[c][w].forEach(k=>{
@@ -1182,12 +1189,11 @@ function buildTheoryBody(c,w,collapsed){
    '<p style="margin:0 0 0 51px; font-size:16px; line-height:1.6; color:var(--text)">'+S9.TH[k]+'</p>'+
   '</div>';
  });
- if(collapsed) body+='<details style="margin:0 0 4px;"><summary style="font-size:15px;font-weight:600;color:var(--gold);cursor:pointer;list-style-position:inside;padding:4px 0;">'+S9.ldReview+'</summary><div style="margin-top:12px;">'+blocks+'</div></details>';
- else body+=blocks;
- // dettaglio tecnico facoltativo (intervalli/semitoni)
- body+='<details class="legbox" style="margin:0;"><summary style="font-size:14px;color:var(--muted);cursor:pointer;list-style-position:inside;">'+S9.ldMore+'</summary>';
- CWADD[c][w].forEach(k=>{body+='<p style="margin:8px 0 0; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
- body+='</details>';
+ body+=blocks;
+ // dettaglio semitoni, sempre aperto (niente fisarmoniche)
+ body+='<div style="border-top:1px solid var(--line); margin-top:4px; padding-top:14px;">';
+ CWADD[c][w].forEach(k=>{body+='<p style="margin:0 0 6px; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
+ body+='</div>';
  return body;
 }
 function showLevelDetail(c,w){
@@ -1200,9 +1206,12 @@ function showLevelDetail(c,w){
  $('view-leveldetail').style.setProperty('--lc', C[CWADD[c][w][CWADD[c][w].length-1]].h);
  $('ld-learnhead').textContent=S9.ldLearn;
  $('ld-difhead').textContent=S9.ldDif;
- const seenKey='hm_seen_theory_'+c+'_'+w, seen=!!localStorage.getItem(seenKey);
- $('ld-theory').innerHTML=buildTheoryBody(c,w,seen);
- localStorage.setItem(seenKey,'1');
+ const lnotes=cumSet(c,w);
+ miniWheel($('ld-wheel'), lnotes, 230);
+ $('ld-listen').innerHTML='<button class="btn" id="ld-taste"><i class="ti ti-music"></i><span>'+S9.fsTaste+'</span></button><button class="btn" id="ld-seq"><i class="ti ti-volume"></i><span>'+S9.ldSeq+'</span></button>';
+ $('ld-taste').addEventListener('click',()=>playTasteNotes(lnotes));
+ $('ld-seq').addEventListener('click',()=>playNotesSeq(lnotes));
+ $('ld-theory').innerHTML=buildTheoryBody(c,w);
  $('ld-theory').querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); playInterval(+b.dataset.iv);}));
  const md=$('ld-modes'); md.innerHTML='';
  MODES.forEach((mn,m)=>{
@@ -1354,6 +1363,31 @@ function buzz(){
 function chime(){[0,4,7,12].forEach((s,i)=>{setTimeout(()=>tone(72+s,0.25),i*90);});}
 function playInterval(k){ensureCtx(); const t=ctx.currentTime; tone(60,0.5); setTimeout(()=>tone(60+k,0.5),560); setTimeout(()=>{tone(60,0.95);tone(60+k,0.95);},1180);}
 function playScaleAsc(id){ensureCtx(); const ns=SCALES[id].concat([12]); ns.forEach((k,i)=>setTimeout(()=>tone(60+k,0.34),i*300));}
+// mini-ruota statica: note della scala disposte in cerchio (visualizza gli intervalli), toccabili per ascoltarle
+function miniWheel(box,notes,size){
+ size=size||240; box.innerHTML=''; box.style.cssText='position:relative;width:'+size+'px;height:'+size+'px;margin:0 auto 12px;';
+ const cx=size/2, key=size<230?34:40, r=size/2-key/2-2;
+ for(let k=0;k<12;k++){
+  const a=(-90+k*30)*Math.PI/180, x=cx+r*Math.cos(a), y=cx+r*Math.sin(a);
+  if(notes.includes(k)){
+   const b=document.createElement('button'); b.className='mwk'; b.dataset.iv=k; b.setAttribute('aria-label',NOTE[k]);
+   b.style.cssText='left:'+(x-key/2)+'px;top:'+(y-key/2)+'px;width:'+key+'px;height:'+key+'px;background:'+C[k].h+';color:'+ink(k)+(k===0?';box-shadow:0 0 0 2.5px #fff':'');
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(key*0.42)+'px"></i>';
+   box.appendChild(b);
+  } else {
+   const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-4)+'px;top:'+(y-4)+'px;width:8px;height:8px;border-radius:50%;background:var(--line);';
+   box.appendChild(d);
+  }
+ }
+ box.querySelectorAll('.mwk').forEach(b=>b.addEventListener('click',()=>{ensureCtx(); tone(60+ +b.dataset.iv,0.6);}));
+}
+function playNotesSeq(arr){ensureCtx(); const ns=arr.slice().sort((a,b)=>a-b).concat([12]); ns.forEach((k,i)=>timers.push(setTimeout(()=>tone(60+k,0.34),i*300)));}
+function playTasteNotes(arr){
+ ensureCtx(); const ext=arr.slice().sort((a,b)=>a-b).concat([12]); let idx=0; const mel=[0];
+ for(let i=0;i<5;i++){idx=Math.max(0,Math.min(ext.length-1,idx+(Math.random()<0.5?-1:1)*(Math.random()<0.75?1:2))); mel.push(ext[idx]);}
+ mel.push(0);
+ let t=120, base=360; mel.forEach((k,i)=>{const df=i===mel.length-1?1.7:[0.7,1,1,1.4][Math.floor(Math.random()*4)]; timers.push(setTimeout(()=>tone(60+k,Math.max(0.25,base*df*0.85/1000)),t)); t+=base*df;});
+}
 function flash(k,ms,skipCenter){
  const b=$('b'+k); if(b){b.style.transform='scale(1.28)'; setTimeout(()=>{b.style.transform='scale(1)';},ms||300);}
  if(skipCenter) return;
