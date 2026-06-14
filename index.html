@@ -448,13 +448,13 @@ it:{
  modesTitle:"I modi: la luce del viaggio",
  modesIntro:"Un modo è la stessa collana di note con una casa diversa: prendi le sette note della maggiore, scegli come tonica un'altra di loro, e le distanze da casa cambiano: si accende un'altra costellazione. Maggiore e minore naturale sono anche loro modi (ionico ed eolio): li chiamiamo scale solo perché sono i due di default. Stessi luoghi, luce diversa.",
  MODETH:{
-  lyd:{nick:"la piuma",desc:"Toglie l'unico peso del maggiore (la quarta che scende) e tutto galleggia: sognante, fiabesco, sospeso a mezz'aria. È il suono della meraviglia nelle colonne sonore. Sensazione: volare."},
-  maj:{nick:"la bandiera",desc:"Il maggiore pieno: affermativo, quadrato, ogni tensione sa dove risolvere. È la luce di default della musica occidentale: inni, pop, cori da stadio. Sensazione: arrivare."},
-  mixo:{nick:"la strada",desc:"Maggiore senza sensibile: niente fretta di tornare a casa. Terreno, caldo, un po' polveroso: blues, rock anni settanta, folk. Sensazione: camminare col sole addosso."},
-  dor:{nick:"la bussola",desc:"Minore con la schiena dritta: la sesta maggiore gli accende una speranza dentro la malinconia. Cool, elegante, mai disperato: jazz modale, Santana, ballate celtiche. Sensazione: tramonto con la rotta chiara."},
-  min:{nick:"l'ombrello",desc:"Il minore naturale, la malinconia di default: pioggia interiore, nostalgia, raccoglimento. Sensazione: sera, dentro casa, fuori piove."},
-  phr:{nick:"il vento",desc:"La seconda minore sopra la tonica preme come un vento caldo e scuro: spagnolo, mediterraneo, minaccioso. Flamenco e metal se lo contendono. Sensazione: notte di vento."},
-  loc:{nick:"il vortice",desc:"Non ha la quinta giusta: manca il pavimento. Tutto è sospeso, instabile, in caduta controllata. Quasi mai un centro tonale, quasi sempre un passaggio. Sensazione: vertigine."}},
+  lyd:{nick:"la piuma",desc:"Toglie l'unico peso del maggiore (la quarta che scende) e tutto <b>galleggia</b>: sognante, fiabesco, sospeso a mezz'aria. È il suono della <b>meraviglia</b> nelle colonne sonore. Sensazione: <b>volare</b>."},
+  maj:{nick:"la bandiera",desc:"Il maggiore pieno: <b>affermativo</b>, quadrato, ogni tensione sa dove risolvere. È la <b>luce di default</b> della musica occidentale: inni, pop, cori da stadio. Sensazione: <b>arrivare</b>."},
+  mixo:{nick:"la strada",desc:"Maggiore <b>senza sensibile</b>: niente fretta di tornare a casa. Terreno, caldo, un po' polveroso: blues, rock anni settanta, folk. Sensazione: <b>camminare col sole addosso</b>."},
+  dor:{nick:"la bussola",desc:"Minore con la <b>schiena dritta</b>: la sesta maggiore gli accende una <b>speranza dentro la malinconia</b>. Cool, elegante, mai disperato: jazz modale, Santana, ballate celtiche. Sensazione: <b>tramonto con la rotta chiara</b>."},
+  min:{nick:"l'ombrello",desc:"Il minore naturale, la <b>malinconia di default</b>: pioggia interiore, nostalgia, raccoglimento. Sensazione: <b>sera, dentro casa, fuori piove</b>."},
+  phr:{nick:"il vento",desc:"La seconda minore sopra la tonica preme come un <b>vento caldo e scuro</b>: spagnolo, mediterraneo, minaccioso. Flamenco e metal se lo contendono. Sensazione: <b>notte di vento</b>."},
+  loc:{nick:"il vortice",desc:"Non ha la quinta giusta: <b>manca il pavimento</b>. Tutto è sospeso, <b>instabile</b>, in caduta controllata. Quasi mai un centro tonale, quasi sempre un passaggio. Sensazione: <b>vertigine</b>."}},
  round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)",
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
@@ -474,7 +474,7 @@ it:{
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
  unlockTap:"tocca per continuare",
- legsum:"Legenda colori", thintro:"La funzione di ogni intervallo: cosa fa dentro la musica, dove tira, che carattere ha. La sensazione vale ovunque; il ruolo descritto è quello nel contesto maggiore/minore: dentro ogni modo lo stesso intervallo può cambiare mestiere (la 2m nel frigio non è una tensione da risolvere, è il colore di casa).",
+ legsum:"Legenda colori", thintro:"La <b>funzione di ogni intervallo</b>: cosa fa dentro la musica, dove tira, che carattere ha. La sensazione vale ovunque; il ruolo descritto è quello nel <b>contesto maggiore/minore</b>: dentro ogni modo lo stesso intervallo può <b>cambiare mestiere</b> (la 2m nel frigio non è una tensione da risolvere, è il colore di casa).",
  semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
  NOTE:['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'],
@@ -482,31 +482,31 @@ it:{
  DEG:['tonica','sopratonica minore','sopratonica maggiore','mediante minore','mediante maggiore','sottodominante','tritono','dominante','sopradominante minore','sopradominante maggiore','sottotonica','sensibile'],
  NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','cielo','onda','fulmine'],
  courses:{
-  pent:{title:"La pentatonica", desc:"Cinque note che insieme non sbagliano un colpo: nessun semitono, nessuna tensione. Tutto galleggia, tutto suona bene. È la scala più diffusa al mondo, dal blues ai canti popolari. Qui costruisci le fondamenta dell'orecchio: casa, apertura, movimento. La sensazione di base su cui poi nascerà tutto il resto.",
+  pent:{title:"La pentatonica", desc:"Cinque note che insieme <b>non sbagliano un colpo</b>: nessun semitono, nessuna tensione. Tutto <b>galleggia</b>, tutto suona bene. È la scala <b>più diffusa al mondo</b>, dal blues ai canti popolari. Qui costruisci le <b>fondamenta dell'orecchio</b>: casa, apertura, movimento. La sensazione di base su cui poi nascerà tutto il resto.",
    levels:[
-   {name:"I due poli", th:"Si parte dai due punti tra cui si muove tutta la musica: la tonica, il riposo, e la dominante, il suo pilastro. Uno è casa, l'altro è la spinta che ti riporta a casa. Non c'è ancora colore né tensione: senti solo l'asse, il nord e il sud del suono. È la sensazione della stabilità, il pavimento sotto i piedi."},
-   {name:"L'arpeggio", th:"Arriva la terza maggiore e di colpo c'è un'identità: con casa e pilastro forma l'accordo maggiore, il suo sorriso. È la nota che accende la luce. Senti come da due punti nudi nasce un colore pieno, aperto, affermativo: la sensazione del sole che sorge."},
-   {name:"Il passo", th:"Finora le note saltavano da un punto all'altro; ora arriva il gradino che le fa camminare. Questa nota non è riposo né tensione: è movimento puro. Con lei la melodia smette di balzare e inizia a passeggiare, un passo dopo l'altro. La sensazione è quella del cammino dolce."},
-   {name:"La pentatonica", th:"L'ultima nota completa la pentatonica: cinque suoni, zero semitoni, zero tensione. È la scala \"a prova di errore\", dove qualsiasi cosa suoni va bene. Senti l'apertura totale, calda e senza gravità: niente tira, tutto galleggia. Tieni a mente bene questa sensazione, perché nel prossimo corso la trasformeremo."}]},
-  maj:{title:"La scala maggiore", desc:"Prendi la pentatonica che hai costruito e aggiungi le due note che le mancano. Sono le uniche due che creano un semitono, e cambiano tutto: dove prima tutto galleggiava, ora compare la gravità. Tensione che chiede di risolvere, il bisogno di tornare a casa. È così che dalla pentatonica nasce il suono pieno e affermativo della scala maggiore, l'alfabeto di quasi ogni melodia che conosci.",
+   {name:"I due poli", th:"Si parte dai <b>due punti</b> tra cui si muove tutta la musica: la <b>tonica</b>, il riposo, e la <b>dominante</b>, il suo pilastro. Uno è casa, l'altro è la spinta che ti riporta a casa. Non c'è ancora colore né tensione: senti solo l'<b>asse</b>, il nord e il sud del suono. È la sensazione della <b>stabilità</b>, il pavimento sotto i piedi."},
+   {name:"L'arpeggio", th:"Arriva la <b>terza maggiore</b> e di colpo c'è un'<b>identità</b>: con casa e pilastro forma l'accordo maggiore, il suo sorriso. È la nota che <b>accende la luce</b>. Senti come da due punti nudi nasce un colore pieno, aperto, affermativo: la sensazione del <b>sole che sorge</b>."},
+   {name:"Il passo", th:"Finora le note saltavano da un punto all'altro; ora arriva il <b>gradino</b> che le fa camminare. Questa nota non è riposo né tensione: è <b>movimento puro</b>. Con lei la melodia smette di balzare e inizia a passeggiare, un passo dopo l'altro. La sensazione è quella del <b>cammino dolce</b>."},
+   {name:"La pentatonica", th:"L'ultima nota <b>completa la pentatonica</b>: cinque suoni, zero semitoni, zero tensione. È la scala <b>\"a prova di errore\"</b>, dove qualsiasi cosa suoni va bene. Senti l'<b>apertura totale</b>, calda e senza gravità: niente tira, tutto galleggia. Tieni a mente bene questa sensazione, perché nel prossimo corso la trasformeremo."}]},
+  maj:{title:"La scala maggiore", desc:"Prendi la pentatonica che hai costruito e aggiungi le <b>due note che le mancano</b>. Sono le uniche due che creano un <b>semitono</b>, e cambiano tutto: dove prima tutto galleggiava, ora compare la <b>gravità</b>. Tensione che chiede di risolvere, il bisogno di tornare a casa. È così che dalla pentatonica nasce il <b>suono pieno e affermativo</b> della scala maggiore, l'alfabeto di quasi ogni melodia che conosci.",
    levels:[
-   {name:"La sensibile", th:"Ecco la prima vera tensione. La sensibile sta a un solo semitono da casa: non sta ferma, preme, tira verso l'alto, chiede di scaricarsi sulla tonica. Dopo tutto il galleggiare della pentatonica, per la prima volta senti una nota che NON vuole restare dov'è: è lei che rende il ritorno a casa inevitabile. La sensazione cambia: ora c'è un richiamo."},
-   {name:"La scala completa", th:"L'ultima nota chiude il cerchio: tutti e sette i gradi. La sottodominante apre il primo passo del viaggio armonico e, insieme alla sensibile, forma il tritono nascosto (fa-si), il motore segreto di ogni chiusura. Ora la scala ha gravità piena: ogni tensione sa dove andare. Questa è la sensazione del maggiore: affermazione, arrivo, casa."}]}},
+   {name:"La sensibile", th:"Ecco la <b>prima vera tensione</b>. La sensibile sta a un <b>solo semitono da casa</b>: non sta ferma, preme, tira verso l'alto, chiede di scaricarsi sulla tonica. Dopo tutto il galleggiare della pentatonica, per la prima volta senti una nota che <b>NON vuole restare dov'è</b>: è lei che rende il ritorno a casa inevitabile. La sensazione cambia: ora c'è un <b>richiamo</b>."},
+   {name:"La scala completa", th:"L'ultima nota <b>chiude il cerchio</b>: tutti e sette i gradi. La sottodominante apre il viaggio armonico e, insieme alla sensibile, forma il <b>tritono nascosto</b> (fa-si), il motore segreto di ogni chiusura. Ora la scala ha <b>gravità piena</b>: ogni tensione sa dove andare. Questa è la sensazione del maggiore: affermazione, arrivo, casa."}]}},
  TH:[
-  "Il punto di riposo. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si chiude.",
-  "Un semitono sopra casa: striscia, preme, non sta ferma. È la tensione cromatica pura, il colore scuro del modo frigio.",
-  "Il passo naturale della melodia. Non è riposo e non è dramma: è movimento, il gradino con cui le frasi camminano.",
-  "La nota che scurisce: con lei il modo diventa minore. Malinconia, interiorità. Cuore dell'accordo minore.",
-  "La nota che illumina: con lei il modo diventa maggiore. Apertura, affermazione. Cuore dell'accordo maggiore.",
-  "Il primo passo del viaggio armonico (I→IV). Sospende senza drammatizzare: è la quarta del sus4, che chiede di posarsi sulla terza.",
-  "Divide l'ottava esattamente a metà: massima instabilità, nessuna gerarchia. È il motore dell'accordo di dominante: vuole risolvere per semitoni, in entrambe le direzioni.",
-  "Il pilastro. L'intervallo più stabile dopo l'ottava, e insieme la tensione strutturale dell'armonia: la dominante esiste per tirare verso casa.",
-  "La malinconia dolce del modo minore. Pesa verso il basso: tende a scendere di semitono sulla dominante.",
-  "Calda e aperta, il colore del maggiore che sorride. Da qui la relativa minore è a un passo.",
-  "Il colore del blues e del mixolidio, la settima dell'accordo di dominante. Tensione morbida che scende verso la mediante.",
-  "Il fulmine: a un semitono da casa, carica massima verso l'alto. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
+  "Il <b>punto di riposo</b>. Tutto si misura da qui e tutto, prima o poi, ci torna. Quando la melodia atterra sulla tonica, la frase si <b>chiude</b>.",
+  "Un <b>semitono sopra casa</b>: striscia, preme, non sta ferma. È la <b>tensione cromatica</b> pura, il colore scuro del modo frigio.",
+  "Il <b>passo naturale</b> della melodia. Non è riposo e non è dramma: è <b>movimento</b>, il gradino con cui le frasi camminano.",
+  "La nota che <b>scurisce</b>: con lei il modo diventa <b>minore</b>. Malinconia, interiorità. Cuore dell'accordo minore.",
+  "La nota che <b>illumina</b>: con lei il modo diventa <b>maggiore</b>. Apertura, affermazione. Cuore dell'accordo maggiore.",
+  "Il <b>primo passo</b> del viaggio armonico (I→IV). <b>Sospende</b> senza drammatizzare: è la quarta del sus4, che chiede di posarsi sulla terza.",
+  "Divide l'ottava esattamente <b>a metà</b>: <b>massima instabilità</b>, nessuna gerarchia. È il motore dell'accordo di dominante: vuole risolvere per semitoni, in entrambe le direzioni.",
+  "Il <b>pilastro</b>. L'intervallo più <b>stabile</b> dopo l'ottava, e insieme la <b>tensione strutturale</b> dell'armonia: la dominante esiste per tirare verso casa.",
+  "La <b>malinconia dolce</b> del modo minore. Pesa verso il basso: tende a <b>scendere di semitono</b> sulla dominante.",
+  "<b>Calda e aperta</b>, il colore del maggiore che sorride. Da qui la relativa minore è a un passo.",
+  "Il colore del <b>blues</b> e del mixolidio, la settima dell'accordo di dominante. <b>Tensione morbida</b> che scende verso la mediante.",
+  "Il <b>fulmine</b>: a un semitono da casa, <b>carica massima verso l'alto</b>. È la sensibile, la nota che rende inevitabile il ritorno alla tonica."],
  GUIDE:[
-  {h:"Cosa alleni qui", p:"Huermony allena l'orecchio relativo con una piccola sinestesia: ogni suono, rispetto alla tonica (la nota di casa), ha sempre lo stesso colore, lo stesso simbolo e lo stesso posto sulla ruota. Cambi la nota di partenza e i colori restano gli stessi. Non impari le note a memoria: impari le distanze."},
+  {h:"Cosa alleni qui", p:"Huermony allena l'<b>orecchio relativo</b> con una piccola sinestesia: ogni suono, rispetto alla tonica (la nota di casa), ha sempre lo <b>stesso colore</b>, lo stesso simbolo e lo stesso posto sulla ruota. Cambi la nota di partenza e i colori restano gli stessi. <b>Non impari le note a memoria: impari le distanze.</b>"},
   {h:"Il percorso", p:"Nella <b>Home</b> trovi i corsi uno sotto l'altro, come un sentiero. Si parte dalla <b>pentatonica</b>: 5 note, nessuna tensione, facili da cantare. La costruisci un suono alla volta (Casa e Pilastro, poi Sole, Passo, Cielo). Quando la finisci si sblocca la <b>scala maggiore</b>: prendi la pentatonica e aggiungi le 2 note che creano la tensione. Sotto a ogni scala c'è una riga di cerchi colorati: toccali per sentire le note, tocca l'altoparlante per sentire tutta la scala."},
   {h:"Come si gioca", t:"do", p:"È come Simon: ascolta e ripeti.<br>1. Premi <b>Gioca</b> (o il grande tasto Play al centro della ruota): parte una breve melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più.<br><br>Si sale fino al <b>round 7</b>: lì hai superato il livello. Se sbagli vedi la sequenza giusta, ed è lì che si impara. Il ritmo cambia da solo: le note hanno durate diverse, ma a te basta l'ordine. La <b>velocità</b> la regoli come in un video: 0.5x, 1x, 1.5x, 2x."},
   {h:"Difficoltà e stelle", p:"Apri un livello e in cima trovi <b>Inizia a giocare</b> con tre difficoltà:<br><b>Facile</b>: vedi i colori e ascolti.<br><b>Normale</b>: solo a orecchio, niente colori.<br><b>Difficile</b>: la tonica cambia a ogni round.<br><br><span style='color:var(--gold)'>★</span> arrivi al round 5 · <span style='color:var(--gold)'>★★</span> al round 7 · <span style='color:var(--gold)'>★★★</span> al round 7 senza usare Riascolta. Fino a 9 stelle per livello. Ogni difficoltà si sblocca con 1★ nella precedente. Più in basso, in <b>Cosa imparerai</b>, trovi il ruolo di ogni suono da ascoltare con calma."},
@@ -585,13 +585,13 @@ en:{
  modesTitle:"The modes: the light of the journey",
  modesIntro:"A mode is the same necklace of notes with a different home: take the seven notes of the major scale, pick another one of them as the tonic, and the distances from home change: a different constellation lights up. Major and natural minor are modes too (Ionian and Aeolian): we call them scales only because they are the two defaults. Same places, different light.",
  MODETH:{
-  lyd:{nick:"the feather",desc:"It removes the major scale's only downward pull (the falling fourth) and everything floats: dreamy, fairy-tale, mid-air. The sound of wonder in film scores. Feels like: flying."},
-  maj:{nick:"the flag",desc:"Full major: affirmative, square, every tension knows where to resolve. The default light of Western music: anthems, pop, stadium choirs. Feels like: arriving."},
-  mixo:{nick:"the road",desc:"Major without the leading tone: no rush to get home. Earthy, warm, a little dusty: blues, seventies rock, folk. Feels like: walking in the sun."},
-  dor:{nick:"the compass",desc:"Minor with a straight back: the major sixth lights a hope inside the melancholy. Cool, elegant, never desperate: modal jazz, Santana, Celtic ballads. Feels like: sunset with a clear course."},
-  min:{nick:"the umbrella",desc:"Natural minor, the default melancholy: inner rain, nostalgia, gathering in. Feels like: evening indoors while it rains."},
-  phr:{nick:"the wind",desc:"The minor second above the tonic presses like a hot, dark wind: Spanish, Mediterranean, threatening. Flamenco and metal both claim it. Feels like: a windy night."},
-  loc:{nick:"the vortex",desc:"It has no perfect fifth: the floor is missing. Everything hangs, unstable, in controlled fall. Almost never a home key, almost always a passage. Feels like: vertigo."}},
+  lyd:{nick:"the feather",desc:"It removes the major scale's only downward pull (the falling fourth) and everything <b>floats</b>: dreamy, fairy-tale, mid-air. The sound of <b>wonder</b> in film scores. Feels like: <b>flying</b>."},
+  maj:{nick:"the flag",desc:"Full major: <b>affirmative</b>, square, every tension knows where to resolve. The <b>default light</b> of Western music: anthems, pop, stadium choirs. Feels like: <b>arriving</b>."},
+  mixo:{nick:"the road",desc:"Major <b>without the leading tone</b>: no rush to get home. Earthy, warm, a little dusty: blues, seventies rock, folk. Feels like: <b>walking in the sun</b>."},
+  dor:{nick:"the compass",desc:"Minor with a <b>straight back</b>: the major sixth lights a <b>hope inside the melancholy</b>. Cool, elegant, never desperate: modal jazz, Santana, Celtic ballads. Feels like: <b>sunset with a clear course</b>."},
+  min:{nick:"the umbrella",desc:"Natural minor, the <b>default melancholy</b>: inner rain, nostalgia, gathering in. Feels like: <b>evening indoors while it rains</b>."},
+  phr:{nick:"the wind",desc:"The minor second above the tonic presses like a <b>hot, dark wind</b>: Spanish, Mediterranean, threatening. Flamenco and metal both claim it. Feels like: <b>a windy night</b>."},
+  loc:{nick:"the vortex",desc:"It has no perfect fifth: <b>the floor is missing</b>. Everything hangs, <b>unstable</b>, in controlled fall. Almost never a home key, almost always a passage. Feels like: <b>vertigo</b>."}},
  round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)",
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
@@ -611,7 +611,7 @@ en:{
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
  unlockTap:"tap to continue",
- legsum:"Color legend", thintro:"What each interval does in music: where it pulls, what character it has. The sensation holds everywhere; the role described is its job in a major/minor context: inside each mode the same interval can change jobs (the m2 in Phrygian is not a tension to resolve, it is the color of home).",
+ legsum:"Color legend", thintro:"<b>What each interval does</b> in music: where it pulls, what character it has. The sensation holds everywhere; the role described is its job in a <b>major/minor context</b>: inside each mode the same interval can <b>change jobs</b> (the m2 in Phrygian is not a tension to resolve, it is the color of home).",
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
  NOTE:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
@@ -619,31 +619,31 @@ en:{
  DEG:['tonic','minor supertonic','major supertonic','minor mediant','major mediant','subdominant','tritone','dominant','minor submediant','major submediant','subtonic','leading tone'],
  NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','sky','wave','bolt'],
  courses:{
-  pent:{title:"The pentatonic", desc:"Five notes that never miss together: no semitones, no tension. Everything floats, everything sounds good. It's the most widespread scale in the world, from blues to folk songs. Here you build the foundations of your ear: home, openness, movement. The base sensation everything else will grow from.",
+  pent:{title:"The pentatonic", desc:"Five notes that <b>never miss together</b>: no semitones, no tension. Everything <b>floats</b>, everything sounds good. It's the <b>most widespread scale in the world</b>, from blues to folk songs. Here you build the <b>foundations of your ear</b>: home, openness, movement. The base sensation everything else will grow from.",
    levels:[
-   {name:"The two poles", th:"You start from the two points all music moves between: the tonic, the rest, and the dominant, its pillar. One is home, the other is the push that brings you back home. No color yet, no tension: you feel only the axis, the north and south of sound. It's the sensation of stability, the floor under your feet."},
-   {name:"The arpeggio", th:"The major third arrives and suddenly there's an identity: with home and pillar it forms the major chord, its smile. It's the note that turns the light on. Feel how from two bare points a full, open, affirmative color is born: the sensation of the rising sun."},
-   {name:"The step", th:"Until now the notes leaped from point to point; now comes the stair-step that makes them walk. This note is neither rest nor tension: it's pure movement. With it the melody stops jumping and starts strolling, one step after another. The sensation is a gentle walk."},
-   {name:"The pentatonic", th:"The last note completes the pentatonic: five sounds, zero semitones, zero tension. It's the \"fail-safe\" scale where anything you play works. Feel the total openness, warm and weightless: nothing pulls, everything floats. Hold on to this sensation, because in the next course we'll transform it."}]},
-  maj:{title:"The major scale", desc:"Take the pentatonic you built and add the two notes it's missing. They're the only two that create a semitone, and they change everything: where before everything floated, now there's gravity. Tension asking to resolve, the need to get home. That's how the full, affirmative sound of the major scale is born from the pentatonic, the alphabet of almost every melody you know.",
+   {name:"The two poles", th:"You start from the <b>two points</b> all music moves between: the <b>tonic</b>, the rest, and the <b>dominant</b>, its pillar. One is home, the other is the push that brings you back home. No color yet, no tension: you feel only the <b>axis</b>, the north and south of sound. It's the sensation of <b>stability</b>, the floor under your feet."},
+   {name:"The arpeggio", th:"The <b>major third</b> arrives and suddenly there's an <b>identity</b>: with home and pillar it forms the major chord, its smile. It's the note that <b>turns the light on</b>. Feel how from two bare points a full, open, affirmative color is born: the sensation of the <b>rising sun</b>."},
+   {name:"The step", th:"Until now the notes leaped from point to point; now comes the <b>stair-step</b> that makes them walk. This note is neither rest nor tension: it's <b>pure movement</b>. With it the melody stops jumping and starts strolling, one step after another. The sensation is a <b>gentle walk</b>."},
+   {name:"The pentatonic", th:"The last note <b>completes the pentatonic</b>: five sounds, zero semitones, zero tension. It's the <b>\"fail-safe\" scale</b> where anything you play works. Feel the <b>total openness</b>, warm and weightless: nothing pulls, everything floats. Hold on to this sensation, because in the next course we'll transform it."}]},
+  maj:{title:"The major scale", desc:"Take the pentatonic you built and add the <b>two notes it's missing</b>. They're the only two that create a <b>semitone</b>, and they change everything: where before everything floated, now there's <b>gravity</b>. Tension asking to resolve, the need to get home. That's how the <b>full, affirmative sound</b> of the major scale is born from the pentatonic, the alphabet of almost every melody you know.",
    levels:[
-   {name:"The leading tone", th:"Here's the first real tension. The leading tone sits just a semitone from home: it won't sit still, it presses, it pulls upward, it begs to discharge onto the tonic. After all the floating of the pentatonic, for the first time you feel a note that does NOT want to stay put: it's what makes the return home inevitable. The sensation shifts: now there's a pull."},
-   {name:"The full scale", th:"The last note closes the circle: all seven degrees. The subdominant opens the first step of the harmonic journey and, with the leading tone, forms the hidden tritone (fa-ti), the secret engine of every closure. Now the scale has full gravity: every tension knows where to go. This is the sensation of major: affirmation, arrival, home."}]}},
+   {name:"The leading tone", th:"Here's the <b>first real tension</b>. The leading tone sits <b>just a semitone from home</b>: it won't sit still, it presses, it pulls upward, it begs to discharge onto the tonic. After all the floating of the pentatonic, for the first time you feel a note that <b>does NOT want to stay put</b>: it's what makes the return home inevitable. The sensation shifts: now there's a <b>pull</b>."},
+   {name:"The full scale", th:"The last note <b>closes the circle</b>: all seven degrees. The subdominant opens the harmonic journey and, with the leading tone, forms the <b>hidden tritone</b> (fa-ti), the secret engine of every closure. Now the scale has <b>full gravity</b>: every tension knows where to go. This is the sensation of major: affirmation, arrival, home."}]}},
  TH:[
-  "The resting point. Everything is measured from here and everything, sooner or later, returns here. When the melody lands on the tonic, the phrase closes.",
-  "A semitone above home: it creeps, it presses, it will not sit still. Pure chromatic tension, the dark color of the Phrygian mode.",
-  "The natural step of melody. Neither rest nor drama: it is motion, the stair-step that phrases walk on.",
-  "The note that darkens: with it the mode turns minor. Melancholy, interiority. The heart of the minor chord.",
-  "The note that brightens: with it the mode turns major. Openness, affirmation. The heart of the major chord.",
-  "The first step of the harmonic journey (I→IV). It suspends without drama: it is the fourth of the sus4 chord, asking to settle onto the third.",
-  "It splits the octave exactly in half: maximum instability, no hierarchy. The engine of the dominant seventh chord: it wants to resolve by semitones, in both directions.",
-  "The pillar. The most stable interval after the octave, and at the same time the structural tension of harmony: the dominant exists to pull toward home.",
-  "The sweet melancholy of the minor mode. It leans downward: it tends to fall by semitone onto the dominant.",
-  "Warm and open, the color of the major mode smiling. From here, the relative minor is one step away.",
-  "The color of blues and Mixolydian, the seventh of the dominant chord. Soft tension drifting down toward the mediant.",
-  "The lightning: a semitone from home, maximum upward charge. It is the leading tone, the note that makes the return to the tonic inevitable."],
+  "The <b>resting point</b>. Everything is measured from here and everything, sooner or later, returns here. When the melody lands on the tonic, the phrase <b>closes</b>.",
+  "A <b>semitone above home</b>: it creeps, it presses, it will not sit still. Pure <b>chromatic tension</b>, the dark color of the Phrygian mode.",
+  "The <b>natural step</b> of melody. Neither rest nor drama: it is <b>motion</b>, the stair-step that phrases walk on.",
+  "The note that <b>darkens</b>: with it the mode turns <b>minor</b>. Melancholy, interiority. The heart of the minor chord.",
+  "The note that <b>brightens</b>: with it the mode turns <b>major</b>. Openness, affirmation. The heart of the major chord.",
+  "The <b>first step</b> of the harmonic journey (I→IV). It <b>suspends</b> without drama: it is the fourth of the sus4 chord, asking to settle onto the third.",
+  "It splits the octave exactly <b>in half</b>: <b>maximum instability</b>, no hierarchy. The engine of the dominant seventh chord: it wants to resolve by semitones, in both directions.",
+  "The <b>pillar</b>. The most <b>stable</b> interval after the octave, and at the same time the <b>structural tension</b> of harmony: the dominant exists to pull toward home.",
+  "The <b>sweet melancholy</b> of the minor mode. It leans downward: it tends to <b>fall by semitone</b> onto the dominant.",
+  "<b>Warm and open</b>, the color of the major mode smiling. From here, the relative minor is one step away.",
+  "The color of <b>blues</b> and Mixolydian, the seventh of the dominant chord. <b>Soft tension</b> drifting down toward the mediant.",
+  "The <b>lightning</b>: a semitone from home, <b>maximum upward charge</b>. It is the leading tone, the note that makes the return to the tonic inevitable."],
  GUIDE:[
-  {h:"What you're training", p:"Huermony trains your relative ear with a little synesthesia: every sound, compared to the tonic (the home note), always has the same color, the same symbol and the same place on the wheel. Change the starting note and the colors stay the same. You don't memorize notes: you learn distances."},
+  {h:"What you're training", p:"Huermony trains your <b>relative ear</b> with a little synesthesia: every sound, compared to the tonic (the home note), always has the <b>same color</b>, the same symbol and the same place on the wheel. Change the starting note and the colors stay the same. <b>You don't memorize notes: you learn distances.</b>"},
   {h:"The path", p:"On the <b>Home</b> screen the courses sit one below the other, like a trail. You start with the <b>pentatonic</b>: 5 notes, no tension, easy to sing. You build it one sound at a time (Home and Pillar, then Sun, Step, Sky). Finish it and the <b>major scale</b> unlocks: you take the pentatonic and add the 2 notes that create the tension. Under each scale there's a row of colored circles: tap them to hear the notes, tap the speaker to hear the whole scale."},
   {h:"How to play", t:"do", p:"It's like Simon: listen and repeat.<br>1. Press <b>Play</b> (or the big Play button in the center of the wheel): a short melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Right? It restarts with one more note.<br><br>You climb up to <b>round 7</b>: that's when you clear the level. If you make a mistake you see the right sequence, and that's where you learn. The rhythm changes on its own: notes have different lengths, but you only need the order. <b>Speed</b> works like a video player: 0.5x, 1x, 1.5x, 2x."},
   {h:"Difficulty and stars", p:"Open a level and at the top you'll find <b>Start playing</b> with three difficulties:<br><b>Easy</b>: see the colors and listen.<br><b>Normal</b>: by ear only, no colors.<br><b>Hard</b>: the tonic changes every round.<br><br><span style='color:var(--gold)'>★</span> reach round 5 · <span style='color:var(--gold)'>★★</span> round 7 · <span style='color:var(--gold)'>★★★</span> round 7 without using Replay. Up to 9 stars per level. Each difficulty unlocks with 1★ in the previous one. Further down, in <b>What you'll learn</b>, you'll find the role of each sound to listen to at your own pace."},
@@ -821,7 +821,10 @@ function setView(name){
  const tabFor={levels:'home', leveldetail:'home', free:'free', guide:'guide', theory:'theory', home:'profile'};
  const ta=tabFor[name]||name;
  ['home','free','guide','theory','profile'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ scrollTop();
 }
+// ogni cambio pagina riparte dall'alto
+function scrollTop(){ try{window.scrollTo(0,0);}catch(e){} document.documentElement.scrollTop=0; document.body.scrollTop=0; const w=document.querySelector('.wrap'); if(w)w.scrollTop=0; }
 function showHome(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
 function nameForId(id){return COURSE_IDS.includes(id)?S9.courses[id].title:(S9.scales[SCIDX[id]]||id);}
@@ -973,7 +976,7 @@ function openFreeSetup(){
  }
  $('fs-scale').value=scale; $('fs-tonic').value=String(root);
  renderFsPreview();
- $('freesetup').hidden=false;
+ $('freesetup').hidden=false; $('freesetup').scrollTop=0;
 }
 function renderFsPreview(){
  const sc=$('fs-scale').value, rt=+$('fs-tonic').value, box=$('fs-preview');
