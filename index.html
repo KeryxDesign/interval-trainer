@@ -34,8 +34,8 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .dashhead #emblem{position:relative; width:46px; height:46px; flex:0 0 auto;}
 #hname{font-size:24px; font-weight:700; letter-spacing:-0.02em; margin:0; flex:1;}
 #htag{font-size:14px; color:var(--muted); margin:0 0 14px;}
-.metrics{display:flex; gap:10px; margin:0 0 14px;}
-.metric{flex:1; background:var(--surface); border-radius:14px; padding:14px 10px; text-align:center;}
+.metrics{display:flex; flex-wrap:wrap; gap:10px; margin:0 0 14px;}
+.metric{flex:1 1 28%; min-width:90px; background:var(--surface); border-radius:14px; padding:14px 10px; text-align:center;}
 .metric .mv{font-size:26px; font-weight:700; line-height:1;}
 .metric .ml{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:6px;}
 #dash-studied{font-size:15px; color:var(--muted); background:var(--surface); border-radius:12px; padding:13px 15px; margin:0 0 18px; display:flex; align-items:center; gap:10px;}
@@ -116,8 +116,13 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .mapdot{position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
 .mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
 .world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
-.secname{font-size:28px; font-weight:800; letter-spacing:-.02em; margin:32px 0 12px; color:var(--text); text-align:center;}
-.pathsec:first-child .secname{margin-top:16px;}
+.secname{font-size:28px; font-weight:800; letter-spacing:-.02em; margin:6px 0 10px; color:var(--text); text-align:center;}
+.pathdots{display:flex; gap:8px; justify-content:center; align-items:center; margin:6px 0 14px;}
+.pdot{width:9px; height:9px; border-radius:50%; border:none; background:var(--line); padding:0; cursor:pointer; transition:width .2s, background .2s; flex:0 0 auto;}
+.pdot.on{background:var(--gold); width:24px; border-radius:5px;}
+.medals{display:flex; gap:16px; justify-content:center; align-items:center; margin:0 0 18px; font-size:15px; font-weight:700; color:var(--text);}
+.medal{display:inline-flex; align-items:center; gap:5px;}
+.coursepage.locked .secname{color:var(--muted);}
 .scalerow{justify-content:center;}
 .secacc{background:var(--surface); border-radius:14px; margin:0 0 16px; overflow:hidden;}
 .secacc summary{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); cursor:pointer; padding:14px 16px; list-style:none; display:flex; align-items:center; justify-content:space-between;}
@@ -253,6 +258,8 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="streak" hidden></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
+      <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
+      <div class="metric"><div class="mv" id="m-boss">0</div><div class="ml" id="m-boss-l"></div></div>
       <div class="metric"><div class="mv" id="m-levels">0</div><div class="ml" id="m-levels-l"></div></div>
       <div class="metric"><div class="mv" id="m-games">0</div><div class="ml" id="m-games-l"></div></div>
     </div>
@@ -485,7 +492,7 @@ it:{
   "Via via aggiungerai sempre più note.\n\nCostruirai scale sempre più complesse.\n\nScoprirai sempre più <b>sapori musicali</b>.",
   "Che tu sia un musicista professionista o un suonatore di campanelli, ti auguro di <b>divertirti</b>, e di sbirciare anche solo per un secondo oltre al velo di mistero che a volte nasconde la musica.\n\nIn bocca al lupo!"
  ],
- dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
+ dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Elite", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
  timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce"},
@@ -636,7 +643,7 @@ en:{
   "Bit by bit you'll add more notes.\n\nYou'll build ever more complex scales.\n\nYou'll discover ever more <b>musical flavors</b>.",
   "Whether you're a professional musician or a doorbell player, I wish you <b>fun</b>, and a chance to peek, even just for a second, beyond the veil of mystery that sometimes hides music.\n\nGood luck!"
  ],
- dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
+ dashTag:"Your progress", mStars:"Stars", mElite:"Elite", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
  timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice"},
@@ -790,6 +797,12 @@ function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss')ret
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
+function courseMaxStars(c){return S9.courses[c].levels.length*9;}
+function courseEliteDone(c){let n=0; S9.courses[c].levels.forEach((_,w)=>{if(localStorage.getItem('hm_elite_'+c+'_'+w))n++;}); return n;}
+function bossDone(c){return !!localStorage.getItem('hm_boss_'+c);}
+function totalElite(){let n=0; COURSE_IDS.forEach(c=>n+=courseEliteDone(c)); return n;}
+function totalEliteMax(){let n=0; COURSE_IDS.forEach(c=>n+=S9.courses[c].levels.length); return n;}
+function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); return n;}
 
 function applyStatic(){
  $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
@@ -866,7 +879,7 @@ function applyStatic(){
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
  $('htag').textContent=S9.dashTag;
- $('m-stars-l').textContent=S9.mStars; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
+ $('m-stars-l').textContent=S9.mStars; $('m-elite-l').textContent=S9.mElite; $('m-boss-l').textContent=S9.mBoss; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
  $('hguide').textContent=S9.dashGuide;
  $('htuttxt').textContent=S9.tutBtn;
  $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="heroq">'+S9.guideQ+'</div><div class="heropts">'+S9.guidePts.map(p=>'<div class="hp"><i class="ti ti-'+p.ic+'"></i><span>'+p.t+'</span></div>').join('')+'</div>';
@@ -959,6 +972,8 @@ function renderDashboard(){
  paintAvatar($('emblem'),getAvatar(),46);
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
  $('m-stars').textContent=totalStars();
+ $('m-elite').textContent=totalElite();
+ $('m-boss').textContent=totalBoss();
  $('m-levels').textContent=completedLevels();
  $('m-games').textContent=totalGames();
  const stk=getStreak(); const sd=$('streak');
@@ -1303,25 +1318,35 @@ function saveCurrentGameProgress(){
  let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
  saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
 }
+let pathPage=0;
 function renderPath(){
  const box=$('path'); box.innerHTML='';
+ const dotsbar=document.createElement('div'); dotsbar.className='pathdots';
+ const track=document.createElement('div'); track.className='pathtrack';
  COURSE_IDS.forEach((c,ci)=>{
   const cOpen=courseUnlocked(c);
-  const sec=document.createElement('div'); sec.className='pathsec'+(cOpen?'':' locked');
+  const page=document.createElement('div'); page.className='coursepage'+(cOpen?'':' locked');
   const allNotes=[...new Set((CBASE[c]||[]).concat(...CWADD[c]))].sort((a,b)=>a-b);
-  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+
+  // medaglie sotto il nome: stelle, elite, boss
+  const eD=courseEliteDone(c), eT=S9.courses[c].levels.length, bD=localStorage.getItem('hm_boss_'+c);
+  const medals='<div class="medals">'
+   +'<span class="medal"><i class="ti ti-star-filled" style="color:var(--gold)"></i> '+courseStars(c)+'/'+courseMaxStars(c)+'</span>'
+   +'<span class="medal"><i class="ti ti-skull" style="color:'+(eD>0?'var(--gold)':'var(--muted)')+'"></i> '+eD+'/'+eT+'</span>'
+   +'<span class="medal"><i class="ti ti-trophy" style="color:'+(bD?'var(--gold)':'var(--muted)')+'"></i> '+(bD?(bD==='3'?'🏆':'★'):'–')+'</span>'
+   +'</div>';
+  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
    '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
    (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
    '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
     (cOpen&&MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '</details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
-  sec.innerHTML=sh; box.appendChild(sec);
-  miniWheel(sec.querySelector('.mwbox'), allNotes, 230);
+  page.innerHTML=sh;
+  miniWheel(page.querySelector('.mwbox'), allNotes, 230);
   if(cOpen){
-   const mw=sec.querySelector('.mwbox');
-   sec.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, mw));
-   if(MELODIES[c]) sec.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, mw)));
+   const mw=page.querySelector('.mwbox');
+   page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, mw));
+   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, mw)));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1339,7 +1364,7 @@ function renderPath(){
     card.innerHTML=h;
     card.addEventListener('click',()=>showLevelDetail(c,i));
    }
-   box.appendChild(card);
+   page.appendChild(card);
   });
   // BOSS finale del corso: melodia random di 8 note
   {
@@ -1348,9 +1373,27 @@ function renderPath(){
    let bh='<i class="ti ti-skull skull"></i><span class="btitle">'+S9.boss+(bDone?' <span style="color:var(--gold)">'+(bDone==='3'?'🏆':'★')+'</span>':'')+'</span>';
    if(bOpen){ bh+='<p class="wsub" style="text-align:center">'+S9.bossCard+'</p>'; bc.innerHTML=bh; bc.addEventListener('click',()=>beginBoss(c)); }
    else { bh+='<p class="wreq" style="justify-content:center"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.bossLocked+'</p>'; bc.innerHTML=bh; }
-   box.appendChild(bc);
+   page.appendChild(bc);
   }
+  track.appendChild(page);
+  const dot=document.createElement('button'); dot.className='pdot'; dot.setAttribute('aria-label',S9.courses[c].title); dot.addEventListener('click',()=>setPathPage(ci)); dotsbar.appendChild(dot);
  });
+ box.appendChild(dotsbar); box.appendChild(track);
+ attachPathSwipe(track);
+ setPathPage(Math.min(pathPage, COURSE_IDS.length-1));
+}
+function setPathPage(i){
+ const pages=document.querySelectorAll('.coursepage'); if(!pages.length) return;
+ i=Math.max(0,Math.min(pages.length-1,i)); pathPage=i;
+ pages.forEach((p,idx)=>{ p.hidden=idx!==i; });
+ document.querySelectorAll('.pdot').forEach((d,idx)=>d.classList.toggle('on',idx===i));
+ const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
+ try{window.scrollTo(0,0);}catch(e){}
+}
+function attachPathSwipe(el){
+ let x0=null,y0=null;
+ el.addEventListener('touchstart',e=>{const t=e.touches[0]; x0=t.clientX; y0=t.clientY;},{passive:true});
+ el.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0]; const dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3) setPathPage(pathPage+(dx<0?1:-1)); },{passive:true});
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 // spezza i paragrafi lunghi (~max 4 righe) ai confini di frase, in tutta l'app
@@ -2035,7 +2078,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.63'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.64'; $('ver').textContent='v'+APP_VER+' alpha';
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
