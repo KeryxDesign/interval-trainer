@@ -2078,7 +2078,9 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.64'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.65'; $('ver').textContent='v'+APP_VER+' alpha';
+// l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
+['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
