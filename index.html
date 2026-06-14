@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <style>
 :root{
-  --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f; --gold:#eab308; --elite:#a78bfa;
+  --bg:#14151a; --surface:#1e2027; --surface2:#262932; --text:#edeef2; --muted:#9aa0ad; --line:#33363f; --gold:#eab308;
 }
 [hidden]{display:none !important;}
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
@@ -143,12 +143,13 @@ button.levelcard:active{transform:scale(0.99);}
 .bosscard .skull{font-size:62px; color:#e24b4a; line-height:1; display:block; margin:0 0 8px;}
 .bosscard.done .skull{color:var(--gold);}
 .bosscard .btitle{font-size:19px; font-weight:700; display:block; margin:0 0 4px;}
-.levelcard.elitecard{text-align:center; padding:18px 16px 16px; border:1.5px solid var(--elite); background:linear-gradient(180deg, rgba(167,139,250,.10), var(--surface)); margin-bottom:14px;}
-.elitecard.locked{border-color:var(--line); opacity:.85;}
-.elitecard .eskull{font-size:46px; color:var(--elite); line-height:1; display:block; margin:0 0 6px;}
-.elitecard.locked .eskull{color:var(--muted);}
+.levelcard.elitecard{text-align:center; padding:18px 16px 16px; border:1.5px solid var(--line); background:var(--surface); margin-bottom:14px;}
+.elitecard.done{border:1.5px solid var(--gold); background:linear-gradient(180deg, rgba(234,179,8,.10), var(--surface));}
+.elitecard.locked{opacity:.85;}
+.elitecard .eskull{font-size:46px; color:#e24b4a; line-height:1; display:block; margin:0 0 6px;}
+.elitecard.done .eskull{color:var(--gold);}
 .elitecard .etitle{font-size:18px; font-weight:700; display:block; margin:0 0 4px;}
-.elitecard .estar{color:var(--elite); font-size:20px; vertical-align:-1px;}
+.elitecard .estar{color:var(--gold); font-size:20px; vertical-align:-1px;}
 .elitecard .esub{font-size:14px; color:var(--muted); margin:0;}
 .welpair{display:flex; align-items:center; justify-content:center; gap:14px; margin:0 0 16px;}
 .welnote{width:70px; height:70px; border-radius:50%; border:1.5px solid var(--line); background:var(--surface2); color:var(--text); font-size:18px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .1s; flex:0 0 auto;}
@@ -1357,7 +1358,7 @@ function showLevelDetail(c,w){
  // ELITE: mini-boss sbloccato dopo aver superato la modalità Difficile (1★). Si batte una volta, una sola grande stella.
  const eu=unlockAll()||starsOf(c,w,2)>=1;
  const eDone=localStorage.getItem('hm_elite_'+c+'_'+w);
- const eb=document.createElement(eu?'button':'div'); eb.className='world levelcard elitecard'+(eu?'':' locked');
+ const eb=document.createElement(eu?'button':'div'); eb.className='world levelcard elitecard'+(eu?'':' locked')+(eDone?' done':'');
  let eh='<i class="ti ti-skull eskull"></i><span class="etitle">'+S9.elite+(eDone?' <span class="estar">★</span>':'')+'</span>';
  if(eu){ eh+='<p class="esub">'+S9.eliteCard+'</p>'; eb.innerHTML=eh; eb.addEventListener('click',()=>beginElite(c,w)); }
  else { eh+='<p class="esub"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.eliteLocked+'</p>'; eb.innerHTML=eh; }
@@ -1604,7 +1605,7 @@ function bossWin(){
  else { const key='hm_boss_'+game.c, prev=localStorage.getItem(key); localStorage.setItem(key, perfect?'3':(prev==='3'?'3':'1')); }
  $('bossbar').hidden=true;
  const ico=$('celico');
- if(isElite) ico.innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--elite);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-star-filled" style="font-size:40px"></i></div>';
+ if(isElite) ico.innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-star-filled" style="font-size:40px"></i></div>';
  else ico.innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isElite?S9.eliteWin:S9.bossWin;
  $('celname').innerHTML='<b>'+game.name+'</b>'+(!isElite&&perfect?'<br><span style="color:var(--gold);font-size:14px">'+S9.bossPerfect+'</span>':'');
