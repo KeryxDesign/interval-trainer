@@ -328,7 +328,7 @@ button.levelcard:active{transform:scale(0.99);}
     <button class="btn primary" id="fs-play" style="flex:1.4; justify-content:center; padding:14px; font-size:16px;"><i class="ti ti-player-play"></i><span id="fs-playtxt"></span></button>
   </div>
 </div>
-<div id="preroll" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
+<div id="preroll" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
   <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 28px;"></p>
   <div id="pr-icon" style="font-size:42px; color:var(--gold); margin:0 0 14px; min-height:46px;"></div>
   <p id="pr-cat" style="font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); margin:0 0 12px;"></p>
@@ -410,7 +410,7 @@ it:{
  guidePts:[{ic:'palette',t:"Ogni suono ha sempre il suo <b>colore</b>"},{ic:'ear',t:"Impari a <b>sentire</b> la musica, non a memorizzarla"},{ic:'player-play',t:"Si impara <b>giocando</b>, come a Simon"}],
  welBody:"",
  welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
- welSteps:[{ic:'palette',t:"Ogni suono ha il suo colore. Imparerai a riconoscerli a orecchio."},{ic:'player-play',t:"Si gioca così: ascolti una melodia e la ripeti. Niente spartiti, niente teoria."},{ic:'heart',t:"Funziona anche se pensi di non avere orecchio. Si parte dal primo passo, con calma."}],
+ welSteps:[{ic:'robot',t:"Perché certi musicisti suonano come robot, e altri sembra che parlino musica?"},{ic:'ear',t:"Chi parla musica ha imparato la sensazione dei suoni, non solo dove mettere le dita."},{ic:'palette',t:"Huermony te la fa imparare in fretta: giocando, associando suoni a colori e forme. Sarai capace di suonare o cantare fin da subito, senza una lezione."},{ic:'microphone-2',t:"Provalo col tutorial. Puoi usare anche il tuo strumento vero: ti accorgerai che stai già suonando note che stanno bene insieme."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
@@ -543,7 +543,7 @@ en:{
  guidePts:[{ic:'palette',t:"Every sound always has its own <b>color</b>"},{ic:'ear',t:"You learn to <b>feel</b> music, not memorize it"},{ic:'player-play',t:"You learn by <b>playing</b>, like Simon"}],
  welBody:"",
  welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
- welSteps:[{ic:'palette',t:"Every sound has its own color. You'll learn to recognize them by ear."},{ic:'player-play',t:"Here's how you play: you hear a melody and repeat it. No sheet music, no theory."},{ic:'heart',t:"It works even if you think you have no ear. You start from the first step, take it easy."}],
+ welSteps:[{ic:'robot',t:"Why do some musicians play like robots, while others seem to speak music?"},{ic:'ear',t:"Those who speak music learned the feeling of sounds, not just where to put their fingers."},{ic:'palette',t:"Huermony gets you there fast: by playing, pairing sounds with colors and shapes. You'll be able to play or sing right away, with no lesson."},{ic:'microphone-2',t:"Try it with the tutorial. You can use your real instrument too: you'll notice you're already playing notes that sound good together."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
