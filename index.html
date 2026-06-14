@@ -156,6 +156,13 @@ button.levelcard:active{transform:scale(0.99);}
 .welnote:active{transform:scale(.92);}
 .welplay{width:42px; height:42px; border-radius:50%; border:none; background:var(--text); color:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex:0 0 auto;}
 .welplay:active{transform:scale(.92);}
+#tutbox{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px 16px 16px; margin:0 0 12px; text-align:center;}
+.tut-ill{width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.tut-txt{font-size:16px; line-height:1.45; color:var(--text); margin:0; font-weight:600;}
+.tut-chips{display:flex; gap:14px; justify-content:center; margin:14px 0 0;}
+.tut-chip{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.tut-chip .c{width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.tut-chip small{font-size:13px; color:var(--muted); font-weight:700;}
 .gcard{background:var(--surface); border-radius:16px; padding:18px 18px 20px; margin-bottom:14px; border:1px solid var(--line);}
 .ghead{display:flex; align-items:center; gap:11px; margin:0 0 12px;}
 .ghead i{font-size:18px; color:var(--gold); flex:0 0 auto; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; background:rgba(234,179,8,.12); border-radius:10px;}
@@ -317,6 +324,7 @@ button.levelcard:active{transform:scale(0.99);}
       </div>
     </div>
 
+    <div id="tutbox" hidden></div>
     <p id="status"></p>
     <p id="micline" hidden style="font-size:14px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
@@ -857,7 +865,7 @@ function applyStatic(){
 
 function setView(name){
  if(ctx) stopAllHeld();
- $('bossbar').hidden=true;
+ $('bossbar').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1133,6 +1141,12 @@ function tutAllow(arr){
  tut.allowed=arr;
  document.querySelectorAll('#wheel .key').forEach(b=>{const k=+b.id.slice(1); b.style.opacity=(arr.length===0||arr.includes(k))?'1':'0.3';});
 }
+// presentazione grafica del tutorial: icona-illustrazione + testo + note coi colori
+function tutMsg(ic, bg, fg, text, notes){
+ const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
+ const chips=(notes||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
+ b.innerHTML='<div class="tut-ill" style="background:'+(bg||'var(--surface2)')+';color:'+(fg||'var(--gold)')+'"><i class="ti ti-'+ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'');
+}
 function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
  setView('free');
@@ -1145,7 +1159,7 @@ function startTutorial(){
  render(); clearCenter();
  tut={step:1,allowed:[],expect:[],pos:0};
  tutAllow([0]);
- setStatus(S9.tut1);
+ tutMsg('home', C[0].h, ink(0), S9.tut1, [0]);
 }
 function tutMelody(cb){
  timers.push(setTimeout(()=>{flash(0,420); tone(60,0.45);},400));
@@ -1157,14 +1171,14 @@ function tutPress(k){
  ensureCtx();
  if(tut.step===1&&k===0){
   flash(0); tone(60,0.5); tutAllow([-1]);
-  timers.push(setTimeout(()=>{tutAllow([7]); setStatus(S9.tut2);},800));
+  timers.push(setTimeout(()=>{tutAllow([7]); tutMsg(C[7].ic, C[7].h, ink(7), S9.tut2, [0,7]);},800));
   tut.step=2; return;
  }
  if(tut.step===2&&k===7){
   flash(7); tone(67,0.5); tutAllow([-1]); tut.step=3;
   timers.push(setTimeout(()=>{
-   setStatus(S9.tut3);
-   tutMelody(()=>{tut.expect=[0,7]; tut.pos=0; tutAllow([0,7]); setStatus(S9.tutGo);});
+   tutMsg('ear', 'var(--surface2)', 'var(--gold)', S9.tut3, [0,7]);
+   tutMelody(()=>{tut.expect=[0,7]; tut.pos=0; tutAllow([0,7]); tutMsg('hand-finger', 'var(--surface2)', 'var(--gold)', S9.tutGo, [0,7]);});
   },800));
   return;
  }
@@ -1174,7 +1188,7 @@ function tutPress(k){
    tut.pos++;
    if(tut.pos>=tut.expect.length){
     tut.step=4; tutAllow([-1]);
-    setStatus(S9.tutDone,'ok'); chime();
+    tutMsg('star-filled', 'var(--gold)', '#14151a', S9.tutDone, [0,7]); chime();
     localStorage.setItem('hm_tut_done','1');
     // l'intro conta come gioco: prima stella di Livello 1 (Facile) gia' guadagnata
     saveProg('pent','w0m0',{stars:1,bestRound:2}); bumpPlays('pent'); bumpStreak();
@@ -1182,9 +1196,9 @@ function tutPress(k){
    }
   } else {
    tut.pos=0; tutAllow([-1]);
-   setStatus(S9.tutRetry,'err');
+   tutMsg('refresh', 'var(--surface2)', '#e24b4a', S9.tutRetry, [0,7]);
    timers.push(setTimeout(()=>{
-    tutMelody(()=>{tutAllow([0,7]); setStatus(S9.tutGo);});
+    tutMelody(()=>{tutAllow([0,7]); tutMsg('hand-finger', 'var(--surface2)', 'var(--gold)', S9.tutGo, [0,7]);});
    },700));
   }
  }
