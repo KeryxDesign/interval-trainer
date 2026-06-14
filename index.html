@@ -153,8 +153,12 @@ button.levelcard:active{transform:scale(0.99);}
 .elitecard .estar{color:var(--gold); font-size:20px; vertical-align:-1px;}
 .elitecard .esub{font-size:14px; color:var(--muted); margin:0;}
 .welpair{display:flex; align-items:center; justify-content:center; gap:14px; margin:0 0 16px;}
-.welnote{width:70px; height:70px; border-radius:50%; border:1.5px solid var(--line); background:var(--surface2); color:var(--text); font-size:18px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .1s; flex:0 0 auto;}
+.welnote{width:72px; height:72px; border-radius:50%; border:none; background:var(--surface2); color:var(--text); font-size:14px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; transition:transform .1s; flex:0 0 auto;}
 .welnote:active{transform:scale(.92);}
+#wel-ill{width:78px; height:78px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 22px; background:var(--gold); color:#14151a; box-shadow:0 6px 20px rgba(234,179,8,.22);}
+#wel-ill i{font-size:40px;}
+.wel-title{display:block; font-size:21px; font-weight:800; line-height:1.3; letter-spacing:-.01em; margin:0 0 14px;}
+.wel-body{display:block; font-size:16px; line-height:1.55; color:var(--text);}
 .welplay{width:42px; height:42px; border-radius:50%; border:none; background:var(--text); color:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex:0 0 auto;}
 .welplay:active{transform:scale(.92);}
 #tutbox{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px 16px 16px; margin:0 0 12px; text-align:center;}
@@ -348,6 +352,7 @@ button.levelcard:active{transform:scale(0.99);}
 <div id="welcome" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; overflow-y:auto; z-index:60; max-width:480px; margin:0 auto;">
   <div id="wel-inner" style="margin:auto; display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 28px; width:100%;">
     <div id="wel-pairs" hidden style="width:100%; margin:0 0 22px;"></div>
+    <div id="wel-ill" hidden></div>
     <p id="wel-step" style="font-size:18px; line-height:1.55; color:var(--text); margin:0 0 26px; max-width:340px;"></p>
     <div id="wel-dots" style="display:flex; gap:8px; margin:0 0 24px;"></div>
     <button class="btn primary" id="wel-next" style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px;"></button>
@@ -1073,7 +1078,9 @@ function buildWelPairs(){
  [[{k:0,l:L.do},{k:7,l:L.sol}],[{k:0,l:L.do},{k:11,l:L.si}]].forEach(pair=>{
   const row=document.createElement('div'); row.className='welpair';
   pair.forEach((n,i)=>{
-   const b=document.createElement('button'); b.className='welnote'; b.textContent=n.l;
+   const b=document.createElement('button'); b.className='welnote';
+   b.style.background=C[n.k].h; b.style.color=ink(n.k);
+   b.innerHTML='<i class="ti ti-'+C[n.k].ic+'" style="font-size:22px"></i><span>'+n.l+'</span>';
    b.addEventListener('click',()=>{ensureCtx(); tone(60+n.k,0.7); flashEl(b);});
    row.appendChild(b);
    if(i===0){ const p=document.createElement('button'); p.className='welplay'; p.setAttribute('aria-label','play'); p.innerHTML='<i class="ti ti-player-play"></i>';
@@ -1083,11 +1090,23 @@ function buildWelPairs(){
   box.appendChild(row);
  });
 }
+// icone-illustrazione per le schermate scritte (indice 0 della pre = schermata coppie, niente icona)
+const WEL_IC_PRE=[null,'arrows-join','wave-sine','heart','anchor','player-play'];
+const WEL_IC_POST=['stairs-up','confetti'];
 function renderWelStep(){
  const list=welList(), last=welStep===list.length-1;
  const isPairs=(welMode==='pre'&&welStep===0);
  if(isPairs) buildWelPairs(); else $('wel-pairs').hidden=true;
- $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>');
+ const ill=$('wel-ill');
+ if(isPairs){ ill.hidden=true; $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>'); }
+ else {
+  const ic=(welMode==='post'?WEL_IC_POST:WEL_IC_PRE)[welStep];
+  if(ic){ ill.hidden=false; ill.innerHTML='<i class="ti ti-'+ic+'"></i>'; } else ill.hidden=true;
+  // gerarchia: prima frase = titolo, resto = corpo
+  const parts=(list[welStep]||'').split('\n\n');
+  const title=parts[0]||''; const body=parts.slice(1).join('<br><br>').replace(/\n/g,'<br>');
+  $('wel-step').innerHTML='<span class="wel-title">'+title+'</span>'+(body?'<span class="wel-body">'+body+'</span>':'');
+ }
  let dots=''; list.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
  $('wel-dots').innerHTML=dots;
  $('wel-next').textContent=last?(welMode==='pre'?S9.welTryTut:S9.welStart):S9.welNext;
@@ -2004,7 +2023,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.61'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.62'; $('ver').textContent='v'+APP_VER+' alpha';
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
