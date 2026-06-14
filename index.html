@@ -155,7 +155,10 @@ button.levelcard:active{transform:scale(0.99);}
 .welpair{display:flex; align-items:center; justify-content:center; gap:14px; margin:0 0 16px;}
 .welnote{width:72px; height:72px; border-radius:50%; border:none; background:var(--surface2); color:var(--text); font-size:14px; font-weight:700; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; transition:transform .1s; flex:0 0 auto;}
 .welnote:active{transform:scale(.92);}
-#wel-ill{width:78px; height:78px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 22px; background:var(--gold); color:#14151a; box-shadow:0 6px 20px rgba(234,179,8,.22);}
+#wel-ill{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 22px; background:var(--gold); color:#fff; box-shadow:0 6px 20px rgba(234,179,8,.22);}
+@keyframes welIn{from{opacity:0; transform:translateY(16px) scale(.95)} to{opacity:1; transform:translateY(0) scale(1)}}
+@keyframes welPop{0%{opacity:0; transform:scale(.4)} 60%{transform:scale(1.08)} 100%{opacity:1; transform:scale(1)}}
+@keyframes tutIn{from{opacity:0; transform:translateY(12px) scale(.97)} to{opacity:1; transform:none}}
 #wel-ill i{font-size:40px;}
 .wel-title{display:block; font-size:21px; font-weight:800; line-height:1.3; letter-spacing:-.01em; margin:0 0 14px;}
 .wel-body{display:block; font-size:16px; line-height:1.55; color:var(--text);}
@@ -1093,6 +1096,8 @@ function buildWelPairs(){
 // icone-illustrazione per le schermate scritte (indice 0 della pre = schermata coppie, niente icona)
 const WEL_IC_PRE=[null,'arrows-join','wave-sine','heart','anchor','player-play'];
 const WEL_IC_POST=['stairs-up','confetti'];
+const WEL_COL_PRE=[null,'#14b8a6','#3b82f6','#ef4444','#a855f7','#22c55e'];
+const WEL_COL_POST=['#f59e0b','#eab308'];
 function renderWelStep(){
  const list=welList(), last=welStep===list.length-1;
  const isPairs=(welMode==='pre'&&welStep===0);
@@ -1101,7 +1106,8 @@ function renderWelStep(){
  if(isPairs){ ill.hidden=true; $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>'); }
  else {
   const ic=(welMode==='post'?WEL_IC_POST:WEL_IC_PRE)[welStep];
-  if(ic){ ill.hidden=false; ill.innerHTML='<i class="ti ti-'+ic+'"></i>'; } else ill.hidden=true;
+  const col=(welMode==='post'?WEL_COL_POST:WEL_COL_PRE)[welStep]||'var(--gold)';
+  if(ic){ ill.hidden=false; ill.innerHTML='<i class="ti ti-'+ic+'"></i>'; ill.style.background=col; ill.style.boxShadow='0 8px 26px '+(col[0]==='#'?col+'44':'rgba(234,179,8,.27)'); } else ill.hidden=true;
   // gerarchia: prima frase = titolo, resto = corpo
   const parts=(list[welStep]||'').split('\n\n');
   const title=parts[0]||''; const body=parts.slice(1).join('<br><br>').replace(/\n/g,'<br>');
@@ -1112,7 +1118,12 @@ function renderWelStep(){
  $('wel-next').textContent=last?(welMode==='pre'?S9.welTryTut:S9.welStart):S9.welNext;
  $('wel-skip').style.display=welMode==='pre'?'block':'none';
  $('welcome').scrollTop=0;
+ // animazioni d'ingresso (staggered): illustrazione pop, testo/coppie slide-in
+ if(!isPairs){ anim(ill,'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',0); anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',90); }
+ else { anim($('wel-pairs'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',0); anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',90); }
 }
+// retrigger affidabile di una CSS animation
+function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
 function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
 function startLevel(c,w,m){
@@ -1167,6 +1178,7 @@ function tutMsg(ic, bg, fg, text, notes){
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
  const chips=(notes||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
  b.innerHTML='<div class="tut-ill" style="background:'+(bg||'var(--surface2)')+';color:'+(fg||'var(--gold)')+'"><i class="ti ti-'+ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'');
+ anim(b,'tutIn .4s ease both',0); anim(b.querySelector('.tut-ill'),'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',60);
 }
 function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
@@ -2023,7 +2035,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.62'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.63'; $('ver').textContent='v'+APP_VER+' alpha';
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
