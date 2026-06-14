@@ -1596,7 +1596,7 @@ function bossHit(k){
   game.lives--; buzz(); renderBossBar();
   flash(game.seq[step],420); // mostra la nota giusta
   if(game.lives<=0){ state='over'; bossFail(); }
-  else setStatus(S9.bossWrong,'err');
+  else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossPlay(),1100)); } // riascolto automatico, si riparte da capo
  }
 }
 function bossWin(){
