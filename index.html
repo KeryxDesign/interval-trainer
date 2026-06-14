@@ -167,6 +167,7 @@ button.levelcard:active{transform:scale(0.99);}
 #wel-ill i{font-size:40px;}
 .wel-title{display:block; font-size:21px; font-weight:800; line-height:1.3; letter-spacing:-.01em; margin:0 0 14px;}
 .wel-body{display:block; font-size:16px; line-height:1.55; color:var(--text);}
+#welcome b{color:var(--gold);}
 .welplay{width:42px; height:42px; border-radius:50%; border:none; background:var(--text); color:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex:0 0 auto;}
 .welplay:active{transform:scale(.92);}
 #tutbox{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px 16px 16px; margin:0 0 12px; text-align:center;}
@@ -514,7 +515,7 @@ it:{
   min:{nick:"l'ombrello",desc:"Il minore naturale, la <b>malinconia di default</b>: pioggia interiore, nostalgia, raccoglimento. Sensazione: <b>sera, dentro casa, fuori piove</b>."},
   phr:{nick:"il vento",desc:"La seconda minore sopra la tonica preme come un <b>vento caldo e scuro</b>: spagnolo, mediterraneo, minaccioso. Flamenco e metal se lo contendono. Sensazione: <b>notte di vento</b>."},
   loc:{nick:"il vortice",desc:"Non ha la quinta giusta: <b>manca il pavimento</b>. Tutto è sospeso, <b>instabile</b>, in caduta controllata. Quasi mai un centro tonale, quasi sempre un passaggio. Sensazione: <b>vertigine</b>."}},
- round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)",
+ round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)", modaLibera:"Modalità libera", freeNeedLevel:"Gioca il Livello 1 per sbloccare le note.",
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
  wrong:(s,n,d)=>"sbagliato al passo "+s+": era "+n+" ("+d+")", roundW:"round",
@@ -541,7 +542,7 @@ it:{
  DEG:['tonica','sopratonica minore','sopratonica maggiore','mediante minore','mediante maggiore','sottodominante','tritono','dominante','sopradominante minore','sopradominante maggiore','sottotonica','sensibile'],
  NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','cielo','onda','fulmine'],
  courses:{
-  pent:{title:"La pentatonica", desc:"Cinque note che insieme <b>non sbagliano un colpo</b>: nessun semitono, nessuna tensione. Tutto <b>galleggia</b>, tutto suona bene. È la scala <b>più diffusa al mondo</b>, dal blues ai canti popolari. Qui costruisci le <b>fondamenta dell'orecchio</b>: casa, apertura, movimento. La sensazione di base su cui poi nascerà tutto il resto.",
+  pent:{title:"Pentatonica maggiore", desc:"Cinque note che insieme <b>non sbagliano un colpo</b>: nessun semitono, nessuna tensione. Tutto <b>galleggia</b>, tutto suona bene. È la scala <b>più diffusa al mondo</b>, dal blues ai canti popolari. Qui costruisci le <b>fondamenta dell'orecchio</b>: casa, apertura, movimento. La sensazione di base su cui poi nascerà tutto il resto.",
    levels:[
    {name:"I due poli", th:"Si parte dai <b>due punti</b> tra cui si muove tutta la musica: la <b>tonica</b>, il riposo, e la <b>dominante</b>, il suo pilastro. Uno è casa, l'altro è la spinta che ti riporta a casa. Non c'è ancora colore né tensione: senti solo l'<b>asse</b>, il nord e il sud del suono. È la sensazione della <b>stabilità</b>, il pavimento sotto i piedi."},
    {name:"L'arpeggio", th:"Arriva la <b>terza maggiore</b> e di colpo c'è un'<b>identità</b>: con casa e pilastro forma l'accordo maggiore, il suo sorriso. È la nota che <b>accende la luce</b>. Senti come da due punti nudi nasce un colore pieno, aperto, affermativo: la sensazione del <b>sole che sorge</b>."},
@@ -665,7 +666,7 @@ en:{
   min:{nick:"the umbrella",desc:"Natural minor, the <b>default melancholy</b>: inner rain, nostalgia, gathering in. Feels like: <b>evening indoors while it rains</b>."},
   phr:{nick:"the wind",desc:"The minor second above the tonic presses like a <b>hot, dark wind</b>: Spanish, Mediterranean, threatening. Flamenco and metal both claim it. Feels like: <b>a windy night</b>."},
   loc:{nick:"the vortex",desc:"It has no perfect fifth: <b>the floor is missing</b>. Everything hangs, <b>unstable</b>, in controlled fall. Almost never a home key, almost always a passage. Feels like: <b>vertigo</b>."}},
- round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)",
+ round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)", modaLibera:"Free play", freeNeedLevel:"Play Level 1 to unlock the notes.",
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
  wrong:(s,n,d)=>"wrong at step "+s+": it was "+n+" ("+d+")", roundW:"round",
@@ -692,7 +693,7 @@ en:{
  DEG:['tonic','minor supertonic','major supertonic','minor mediant','major mediant','subdominant','tritone','dominant','minor submediant','major submediant','subtonic','leading tone'],
  NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','sky','wave','bolt'],
  courses:{
-  pent:{title:"The pentatonic", desc:"Five notes that <b>never miss together</b>: no semitones, no tension. Everything <b>floats</b>, everything sounds good. It's the <b>most widespread scale in the world</b>, from blues to folk songs. Here you build the <b>foundations of your ear</b>: home, openness, movement. The base sensation everything else will grow from.",
+  pent:{title:"Major pentatonic", desc:"Five notes that <b>never miss together</b>: no semitones, no tension. Everything <b>floats</b>, everything sounds good. It's the <b>most widespread scale in the world</b>, from blues to folk songs. Here you build the <b>foundations of your ear</b>: home, openness, movement. The base sensation everything else will grow from.",
    levels:[
    {name:"The two poles", th:"You start from the <b>two points</b> all music moves between: the <b>tonic</b>, the rest, and the <b>dominant</b>, its pillar. One is home, the other is the push that brings you back home. No color yet, no tension: you feel only the <b>axis</b>, the north and south of sound. It's the sensation of <b>stability</b>, the floor under your feet."},
    {name:"The arpeggio", th:"The <b>major third</b> arrives and suddenly there's an <b>identity</b>: with home and pillar it forms the major chord, its smile. It's the note that <b>turns the light on</b>. Feel how from two bare points a full, open, affirmative color is born: the sensation of the <b>rising sun</b>."},
@@ -793,7 +794,9 @@ function courseUnlocked(c){
  return S9.courses[prev].levels.every((_,i)=>levelStars(prev,i)>=1);
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss')return game.notes; return game.kind==='free'?SCALES[scale]:cumSet(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
+function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
+function unlockedNotes(c){const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||levelStars(c,w)>=1) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
@@ -1079,6 +1082,20 @@ function startFreeGame(){
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
  render(); renderSig(); renderChords(); loadBest();
 }
+// modalità libera legata a un corso: solo le note SBLOCCATE dai livelli
+function beginCourseFree(c){
+ clearTimers(); stopAllHeld(); stopMic();
+ const notes=unlockedNotes(c);
+ scale=courseScale(c); root=0; state='idle'; seq=[];
+ game={kind:'free', c:c, notes:notes};
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('gametop').hidden=false; $('gametitle').textContent=S9.courses[c].title+' · '+S9.modaLibera;
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
+ $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
+ if(notes.length<2){ render(); clearCenter(); setStatus(S9.freeNeedLevel,'err'); return; }
+ setStatus(''); render(); loadBest();
+}
 function openFreeIntro(){
  $('fi-title').textContent=S9.fiTitle;
  $('fi-body').innerHTML=S9.fiBody;
@@ -1336,7 +1353,7 @@ function renderPath(){
    +'</div>';
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
    '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
-   (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
+   (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button><button class="btn primary freebtn"><i class="ti ti-player-play"></i><span>'+S9.modaLibera+'</span></button></div>':'')+
    '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
     (cOpen&&MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '</details>';
@@ -1346,6 +1363,7 @@ function renderPath(){
   if(cOpen){
    const mw=page.querySelector('.mwbox');
    page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, mw));
+   const fb=page.querySelector('.freebtn'); if(fb) fb.addEventListener('click',()=>beginCourseFree(c));
    if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, mw)));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
@@ -2078,7 +2096,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.65'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.66'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
