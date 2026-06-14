@@ -530,7 +530,7 @@ it:{
   min:{nick:"l'ombrello",desc:"Il minore naturale, la <b>malinconia di default</b>: pioggia interiore, nostalgia, raccoglimento. Sensazione: <b>sera, dentro casa, fuori piove</b>."},
   phr:{nick:"il vento",desc:"La seconda minore sopra la tonica preme come un <b>vento caldo e scuro</b>: spagnolo, mediterraneo, minaccioso. Flamenco e metal se lo contendono. Sensazione: <b>notte di vento</b>."},
   loc:{nick:"il vortice",desc:"Non ha la quinta giusta: <b>manca il pavimento</b>. Tutto è sospeso, <b>instabile</b>, in caduta controllata. Quasi mai un centro tonale, quasi sempre un passaggio. Sensazione: <b>vertigine</b>."}},
- round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)", modaLibera:"Modalità libera", freeNeedLevel:"Gioca il Livello 1 per sbloccare le note.",
+ round:"Round", bestScale:"Record (scala)", bestLevel:"Record (livello)", modaLibera:"Modalità libera", freeNeedLevel:"Gioca il Livello 1 per sbloccare le note.", noteLocked:"Nota bloccata: sbloccala giocando i livelli.",
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
  wrong:(s,n,d)=>"sbagliato al passo "+s+": era "+n+" ("+d+")", roundW:"round",
@@ -681,7 +681,7 @@ en:{
   min:{nick:"the umbrella",desc:"Natural minor, the <b>default melancholy</b>: inner rain, nostalgia, gathering in. Feels like: <b>evening indoors while it rains</b>."},
   phr:{nick:"the wind",desc:"The minor second above the tonic presses like a <b>hot, dark wind</b>: Spanish, Mediterranean, threatening. Flamenco and metal both claim it. Feels like: <b>a windy night</b>."},
   loc:{nick:"the vortex",desc:"It has no perfect fifth: <b>the floor is missing</b>. Everything hangs, <b>unstable</b>, in controlled fall. Almost never a home key, almost always a passage. Feels like: <b>vertigo</b>."}},
- round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)", modaLibera:"Free play", freeNeedLevel:"Play Level 1 to unlock the notes.",
+ round:"Round", bestScale:"Best (scale)", bestLevel:"Best (level)", modaLibera:"Free play", freeNeedLevel:"Play Level 1 to unlock the notes.", noteLocked:"Locked note: unlock it by playing the levels.",
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
  wrong:(s,n,d)=>"wrong at step "+s+": it was "+n+" ("+d+")", roundW:"round",
@@ -1106,7 +1106,7 @@ function setupCardFree(c, page){
  const slot=page.querySelector('.gameslot'); if(!slot) return;
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
- scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes};
+ scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
  if(notes.length<2){ render(); clearCenter(); setStatus(S9.freeNeedLevel,'err'); }
@@ -1528,18 +1528,26 @@ function render(){
  ctr.style.cssText='left:'+(CXY-cs/2)+'px;top:'+(CXY-cs/2)+'px;width:'+cs+'px;height:'+cs+'px;';
  w.appendChild(ctr);
  const sc=activeSet();
+ const disp=(game.kind==='free'&&game.allNotes)?game.allNotes:sc;
  for(let k=0;k<12;k++){
   const a=(-90+k*30)*Math.PI/180, x=CXY+R*Math.cos(a), y=CXY+R*Math.sin(a);
-  if(sc.includes(k)){
+  if(disp.includes(k)){
    const free=game.kind==='free';
-   const b=document.createElement('button'); b.className='key'; b.id='b'+k;
-   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+C[k].h+';color:'+ink(k)+ring(k);
-   b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+(KEY*(free?0.28:0.32))+'px"></i><span style="font-size:'+(KEY*(free?0.2:0.24))+'px;line-height:1.15">'+IV[k]+'</span>'+(free?'<span class="nt" data-k="'+k+'" style="font-size:'+(KEY*0.17)+'px;line-height:1.15;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
-   b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||state==='input'){press(k);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}});
-   b.addEventListener('pointerup',()=>stopHold(k));
-   b.addEventListener('pointerleave',()=>stopHold(k));
-   b.addEventListener('pointercancel',()=>stopHold(k));
+   const locked=free && !sc.includes(k); // nota non ancora sbloccata -> grigia
+   const b=document.createElement('button'); b.className='key'+(locked?' klock':''); b.id='b'+k;
+   const bg=locked?'var(--surface2)':C[k].h, col=locked?'var(--muted)':ink(k);
+   b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+bg+';color:'+col+(locked?'':ring(k));
+   b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
+   const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
+   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
+   if(locked){
+    b.addEventListener('click',()=>setStatus(S9.noteLocked,'err'));
+   } else {
+    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||state==='input'){press(k);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}});
+    b.addEventListener('pointerup',()=>stopHold(k));
+    b.addEventListener('pointerleave',()=>stopHold(k));
+    b.addEventListener('pointercancel',()=>stopHold(k));
+   }
    w.appendChild(b);
   } else {
    const d=document.createElement('div'); d.className='dot';
@@ -2116,7 +2124,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.70'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.71'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
