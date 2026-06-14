@@ -126,7 +126,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .secacc .secdesc{padding:0 16px 16px; font-size:15px; line-height:1.6; color:var(--muted); margin:0;}
 .mwk{position:absolute; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:0;}
 .mwk:active{transform:scale(.92);}
-.mwctrl{display:flex; gap:8px; justify-content:center; margin:0 0 18px; flex-wrap:wrap;}
+.mwctrl{display:flex; gap:8px; justify-content:center; margin:0 0 14px; flex-wrap:wrap;}
+.exrow{display:flex; flex-wrap:wrap; align-items:center; gap:8px; justify-content:center; margin:0 0 16px;}
+.exlbl{font-size:13px; color:var(--muted); width:100%; text-align:center; margin:0 0 2px;}
+.exbtn{background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:8px 13px; font-size:14px; font-weight:600; color:var(--text); cursor:pointer; display:inline-flex; align-items:center; gap:6px;}
+.exbtn i{color:var(--gold);}
+.exbtn:active{transform:scale(.97);}
 .seclock{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:var(--gold); margin:0 0 14px;}
 .pathsec.locked .secname{color:var(--muted);}
 .world.courselock{opacity:.45;}
@@ -435,7 +440,7 @@ it:{
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
  fiTitle:"Modalità Libero", fiClose:"Inizia",
- fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia", ldSeq:"In sequenza",
+ fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia", ldSeq:"In sequenza", exLbl:"Lo senti in queste melodie",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
  modesTitle:"I modi: la luce del viaggio",
@@ -571,7 +576,7 @@ en:{
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
  fiTitle:"Free play", fiClose:"Start",
- fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change", ldSeq:"In sequence",
+ fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change", ldSeq:"In sequence", exLbl:"You hear it in these melodies",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
  modesTitle:"The modes: the light of the journey",
@@ -1188,13 +1193,15 @@ function renderPath(){
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+
    '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
    (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
+   (cOpen&&MELODIES[c]?'<div class="exrow"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+S9.courses[c].desc+'</p></details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   sec.innerHTML=sh; box.appendChild(sec);
   miniWheel(sec.querySelector('.mwbox'), allNotes, 230);
   if(cOpen){
-   const sp=sec.querySelector('.srplay');
-   sp.addEventListener('click',()=>playTasteNotes(allNotes, sec.querySelector('.mwbox')));
+   const mw=sec.querySelector('.mwbox');
+   sec.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, mw));
+   if(MELODIES[c]) sec.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, mw)));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1427,6 +1434,14 @@ function miniWheel(box,notes,size){
 }
 function flashMwk(box,k,ms){if(!box)return; const b=box.querySelector('.mwk[data-iv="'+(((k%12)+12)%12)+'"]'); if(b){b.style.transition='transform .09s'; b.style.transform='scale(1.34)'; setTimeout(()=>{if(b)b.style.transform='scale(1)';},ms||240);}}
 function playNotesSeq(arr,box){ensureCtx(); const ns=arr.slice().sort((a,b)=>a-b).concat([12]); ns.forEach((k,i)=>timers.push(setTimeout(()=>{tone(60+k,0.34); flashMwk(box,k,260);},i*300)));}
+// melodie pubblico dominio (gradi 1-7 relativi alla tonica) -> suonate coi colori che si illuminano
+const D2S=[0,2,4,5,7,9,11];
+const MELODIES={
+ pent:[{it:"Mary Had a Little Lamb",en:"Mary Had a Little Lamb",deg:[3,2,1,2,3,3,3,2,2,2,3,5,5,3,2,1,2,3,3,3,3,2,2,3,2,1]}],
+ maj:[{it:"Inno alla gioia",en:"Ode to Joy",deg:[3,3,4,5,5,4,3,2,1,1,2,3,3,2,2,3,3,4,5,5,4,3,2,1,1,2,3,2,1,1]},
+      {it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}]
+};
+function playMelody(deg,box){ensureCtx(); let t=120,base=300; deg.forEach(d=>{const k=D2S[d-1]; timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,base*0.85/1000)); flashMwk(box,k,base-50);},t)); t+=base;});}
 function playTasteNotes(arr,box){
  ensureCtx(); const ext=arr.slice().sort((a,b)=>a-b).concat([12]); let idx=0; const mel=[0];
  for(let i=0;i<5;i++){idx=Math.max(0,Math.min(ext.length-1,idx+(Math.random()<0.5?-1:1)*(Math.random()<0.75?1:2))); mel.push(ext[idx]);}
