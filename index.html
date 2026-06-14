@@ -130,7 +130,12 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .coursepage.locked .gameslot{opacity:.4; filter:saturate(.4); pointer-events:none;}
 .accwheel{margin-top:6px;}
 #gamepanel.incard #gametop, #gamepanel.incard #goalbar, #gamepanel.incard #bossbar, #gamepanel.incard #tutbox, #gamepanel.incard #chordbar, #gamepanel.incard #chordseqrow, #gamepanel.incard #rowsetup, #gamepanel.incard .legbox{display:none !important;}
-#gamepanel.incard .controls{margin-bottom:10px;}
+#gamepanel.incard{display:flex; flex-direction:column;}
+#gamepanel.incard #status{order:0;} #gamepanel.incard #micline{order:0;}
+#gamepanel.incard #wheelbox{order:1;}
+#gamepanel.incard .stats{order:2;}
+#gamepanel.incard .controls{order:3; margin:6px 0 0;}
+#gamepanel.incard #reveal{order:4;}
 .scalerow{justify-content:center;}
 .secacc{background:var(--surface); border-radius:14px; margin:0 0 16px; overflow:hidden;}
 .secacc summary{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); cursor:pointer; padding:14px 16px; list-style:none; display:flex; align-items:center; justify-content:space-between;}
@@ -1777,8 +1782,9 @@ function pulse(ms){
 }
 function centerPlay(){
  const ct=$('ctr'); if(!ct) return;
- ct.dataset.mode='play'; ct.style.background='var(--text)'; ct.style.color='var(--bg)';
- ct.innerHTML='<i class="ti ti-player-play" style="font-size:'+Math.round(S*0.17)+'px"></i>';
+ ct.dataset.mode='play'; ct.style.background='transparent'; ct.style.color='var(--bg)';
+ const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
+ ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
  ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='boss'){ game.elite?beginElite(game.c,game.w):beginBoss(game.c); } else beginGame(); } };
 }
@@ -2110,7 +2116,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.69'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.70'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
