@@ -328,6 +328,12 @@ button.levelcard:active{transform:scale(0.99);}
     <button class="btn primary" id="fs-play" style="flex:1.4; justify-content:center; padding:14px; font-size:16px;"><i class="ti ti-player-play"></i><span id="fs-playtxt"></span></button>
   </div>
 </div>
+<div id="micwarn" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.98); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:55; text-align:left; padding:32px 24px; max-width:480px; margin:0 auto;">
+  <div style="font-size:40px; color:var(--gold); text-align:center; margin:0 0 14px;"><i class="ti ti-microphone-2"></i></div>
+  <p id="mw-title" style="font-size:22px; font-weight:700; text-align:center; margin:0 0 16px;"></p>
+  <p id="mw-body" style="font-size:16px; line-height:1.65; color:var(--text); margin:0 0 26px;"></p>
+  <button class="btn primary" id="mw-ok" style="justify-content:center; padding:14px; font-size:16px;"></button>
+</div>
 <div id="preroll" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
   <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 28px;"></p>
   <div id="pr-icon" style="font-size:42px; color:var(--gold); margin:0 0 14px; min-height:46px;"></div>
@@ -436,7 +442,9 @@ it:{
  pressPlay:'premi "Gioca"', listen:"ascolta…", yourTurn:(a,b)=>"tocca a te ("+a+"/"+b+")",
  correct:"giusto!", newStar:" · nuova stella!",
  wrong:(s,n,d)=>"sbagliato al passo "+s+": era "+n+" ("+d+")", roundW:"round",
- micListen:"in ascolto…", micErr:"microfono non disponibile o permesso negato",
+ micListen:"in ascolto… (una nota alla volta)", micErr:"microfono non disponibile o permesso negato",
+ micWarnTitle:"Microfono (in prova)", micWarnOk:"Ho capito, attiva",
+ micWarnBody:"Il riconoscimento delle note è ancora in fase di prova: può sbagliare. Per farlo funzionare al meglio:<br><br>🔇 <b>Ambiente silenzioso</b>, senza rumori di fondo.<br>🎵 <b>Una nota alla volta</b> (voce o strumento a una voce), niente accordi.<br>🎧 Meglio con le <b>cuffie</b>.",
  keyhint:"Tastiera: A = tonica, poi W S E D F T G Y H U J per semitoni (layout piano). R = riascolta, Invio = gioca. Fuori partita i tasti suonano liberi.",
  tutBtn:"Prova il tutorial guidato (2 minuti)",
  tutLabel:"Tutorial",
@@ -569,7 +577,9 @@ en:{
  pressPlay:'press "Play"', listen:"listen…", yourTurn:(a,b)=>"your turn ("+a+"/"+b+")",
  correct:"correct!", newStar:" · new star!",
  wrong:(s,n,d)=>"wrong at step "+s+": it was "+n+" ("+d+")", roundW:"round",
- micListen:"listening…", micErr:"microphone unavailable or permission denied",
+ micListen:"listening… (one note at a time)", micErr:"microphone unavailable or permission denied",
+ micWarnTitle:"Microphone (beta)", micWarnOk:"Got it, turn on",
+ micWarnBody:"Note recognition is still experimental: it can get things wrong. For best results:<br><br>🔇 <b>Quiet room</b>, no background noise.<br>🎵 <b>One note at a time</b> (voice or a single-note instrument), no chords.<br>🎧 Better with <b>headphones</b>.",
  keyhint:"Keyboard: A = tonic, then W S E D F T G Y H U J up by semitones (piano layout). R = replay, Enter = play. Outside a game the keys play freely.",
  tutBtn:"Try the guided tutorial (2 minutes)",
  tutLabel:"Tutorial",
@@ -780,7 +790,7 @@ function applyStatic(){
 
 function setView(name){
  if(ctx) stopAllHeld();
- $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true;
+ $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail');
@@ -1718,7 +1728,9 @@ $('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(sta
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
-$('miccb').addEventListener('click',function(){if(micOn) stopMic(); else startMic();});
+function openMicWarn(){ $('mw-title').textContent=S9.micWarnTitle; $('mw-body').innerHTML=S9.micWarnBody; $('mw-ok').textContent=S9.micWarnOk; $('micwarn').hidden=false; }
+$('mw-ok').addEventListener('click',()=>{localStorage.setItem('hm_mic_warned','1'); $('micwarn').hidden=true; startMic();});
+$('miccb').addEventListener('click',function(){ if(micOn){stopMic();} else if(localStorage.getItem('hm_mic_warned')){startMic();} else {openMicWarn();} });
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
