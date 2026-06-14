@@ -308,7 +308,7 @@ button.levelcard:active{transform:scale(0.99);}
     </div>
     <div id="goalbar" hidden style="font-size:13px; text-align:center; margin:0 0 12px; background:var(--surface); border-radius:10px; padding:10px 10px;"></div>
     <div id="bossbar" hidden style="display:flex; justify-content:center; align-items:center; gap:18px; font-size:16px; margin:0 0 12px;"></div>
-    <div class="controls">
+    <div class="controls" id="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
         <span id="modechip" hidden style="flex:0 0 auto;"></span>
@@ -1406,6 +1406,7 @@ function renderSig(){
 }
 function render(){
  layout();
+ $('controls').hidden=(game.kind==='tut'); // tutorial: niente controlli, solo la lezione
  const wb=$('wheelbox');
  wb.style.background='transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
