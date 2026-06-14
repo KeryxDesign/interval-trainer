@@ -66,9 +66,14 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .fsnote span{font-size:12px; font-weight:600; line-height:1;}
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-.crow.options{flex-wrap:nowrap; justify-content:center; gap:10px;}
+.crow.options{flex-wrap:wrap; justify-content:center; gap:10px;}
 .crow.options .btn{padding:9px 12px;}
-.crow.options #rehtxt, .crow.options #mictxt{display:none;}
+.crow.options #mictxt{display:none;}
+.spdbox{display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:8px 12px; color:var(--text); font-weight:600; font-size:14px;}
+.spdbox i{color:var(--muted); font-size:16px;}
+.spdbox select{appearance:none; -webkit-appearance:none; border:none; background:transparent; color:var(--text); font:inherit; font-weight:600; padding:0; cursor:pointer;}
+#tonbox{display:none;}
+#gamepanel.incard #tonbox{display:inline-flex;}
 #scsel{flex:1 1 auto; min-width:0;}
 .crow.actions .btn{flex:1; justify-content:center; padding:12px 14px;}
 .crow.actions .btn.primary{flex:1.6;}
@@ -127,7 +132,6 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .medal{display:inline-flex; align-items:center; gap:5px;}
 .coursepage.locked .secname{color:var(--muted);}
 .gameslot{margin:0 0 6px;}
-.coursepage.locked .gameslot{opacity:.4; filter:saturate(.4); pointer-events:none;}
 .accwheel{margin-top:6px;}
 #gamepanel.incard #gametop, #gamepanel.incard #goalbar, #gamepanel.incard #bossbar, #gamepanel.incard #tutbox, #gamepanel.incard #chordbar, #gamepanel.incard #chordseqrow, #gamepanel.incard #rowsetup, #gamepanel.incard .legbox{display:none !important;}
 #gamepanel.incard{display:flex; flex-direction:column;}
@@ -350,8 +354,9 @@ button.levelcard:active{transform:scale(0.99);}
       </div>
       <div class="crow options">
         <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
-        <span style="display:inline-flex; align-items:center; gap:5px;"><i class="ti ti-gauge" style="font-size:16px; color:var(--muted);"></i><select id="spdsel" aria-label="Speed"></select></span>
+        <span class="spdbox"><i class="ti ti-gauge"></i><select id="spdsel" aria-label="Speed"></select></span>
         <button class="tgl" id="miccb" aria-pressed="false"><i class="ti ti-microphone"></i><span id="mictxt"></span><span class="track"><span class="knob"></span></span></button>
+        <span class="spdbox" id="tonbox"><i class="ti ti-music"></i><select id="freetonic" aria-label="Tonic"></select></span>
       </div>
     </div>
 
@@ -811,7 +816,7 @@ function courseUnlocked(c){
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
 function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
-function unlockedNotes(c){const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||levelStars(c,w)>=1) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
+function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||levelStars(c,w)>=1) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
@@ -851,6 +856,8 @@ function applyStatic(){
  sc.value=scale;
  const rs=$('rootsel'); rs.innerHTML='';
  NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; rs.appendChild(o);});
+ const ft=$('freetonic'); ft.innerHTML='';
+ NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; ft.appendChild(o);});
  const sp=$('spdsel'); sp.innerHTML='';
  [['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].forEach(([v,t])=>{const o=document.createElement('option'); o.value=v; o.textContent=t; sp.appendChild(o);});
  sp.value=String(speed);
@@ -1108,8 +1115,9 @@ function setupCardFree(c, page){
  const notes=unlockedNotes(c);
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
+ $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
- if(notes.length<2){ render(); clearCenter(); setStatus(S9.freeNeedLevel,'err'); }
+ if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
  else { setStatus(''); render(); loadBest(); }
 }
 function openFreeIntro(){
@@ -1380,8 +1388,6 @@ function renderPath(){
    const aw=page.querySelector('.accwheel'); miniWheel(aw, allNotes, 200);
    page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, aw));
    if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, aw)));
-  } else {
-   miniWheel(page.querySelector('.gameslot'), allNotes, 230);
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1424,7 +1430,7 @@ function setPathPage(i){
  document.querySelectorAll('.pdot').forEach((d,idx)=>d.classList.toggle('on',idx===i));
  const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
  const c=COURSE_IDS[i];
- if(courseUnlocked(c)) setupCardFree(c, active); else parkPanel();
+ setupCardFree(c, active);
  try{window.scrollTo(0,0);}catch(e){}
 }
 function attachPathSwipe(el){
@@ -2102,6 +2108,7 @@ $('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='bos
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
+$('freetonic').addEventListener('change',e=>{ root=+e.target.value; updateNotes(); });
 function openMicWarn(){ $('mw-title').textContent=S9.micWarnTitle; $('mw-body').innerHTML=S9.micWarnBody; $('mw-ok').textContent=S9.micWarnOk; $('micwarn').hidden=false; }
 $('mw-ok').addEventListener('click',()=>{localStorage.setItem('hm_mic_warned','1'); $('micwarn').hidden=true; startMic();});
 $('miccb').addEventListener('click',function(){ if(micOn){stopMic();} else if(localStorage.getItem('hm_mic_warned')){startMic();} else {openMicWarn();} });
@@ -2124,7 +2131,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.71'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.72'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
