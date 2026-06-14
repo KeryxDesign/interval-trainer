@@ -126,8 +126,11 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .medals{display:flex; gap:16px; justify-content:center; align-items:center; margin:0 0 18px; font-size:15px; font-weight:700; color:var(--text);}
 .medal{display:inline-flex; align-items:center; gap:5px;}
 .coursepage.locked .secname{color:var(--muted);}
-.coursepage.playing .mwbox, .coursepage.playing .mwctrl, .coursepage.playing .secacc, .coursepage.playing .levelcard, .coursepage.playing .bosscard, .coursepage.playing .seclock{display:none !important;}
-.coursepage.playing #gamepanel{margin-top:8px;}
+.gameslot{margin:0 0 6px;}
+.coursepage.locked .gameslot{opacity:.4; filter:saturate(.4); pointer-events:none;}
+.accwheel{margin-top:6px;}
+#gamepanel.incard #gametop, #gamepanel.incard #goalbar, #gamepanel.incard #bossbar, #gamepanel.incard #tutbox, #gamepanel.incard #chordbar, #gamepanel.incard #chordseqrow, #gamepanel.incard #rowsetup, #gamepanel.incard .legbox{display:none !important;}
+#gamepanel.incard .controls{margin-bottom:10px;}
 .scalerow{justify-content:center;}
 .secacc{background:var(--surface); border-radius:14px; margin:0 0 16px; overflow:hidden;}
 .secacc summary{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); cursor:pointer; padding:14px 16px; list-style:none; display:flex; align-items:center; justify-content:space-between;}
@@ -898,7 +901,7 @@ function applyStatic(){
 
 function setView(name){
  if(ctx) stopAllHeld();
- { const gp=$('gamepanel'); if(gp && !$('view-game').contains(gp)){ $('view-game').appendChild(gp); inlineFree=false; document.querySelectorAll('.coursepage.playing').forEach(p=>p.classList.remove('playing')); } }
+ parkPanel();
  $('bossbar').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
@@ -1090,28 +1093,19 @@ function startFreeGame(){
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
  render(); renderSig(); renderChords(); loadBest();
 }
-// modalità libera INLINE nella card: gioca sulla scala del corso con SOLO le note sbloccate
-let inlineFree=false;
-function beginCourseFree(c){
+// la ruota della card È la modalità libera: gioca sulla scala del corso con SOLO le note sbloccate
+function parkPanel(){ const gp=$('gamepanel'); if(gp){ gp.classList.remove('incard'); if(!$('view-game').contains(gp)) $('view-game').appendChild(gp); } }
+function setupCardFree(c, page){
+ if(!page) return;
  clearTimers(); stopAllHeld(); stopMic();
- const idx=COURSE_IDS.indexOf(c); const card=document.querySelectorAll('.coursepage')[idx];
- if(!card) return;
+ const slot=page.querySelector('.gameslot'); if(!slot) return;
+ const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
- scale=courseScale(c); root=0; state='idle'; seq=[];
- game={kind:'free', c:c, notes:notes};
- const gp=$('gamepanel'); card.appendChild(gp); card.classList.add('playing'); inlineFree=true;
- const pd=document.querySelector('.pathdots'); if(pd) pd.style.display='none';
- $('gametop').hidden=false; $('gametitle').textContent=S9.modaLibera;
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true;
+ scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes};
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
- if(notes.length<2){ render(); clearCenter(); setStatus(S9.freeNeedLevel,'err'); return; }
- setStatus(''); render(); loadBest();
-}
-function exitInlineFree(){
- clearTimers(); stopAllHeld(); stopMic(); inlineFree=false;
- const gp=$('gamepanel'); $('view-game').appendChild(gp);
- game={kind:'free'}; state='idle'; seq=[];
- renderPath();
+ if(notes.length<2){ render(); clearCenter(); setStatus(S9.freeNeedLevel,'err'); }
+ else { setStatus(''); render(); loadBest(); }
 }
 function openFreeIntro(){
  $('fi-title').textContent=S9.fiTitle;
@@ -1201,7 +1195,7 @@ $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
 $('tab-guide').addEventListener('click',showGuide);
 $('tab-profile').addEventListener('click',showHome);
-$('backbtn').addEventListener('click',function(){ if(inlineFree){exitInlineFree(); return;} if(game.kind==='level') showLevelDetail(game.c,game.w); else showLevels(); });
+$('backbtn').addEventListener('click',function(){ if(game.kind==='level') showLevelDetail(game.c,game.w); else showLevels(); });
 $('ld-back').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showLevels);
 $('hplay').addEventListener('click',()=>{
@@ -1354,7 +1348,7 @@ function saveCurrentGameProgress(){
 }
 let pathPage=0;
 function renderPath(){
- const gp=$('gamepanel'); if(gp && !$('view-game').contains(gp)) $('view-game').appendChild(gp); inlineFree=false;
+ parkPanel();
  const box=$('path'); box.innerHTML='';
  const dotsbar=document.createElement('div'); dotsbar.className='pathdots';
  const track=document.createElement('div'); track.className='pathtrack';
@@ -1370,19 +1364,19 @@ function renderPath(){
    +'<span class="medal"><i class="ti ti-trophy" style="color:'+(bD?'var(--gold)':'var(--muted)')+'"></i> '+(bD?(bD==='3'?'🏆':'★'):'–')+'</span>'
    +'</div>';
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
-   '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
-   (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button><button class="btn primary freebtn"><i class="ti ti-player-play"></i><span>'+S9.modaLibera+'</span></button></div>':'')+
+   '<div class="gameslot"></div>'+
    '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
+    (cOpen?'<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
     (cOpen&&MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '</details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   page.innerHTML=sh;
-  miniWheel(page.querySelector('.mwbox'), allNotes, 230);
   if(cOpen){
-   const mw=page.querySelector('.mwbox');
-   page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, mw));
-   const fb=page.querySelector('.freebtn'); if(fb) fb.addEventListener('click',()=>beginCourseFree(c));
-   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, mw)));
+   const aw=page.querySelector('.accwheel'); miniWheel(aw, allNotes, 200);
+   page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, aw));
+   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, aw)));
+  } else {
+   miniWheel(page.querySelector('.gameslot'), allNotes, 230);
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1419,12 +1413,13 @@ function renderPath(){
  setPathPage(Math.min(pathPage, COURSE_IDS.length-1));
 }
 function setPathPage(i){
- if(inlineFree){ exitInlineFree(); return; }
  const pages=document.querySelectorAll('.coursepage'); if(!pages.length) return;
  i=Math.max(0,Math.min(pages.length-1,i)); pathPage=i;
  pages.forEach((p,idx)=>{ p.hidden=idx!==i; });
  document.querySelectorAll('.pdot').forEach((d,idx)=>d.classList.toggle('on',idx===i));
  const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
+ const c=COURSE_IDS[i];
+ if(courseUnlocked(c)) setupCardFree(c, active); else parkPanel();
  try{window.scrollTo(0,0);}catch(e){}
 }
 function attachPathSwipe(el){
@@ -2115,7 +2110,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.68'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.69'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
