@@ -1129,13 +1129,13 @@ $('hplay').addEventListener('click',()=>{
  if(totalStars()===0&&!localStorage.getItem('hm_tut_done')) showWelcome(); else showLevels();
 });
 $('hguide').addEventListener('click',showGuide);
-$('htut').addEventListener('click',startTutorial);
+$('htut').addEventListener('click',showWelcome);
 $('emblem').addEventListener('click',openProfile);
 $('hname').addEventListener('click',openProfile);
 $('hedit').addEventListener('click',openProfile);
 $('pe-save').addEventListener('click',saveProfile);
 $('pe-cancel').addEventListener('click',()=>{$('profedit').hidden=true;});
-$('tutbtn').addEventListener('click',startTutorial);
+$('tutbtn').addEventListener('click',showWelcome);
 $('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; const cb=celebrateCb; celebrateCb=null; if(cb)cb(); else showLevels();});
 
 let tut={step:0,allowed:[],expect:[],pos:0};
@@ -2004,7 +2004,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.60'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.61'; $('ver').textContent='v'+APP_VER+' alpha';
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
