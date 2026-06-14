@@ -741,7 +741,7 @@ function applyStatic(){
  $('celtitle').textContent=S9.unlockTitle;
  $('celtap').textContent=S9.unlockTap;
  $('legsum').textContent=S9.legsum;
- $('thintro').textContent=S9.thintro;
+ $('thintro').innerHTML=paraBr(S9.thintro);
  const sc=$('scsel'); sc.innerHTML='';
  const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
  [['lyd',5],['maj',0],['mixo',6],['dor',7],['min',1],['phr',8],['loc',9]].forEach(([v,i])=>{const o=document.createElement('option'); o.value=v; o.textContent=S9.scales[i]; g1.appendChild(o);});
@@ -766,7 +766,7 @@ function applyStatic(){
    '<button class="pbtn" data-iv="'+k+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
    '<p style="margin:8px 0 6px 44px;font-size:13px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
-   '<p style="margin:0 0 0 44px;font-size:16px;line-height:1.6;color:var(--text)">'+S9.TH[k]+'</p>';
+   '<p style="margin:0 0 0 44px;font-size:16px;line-height:1.6;color:var(--text)">'+paraBr(S9.TH[k])+'</p>';
   thBox.appendChild(d);});
  const NAMEIDX={maj:0,min:1,lyd:5,mixo:6,dor:7,phr:8,loc:9};
  const mt=document.createElement('p');
@@ -784,7 +784,7 @@ function applyStatic(){
    '<span style="font-size:17px;font-weight:600">'+S9.scales[NAMEIDX[mk]]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+m.nick+'</span></span>'+
    '<button class="pbtn" data-mode="'+mk+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
    '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
-   '<p style="margin:8px 0 8px 44px;font-size:16px;line-height:1.6;color:var(--text)">'+m.desc+'</p>'+
+   '<p style="margin:8px 0 8px 44px;font-size:16px;line-height:1.6;color:var(--text)">'+paraBr(m.desc)+'</p>'+
    '<div style="display:flex;gap:4px;margin:0 0 8px 44px;flex-wrap:wrap;align-items:center">'+cons+'<span style="font-size:12px;color:var(--muted);margin-left:4px">'+(S9.SIG[mk]||'')+'</span></div>'+
    '<p style="margin:0 0 0 44px;font-size:13px;color:var(--muted)"><b style="color:var(--text)">'+S9.compLabel+'</b> '+SCALES[mk].map(k=>IV[k]).join(' · ')+'</p>';
   thBox.appendChild(d);});
@@ -1194,7 +1194,7 @@ function renderPath(){
    '<div class="mwbox"'+(cOpen?'':' style="opacity:.4;filter:saturate(.4);pointer-events:none"')+'></div>'+
    (cOpen?'<div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
    (cOpen&&MELODIES[c]?'<div class="exrow"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
-   '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+S9.courses[c].desc+'</p></details>';
+   '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p></details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   sec.innerHTML=sh; box.appendChild(sec);
   miniWheel(sec.querySelector('.mwbox'), allNotes, 230);
@@ -1224,11 +1224,14 @@ function renderPath(){
  });
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+// spezza i paragrafi lunghi (~max 4 righe) ai confini di frase, in tutta l'app
+function paras(t,mx){mx=mx||130; const out=[]; let cur=''; t.split(/(?<=[.!?])\s+/).forEach(s=>{ if(cur&&(cur+' '+s).length>mx){out.push(cur); cur=s;} else cur=cur?cur+' '+s:s; }); if(cur)out.push(cur); return out;}
+function paraBr(t,mx){return paras(t,mx).join('<br><br>');}
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
 function buildTheoryBody(c,w){
  const lv=S9.courses[c].levels[w];
  // Teoria IN CHIARO sempre aperta: intro + ruolo di ogni suono (con ascolto) + dettaglio semitoni
- let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+lv.th+'</p>';
+ let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+paraBr(lv.th)+'</p>';
  let blocks='';
  CWADD[c][w].forEach(k=>{
   blocks+='<div style="margin:0 0 18px;">'+
@@ -1237,7 +1240,7 @@ function buildTheoryBody(c,w){
     '<span style="flex:1; font-size:17px; font-weight:600;">'+cap(S9.NM[k])+' <span style="color:var(--muted); font-weight:400; font-size:14px">· '+DEG[k]+'</span></span>'+
     '<button class="pbtn" data-iv="'+k+'" aria-label="play"><i class="ti ti-volume"></i></button>'+
    '</div>'+
-   '<p style="margin:0 0 0 51px; font-size:16px; line-height:1.6; color:var(--text)">'+S9.TH[k]+'</p>'+
+   '<p style="margin:0 0 0 51px; font-size:16px; line-height:1.6; color:var(--text)">'+paraBr(S9.TH[k])+'</p>'+
   '</div>';
  });
  body+=blocks;
