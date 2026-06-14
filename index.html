@@ -410,7 +410,7 @@ it:{
  guidePts:[{ic:'palette',t:"Ogni suono ha sempre il suo <b>colore</b>"},{ic:'ear',t:"Impari a <b>sentire</b> la musica, non a memorizzarla"},{ic:'player-play',t:"Si impara <b>giocando</b>, come a Simon"}],
  welBody:"",
  welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
- welSteps:[{ic:'robot',t:"Perché certi musicisti suonano come robot, e altri sembra che parlino musica?"},{ic:'ear',t:"Chi parla musica ha imparato la sensazione dei suoni, non solo dove mettere le dita."},{ic:'palette',t:"Huermony te la fa imparare in fretta: giocando, associando suoni a colori e forme. Sarai capace di suonare o cantare fin da subito, senza una lezione."},{ic:'microphone-2',t:"Provalo col tutorial. Puoi usare anche il tuo strumento vero: ti accorgerai che stai già suonando note che stanno bene insieme."}],
+ welSteps:[{ic:'robot',t:"Perché certi musicisti suonano come robot, e altri sembra che «parlino musica»?"},{ic:'ear',t:"Chi «parla musica» ha imparato la sensazione dei suoni, non solo dove mettere le dita."},{ic:'palette',t:"Huermony te la fa imparare giocando, associando suoni, colori e forme."},{ic:'microphone-2',t:"Provalo col tutorial. Puoi usare subito uno strumento."}],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
@@ -543,7 +543,7 @@ en:{
  guidePts:[{ic:'palette',t:"Every sound always has its own <b>color</b>"},{ic:'ear',t:"You learn to <b>feel</b> music, not memorize it"},{ic:'player-play',t:"You learn by <b>playing</b>, like Simon"}],
  welBody:"",
  welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
- welSteps:[{ic:'robot',t:"Why do some musicians play like robots, while others seem to speak music?"},{ic:'ear',t:"Those who speak music learned the feeling of sounds, not just where to put their fingers."},{ic:'palette',t:"Huermony gets you there fast: by playing, pairing sounds with colors and shapes. You'll be able to play or sing right away, with no lesson."},{ic:'microphone-2',t:"Try it with the tutorial. You can use your real instrument too: you'll notice you're already playing notes that sound good together."}],
+ welSteps:[{ic:'robot',t:"Why do some musicians play like robots, while others seem to \"speak music\"?"},{ic:'ear',t:"Those who \"speak music\" learned the feeling of sounds, not just where to put their fingers."},{ic:'palette',t:"Huermony gets you there by playing, pairing sounds, colors and shapes."},{ic:'microphone-2',t:"Try it with the tutorial. You can use a real instrument right away."}],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
@@ -959,9 +959,10 @@ function openFreeIntro(){
 }
 let welStep=0;
 function showWelcome(){
- const em=$('wel-emblem'); em.style.cssText='position:relative;width:110px;height:110px;'; em.innerHTML='';
- for(let k=0;k<12;k++){const a=(-90+k*30)*Math.PI/180, x=55+46*Math.cos(a), y=55+46*Math.sin(a);
+ const em=$('wel-emblem'); em.style.cssText='position:relative;width:120px;height:120px;margin-bottom:26px;'; em.innerHTML='';
+ for(let k=0;k<12;k++){const a=(-90+k*30)*Math.PI/180, x=60+50*Math.cos(a), y=60+50*Math.sin(a);
   const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-5)+'px;top:'+(y-5)+'px;width:10px;height:10px;border-radius:50%;background:'+C[k].h; em.appendChild(d);}
+ const ic=$('wel-icon'); em.appendChild(ic); ic.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:42px;color:var(--gold);line-height:1;margin:0;';
  welStep=0; renderWelStep();
  $('welcome').hidden=false;
 }
