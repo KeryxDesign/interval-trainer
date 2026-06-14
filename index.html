@@ -144,6 +144,11 @@ button.levelcard:active{transform:scale(0.99);}
 .bosscard .btitle{font-size:19px; font-weight:700; display:block; margin:0 0 4px;}
 .elitecard{border:1px solid var(--gold);}
 .elitecard .eskull{font-size:30px; color:var(--gold); flex:0 0 auto;}
+.welpair{display:flex; align-items:center; justify-content:center; gap:14px; margin:0 0 16px;}
+.welnote{width:70px; height:70px; border-radius:50%; border:1.5px solid var(--line); background:var(--surface2); color:var(--text); font-size:18px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .1s; flex:0 0 auto;}
+.welnote:active{transform:scale(.92);}
+.welplay{width:42px; height:42px; border-radius:50%; border:none; background:var(--text); color:var(--bg); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:18px; flex:0 0 auto;}
+.welplay:active{transform:scale(.92);}
 .gcard{background:var(--surface); border-radius:16px; padding:18px 18px 20px; margin-bottom:14px; border:1px solid var(--line);}
 .ghead{display:flex; align-items:center; gap:11px; margin:0 0 12px;}
 .ghead i{font-size:18px; color:var(--gold); flex:0 0 auto; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; background:rgba(234,179,8,.12); border-radius:10px;}
@@ -323,13 +328,14 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="theory"></div>
   </div>
 </div>
-<div id="welcome" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:60; text-align:center; padding:32px 28px; max-width:480px; margin:0 auto;">
-  <div id="wel-emblem" aria-hidden="true" style="margin-bottom:26px;"></div>
-  <div id="wel-icon" style="font-size:44px; color:var(--gold); margin-bottom:18px; min-height:48px;"></div>
-  <p id="wel-step" style="font-size:18px; line-height:1.5; color:var(--text); margin:0 0 26px; max-width:320px;"></p>
-  <div id="wel-dots" style="display:flex; gap:8px; margin:0 0 26px;"></div>
-  <button class="btn primary" id="wel-next" style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px;"></button>
-  <button id="wel-skip" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; margin-top:4px;"></button>
+<div id="welcome" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; overflow-y:auto; z-index:60; max-width:480px; margin:0 auto;">
+  <div id="wel-inner" style="margin:auto; display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 28px; width:100%;">
+    <div id="wel-pairs" hidden style="width:100%; margin:0 0 22px;"></div>
+    <p id="wel-step" style="font-size:18px; line-height:1.55; color:var(--text); margin:0 0 26px; max-width:340px;"></p>
+    <div id="wel-dots" style="display:flex; gap:8px; margin:0 0 24px;"></div>
+    <button class="btn primary" id="wel-next" style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px;"></button>
+    <button id="wel-skip" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; margin-top:4px;"></button>
+  </div>
 </div>
 <div id="freeintro" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:46; text-align:left; padding:32px 22px; max-width:480px; margin:0 auto;">
   <p id="fi-title" style="font-size:22px; font-weight:700; margin:0 0 16px;"></p>
@@ -439,8 +445,20 @@ it:{
  guideQ:"Perché certe note insieme mi fanno sentire felice, e altre triste?",
  guidePts:[{ic:'palette',t:"Ogni suono ha sempre il suo <b>colore</b>"},{ic:'ear',t:"Impari a <b>sentire</b> la musica, non a memorizzarla"},{ic:'player-play',t:"Si impara <b>giocando</b>, come a Simon"}],
  welBody:"",
- welStart:"Iniziamo", welNext:"Avanti", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
- welSteps:[{ic:'robot',t:"Perché certi musicisti suonano come robot, e altri sembra che «parlino musica»?"},{ic:'ear',t:"Chi «parla musica» ha imparato la sensazione dei suoni, non solo dove mettere le dita."},{ic:'palette',t:"Huermony te la fa imparare giocando, associando suoni, colori e forme."},{ic:'microphone-2',t:"Provalo col tutorial. Puoi usare subito uno strumento."}],
+ welStart:"Iniziamo", welNext:"Avanti", welTryTut:"Prova il tutorial", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
+ welPairsLabels:{do:"Do", sol:"Sol", si:"Si"},
+ welPre:[
+  "Perché Do-Sol suona «<b>aperto</b>»,\nmentre Do-Si suona «<b>teso</b>»?",
+  "Questo è il segreto di chi pensa in musica.\n\nNon pensano in note, pensano in <b>relazioni</b>.\n\nHuermony nasce per aiutarti a familiarizzare con queste relazioni.",
+  "Queste relazioni tra note hanno un nome: <b>intervalli</b>.\n\nLetteralmente la distanza in frequenza tra due note, secondo precisi schemi matematici.\n\n(Più avanti, in Teoria, scoprirai che alcune combinazioni di suoni sono gradevoli per il cervello umano: è un fatto biologico.)\n\nMa c'è un problema… o forse un meraviglioso vantaggio.",
+  "La musica non è solo matematica: sarebbe troppo facile.\n\nLa musica è l'<b>emozione</b> che due note vicine generano.\n\nMa l'emozione non si impara a memoria: la devi <b>sentire</b>. E creare le tue ancore per ricordare le sensazioni che genera.",
+  "Huermony fa esattamente questo.\n\nCrea degli <b>ancoraggi</b> tramite la sinestesia: la contaminazione di sensi diversi.\n\nCosì col tempo riconoscere le note diventa <b>naturale</b>. Come una seconda lingua.",
+  "Fai subito una prova.\n\nPremi qui sotto e parte il tutorial del gioco."
+ ],
+ welPost:[
+  "Via via aggiungerai sempre più note.\n\nCostruirai scale sempre più complesse.\n\nScoprirai sempre più <b>sapori musicali</b>.",
+  "Che tu sia un musicista professionista o un suonatore di campanelli, ti auguro di <b>divertirti</b>, e di sbirciare anche solo per un secondo oltre al velo di mistero che a volte nasconde la musica.\n\nIn bocca al lupo!"
+ ],
  dashTag:"I tuoi progressi", mStars:"Stelle", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
@@ -577,8 +595,20 @@ en:{
  guideQ:"Why do some notes together make me feel happy, and others sad?",
  guidePts:[{ic:'palette',t:"Every sound always has its own <b>color</b>"},{ic:'ear',t:"You learn to <b>feel</b> music, not memorize it"},{ic:'player-play',t:"You learn by <b>playing</b>, like Simon"}],
  welBody:"",
- welStart:"Let's start", welNext:"Next", welSkip:"Already play? Skip the intro →", prHear:"Replay",
- welSteps:[{ic:'robot',t:"Why do some musicians play like robots, while others seem to \"speak music\"?"},{ic:'ear',t:"Those who \"speak music\" learned the feeling of sounds, not just where to put their fingers."},{ic:'palette',t:"Huermony gets you there by playing, pairing sounds, colors and shapes."},{ic:'microphone-2',t:"Try it with the tutorial. You can use a real instrument right away."}],
+ welStart:"Let's start", welNext:"Next", welTryTut:"Try the tutorial", welSkip:"Already play? Skip the intro →", prHear:"Replay",
+ welPairsLabels:{do:"Do", sol:"Sol", si:"Ti"},
+ welPre:[
+  "Why does Do-Sol sound «<b>open</b>»,\nwhile Do-Ti sounds «<b>tense</b>»?",
+  "This is the secret of those who think in music.\n\nThey don't think in notes, they think in <b>relationships</b>.\n\nHuermony exists to help you get familiar with these relationships.",
+  "These relationships between notes have a name: <b>intervals</b>.\n\nLiterally the distance in frequency between two notes, following precise mathematical patterns.\n\n(Later, in Theory, you'll discover that some combinations of sounds are pleasing to the human brain: it's a biological fact.)\n\nBut there's a problem… or maybe a wonderful advantage.",
+  "Music isn't just math: that would be too easy.\n\nMusic is the <b>emotion</b> two nearby notes create.\n\nBut emotion can't be memorized: you have to <b>feel</b> it. And build your own anchors to remember the sensations it creates.",
+  "Huermony does exactly this.\n\nIt builds <b>anchors</b> through synesthesia: the blending of different senses.\n\nSo over time recognizing notes becomes <b>natural</b>. Like a second language.",
+  "Give it a try right now.\n\nTap below and the game tutorial begins."
+ ],
+ welPost:[
+  "Bit by bit you'll add more notes.\n\nYou'll build ever more complex scales.\n\nYou'll discover ever more <b>musical flavors</b>.",
+  "Whether you're a professional musician or a doorbell player, I wish you <b>fun</b>, and a chance to peek, even just for a second, beyond the veil of mystery that sometimes hides music.\n\nGood luck!"
+ ],
  dashTag:"Your progress", mStars:"Stars", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
@@ -1013,22 +1043,37 @@ function openFreeIntro(){
  $('fi-close').textContent=S9.fiClose;
  $('freeintro').hidden=false;
 }
-let welStep=0;
-function showWelcome(){
- const em=$('wel-emblem'); em.style.cssText='position:relative;width:120px;height:120px;margin-bottom:26px;'; em.innerHTML='';
- for(let k=0;k<12;k++){const a=(-90+k*30)*Math.PI/180, x=60+50*Math.cos(a), y=60+50*Math.sin(a);
-  const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-5)+'px;top:'+(y-5)+'px;width:10px;height:10px;border-radius:50%;background:'+C[k].h; em.appendChild(d);}
- const ic=$('wel-icon'); em.appendChild(ic); ic.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:42px;color:var(--gold);line-height:1;margin:0;';
- welStep=0; renderWelStep();
- $('welcome').hidden=false;
+let welStep=0, welMode='pre';
+function welList(){return welMode==='post'?S9.welPost:S9.welPre;}
+function showWelcome(){ welMode='pre'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
+function showWelcomePost(){ welMode='post'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
+function buildWelPairs(){
+ const box=$('wel-pairs'); box.hidden=false; box.innerHTML='';
+ const L=S9.welPairsLabels;
+ const flashEl=el=>{el.style.transform='scale(1.16)'; setTimeout(()=>{el.style.transform='scale(1)';},220);};
+ [[{k:0,l:L.do},{k:7,l:L.sol}],[{k:0,l:L.do},{k:11,l:L.si}]].forEach(pair=>{
+  const row=document.createElement('div'); row.className='welpair';
+  pair.forEach((n,i)=>{
+   const b=document.createElement('button'); b.className='welnote'; b.textContent=n.l;
+   b.addEventListener('click',()=>{ensureCtx(); tone(60+n.k,0.7); flashEl(b);});
+   row.appendChild(b);
+   if(i===0){ const p=document.createElement('button'); p.className='welplay'; p.setAttribute('aria-label','play'); p.innerHTML='<i class="ti ti-player-play"></i>';
+    p.addEventListener('click',()=>{ensureCtx(); pair.forEach(x=>tone(60+x.k,1.2)); [...row.querySelectorAll('.welnote')].forEach(flashEl);});
+    row.appendChild(p); }
+  });
+  box.appendChild(row);
+ });
 }
 function renderWelStep(){
- const steps=S9.welSteps, s=steps[welStep];
- $('wel-icon').innerHTML='<i class="ti ti-'+s.ic+'"></i>';
- $('wel-step').textContent=s.t;
- let dots=''; steps.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
+ const list=welList(), last=welStep===list.length-1;
+ const isPairs=(welMode==='pre'&&welStep===0);
+ if(isPairs) buildWelPairs(); else $('wel-pairs').hidden=true;
+ $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>');
+ let dots=''; list.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
  $('wel-dots').innerHTML=dots;
- $('wel-next').textContent=(welStep<steps.length-1)?S9.welNext:S9.welStart;
+ $('wel-next').textContent=last?(welMode==='pre'?S9.welTryTut:S9.welStart):S9.welNext;
+ $('wel-skip').style.display=welMode==='pre'?'block':'none';
+ $('welcome').scrollTop=0;
 }
 function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
@@ -1122,7 +1167,7 @@ function tutPress(k){
     tut.step=4; tutAllow([-1]);
     setStatus(S9.tutDone,'ok'); chime();
     localStorage.setItem('hm_tut_done','1');
-    timers.push(setTimeout(()=>showLevelDetail('pent',0),2200));
+    timers.push(setTimeout(()=>{ if(!localStorage.getItem('hm_intro_done')) showWelcomePost(); else showLevelDetail('pent',0); },2200));
    }
   } else {
    tut.pos=0; tutAllow([-1]);
@@ -1876,8 +1921,13 @@ $('fs-scale').addEventListener('change',renderFsPreview);
 $('fs-tonic').addEventListener('change',renderFsPreview);
 $('fs-taste').addEventListener('click',function(){this.blur(); ensureCtx(); const sc=$('fs-scale').value, rt=+$('fs-tonic').value; SCALES[sc].concat([12]).forEach((k,i)=>timers.push(setTimeout(()=>tone(60+rt+k,0.34),i*300)));});
 $('fs-play').addEventListener('click',startFreeGame);
-$('wel-next').addEventListener('click',()=>{if(welStep<S9.welSteps.length-1){welStep++; renderWelStep();} else {localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();}});
-$('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); $('welcome').hidden=true; showLevels();});
+$('wel-next').addEventListener('click',()=>{
+ const list=welList();
+ if(welStep<list.length-1){welStep++; renderWelStep(); return;}
+ if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial(); }
+ else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels(); }
+});
+$('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
 $('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
