@@ -2005,7 +2005,13 @@ if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
 if('serviceWorker' in navigator){
  let reloaded=false;
  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloaded)return; reloaded=true; location.reload();});
- window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(r=>{r.update&&r.update();}).catch(()=>{});});
+ window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(r=>{
+  const check=()=>{ try{ r.update(); }catch(e){} };
+  check();
+  // controlla aggiornamenti quando torni sull'app e ogni minuto: si aggiorna da solo
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') check(); });
+  setInterval(check, 60000);
+ }).catch(()=>{});});
 }
 </script>
 </body>
