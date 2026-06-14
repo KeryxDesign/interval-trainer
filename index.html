@@ -281,6 +281,7 @@ button.levelcard:active{transform:scale(0.99);}
       <span id="gametitle" style="font-size:14px; color:var(--text); font-weight:700;"></span>
     </div>
     <div id="goalbar" hidden style="font-size:13px; text-align:center; margin:0 0 12px; background:var(--surface); border-radius:10px; padding:10px 10px;"></div>
+    <div id="bossbar" hidden style="display:flex; justify-content:center; align-items:center; gap:18px; font-size:16px; margin:0 0 12px;"></div>
     <div class="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
@@ -399,6 +400,7 @@ it:{
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
+ boss:"Boss finale", bossCard:"Ricostruisci la melodia a orecchio. 3 vite, 3 riascolti.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, riprova.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite",
  speeds:["Lento","Normale","Veloce","Turbo"],
  scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
  grpScales:"Altre scale", grpModes:"La maggiore e i suoi modi",
@@ -535,6 +537,7 @@ en:{
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
+ boss:"Final boss", bossCard:"Rebuild the melody by ear. 3 lives, 3 replays.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, try again.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives",
  speeds:["Slow","Normal","Fast","Turbo"],
  scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
  grpScales:"Other scales", grpModes:"The major scale and its modes",
@@ -717,7 +720,7 @@ function courseUnlocked(c){
  return S9.courses[prev].levels.every((_,i)=>levelStars(prev,i)>=1);
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; return game.kind==='free'?SCALES[scale]:cumSet(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss')return game.notes; return game.kind==='free'?SCALES[scale]:cumSet(game.c,game.w);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
@@ -806,6 +809,7 @@ function applyStatic(){
 
 function setView(name){
  if(ctx) stopAllHeld();
+ $('bossbar').hidden=true;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1221,6 +1225,15 @@ function renderPath(){
    }
    box.appendChild(card);
   });
+  // BOSS finale del corso
+  if(BOSS[c]){
+   const bOpen=courseComplete(c), bDone=localStorage.getItem('hm_boss_'+c);
+   const bc=document.createElement(bOpen?'button':'div'); bc.className='world levelcard bosscard'+(bOpen?'':' locked');
+   let bh='<div class="whead"><span class="wname"><i class="ti ti-trophy" style="color:var(--gold);font-size:18px;vertical-align:-3px"></i> '+S9.boss+': '+BOSS[c][lang]+'</span>'+(bDone?'<span style="color:var(--gold);font-size:14px;white-space:nowrap">'+(bDone==='3'?'🏆':'★')+'</span>':'')+'</div>';
+   if(bOpen){ bh+='<p class="wsub">'+S9.bossCard+'</p>'; bc.innerHTML=bh; bc.addEventListener('click',()=>beginBoss(c)); }
+   else { bh+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.bossLocked+'</p>'; bc.innerHTML=bh; }
+   box.appendChild(bc);
+  }
  });
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
@@ -1445,6 +1458,71 @@ const MELODIES={
       {it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}]
 };
 function playMelody(deg,box){ensureCtx(); let t=120,base=300; deg.forEach(d=>{const k=D2S[d-1]; timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,base*0.85/1000)); flashMwk(box,k,base-50);},t)); t+=base;});}
+// BOSS finale: ricostruisci una melodia famosa (3 vite, 3 riascolti)
+const BOSS={
+ pent:{it:"Mary Had a Little Lamb",en:"Mary Had a Little Lamb",deg:[3,2,1,2,3,3,3,2,2,2,3,5,5]},
+ maj:{it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}
+};
+function courseComplete(c){return unlockAll()||S9.courses[c].levels.every((_,i)=>levelStars(c,i)>=1);}
+function renderBossBar(){
+ let h='<span style="white-space:nowrap">';
+ for(let i=0;i<3;i++)h+='<i class="ti ti-heart'+(i<game.lives?'-filled':'')+'" style="color:'+(i<game.lives?'#e24b4a':'var(--line)')+'"></i>';
+ h+='</span><span style="color:var(--muted);white-space:nowrap"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> '+game.replays+'/3</span>';
+ $('bossbar').innerHTML=h;
+}
+function beginBoss(c){
+ clearTimers(); stopAllHeld(); stopMic();
+ const m=BOSS[c]; const notes=cumSet(c,S9.courses[c].levels.length-1);
+ game={kind:'boss', c:c, name:m[lang], seq:m.deg.map(d=>D2S[d-1]), notes:notes, lives:3, replays:3};
+ root=0; state='idle'; seq=[];
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('gametop').hidden=false; $('gametitle').textContent='🏆 '+S9.boss+' · '+m[lang];
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
+ $('bossbar').hidden=false;
+ $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
+ render(); renderBossBar();
+ bumpPlays(c); bumpStreak();
+ bossPlay();
+}
+function bossPlay(keepStep){
+ state='play'; clearTimers(); setStatus(S9.listen);
+ if(!keepStep) step=0;
+ let t=350, base=320;
+ game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{flash(k,base-70); tone(60+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
+ timers.push(setTimeout(()=>{state='input'; setStatus(S9.yourTurn(step,game.seq.length));},t));
+}
+function bossReplay(){ if(game.kind!=='boss'||game.replays<=0) return; if(state!=='input'&&state!=='play') return; game.replays--; renderBossBar(); bossPlay(true); }
+function bossHit(k){
+ if(state!=='input') return; ensureCtx();
+ if(k===game.seq[step]){
+  flash(k,300,true); tone(60+k,0.38); step++;
+  if(step>=game.seq.length){ state='over'; chime(); bossWin(); }
+  else setStatus(S9.yourTurn(step,game.seq.length));
+ } else {
+  game.lives--; buzz(); renderBossBar();
+  flash(game.seq[step],420); // mostra la nota giusta
+  if(game.lives<=0){ state='over'; bossFail(); }
+  else setStatus(S9.bossWrong,'err');
+ }
+}
+function bossWin(){
+ const perfect=game.lives===3;
+ const prev=localStorage.getItem('hm_boss_'+game.c);
+ localStorage.setItem('hm_boss_'+game.c, perfect?'3':(prev==='3'?'3':'1'));
+ $('bossbar').hidden=true;
+ const ico=$('celico'); ico.innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
+ $('celtitle').textContent=S9.bossWin;
+ $('celname').innerHTML='<b>'+game.name+'</b>'+(perfect?'<br><span style="color:var(--gold);font-size:14px">'+S9.bossPerfect+'</span>':'');
+ $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevels();
+ $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+}
+function bossFail(){
+ setStatus(S9.bossFail,'err');
+ const rv=$('reveal'); rv.innerHTML='';
+ centerPlay();
+}
 function playTasteNotes(arr,box){
  ensureCtx(); const ext=arr.slice().sort((a,b)=>a-b).concat([12]); let idx=0; const mel=[0];
  for(let i=0;i<5;i++){idx=Math.max(0,Math.min(ext.length-1,idx+(Math.random()<0.5?-1:1)*(Math.random()<0.75?1:2))); mel.push(ext[idx]);}
@@ -1469,7 +1547,7 @@ function centerPlay(){
  ct.dataset.mode='play'; ct.style.background='var(--text)'; ct.style.color='var(--bg)';
  ct.innerHTML='<i class="ti ti-player-play" style="font-size:'+Math.round(S*0.17)+'px"></i>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over') beginGame(); };
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='boss') beginBoss(game.c); else beginGame(); } };
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
@@ -1709,6 +1787,7 @@ function stopMic(){
 
 function press(k){
  if(game.kind==='tut'){tutPress(k); return;}
+ if(game.kind==='boss'){ if(state==='input'){bossHit(k);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
  if(state==='input'){hit(k); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
 }
@@ -1767,7 +1846,7 @@ $('fs-taste').addEventListener('click',function(){this.blur(); ensureCtx(); cons
 $('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{if(welStep<S9.welSteps.length-1){welStep++; renderWelStep();} else {localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial();}});
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); $('welcome').hidden=true; showLevels();});
-$('rehear').addEventListener('click',function(){this.blur(); if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
+$('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
 $('spdsel').addEventListener('change',e=>{speed=parseFloat(e.target.value); localStorage.setItem('it_speed',e.target.value);});
