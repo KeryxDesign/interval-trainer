@@ -66,10 +66,15 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .fsnote span{font-size:12px; font-weight:600; line-height:1;}
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
-.crow.options{flex-wrap:wrap; justify-content:center; gap:10px;}
-.crow.options .btn{padding:9px 12px;}
+.crow.options{flex-wrap:nowrap; justify-content:center; gap:3px;}
+.crow.options .btn{padding:6px 8px; font-size:12px;}
+.crow.options .btn i{font-size:15px;}
+.crow.options .tgl{padding:6px 7px; font-size:12px; gap:5px;}
+.crow.options .tgl .track{width:28px; height:17px;}
+.crow.options .tgl .knob{width:13px; height:13px;}
 .crow.options #mictxt{display:none;}
-.spdbox{display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:8px 12px; color:var(--text); font-weight:600; font-size:14px;}
+.spdbox{display:inline-flex; align-items:center; gap:4px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:6px 7px; color:var(--text); font-weight:600; font-size:12px;}
+.spdbox i{font-size:15px;}
 .spdbox i{color:var(--muted); font-size:16px;}
 .spdbox select{appearance:none; -webkit-appearance:none; border:none; background:transparent; color:var(--text); font:inherit; font-weight:600; padding:0; cursor:pointer;}
 #tonbox{display:none;}
@@ -108,6 +113,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #wheel{position:relative;}
 .key{position:absolute; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:transform .12s; padding:0; color:#fff;}
 .key i{line-height:1;}
+.key.klock{border:2px dashed #5a616e;}
 .key span{font-weight:600; line-height:1.3;}
 .kb{display:none;}
 @media (pointer:fine){
@@ -138,7 +144,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 #gamepanel.incard #status{order:0;} #gamepanel.incard #micline{order:0;}
 #gamepanel.incard #wheelbox{order:1;}
 #gamepanel.incard .stats{order:2;}
-#gamepanel.incard .controls{order:3; margin:6px 0 0;}
+#gamepanel.incard .controls{order:3; margin:20px 0 0;}
 #gamepanel.incard #reveal{order:4;}
 .scalerow{justify-content:center;}
 .secacc{background:var(--surface); border-radius:14px; margin:0 0 16px; overflow:hidden;}
@@ -568,7 +574,7 @@ it:{
    {name:"L'arpeggio", th:"Arriva la <b>terza maggiore</b> e di colpo c'è un'<b>identità</b>: con casa e pilastro forma l'accordo maggiore, il suo sorriso. È la nota che <b>accende la luce</b>. Senti come da due punti nudi nasce un colore pieno, aperto, affermativo: la sensazione del <b>sole che sorge</b>."},
    {name:"Il passo", th:"Finora le note saltavano da un punto all'altro; ora arriva il <b>gradino</b> che le fa camminare. Questa nota non è riposo né tensione: è <b>movimento puro</b>. Con lei la melodia smette di balzare e inizia a passeggiare, un passo dopo l'altro. La sensazione è quella del <b>cammino dolce</b>."},
    {name:"La pentatonica", th:"L'ultima nota <b>completa la pentatonica</b>: cinque suoni, zero semitoni, zero tensione. È la scala <b>\"a prova di errore\"</b>, dove qualsiasi cosa suoni va bene. Senti l'<b>apertura totale</b>, calda e senza gravità: niente tira, tutto galleggia. Tieni a mente bene questa sensazione, perché nel prossimo corso la trasformeremo."}]},
-  maj:{title:"La scala maggiore", desc:"Prendi la pentatonica che hai costruito e aggiungi le <b>due note che le mancano</b>. Sono le uniche due che creano un <b>semitono</b>, e cambiano tutto: dove prima tutto galleggiava, ora compare la <b>gravità</b>. Tensione che chiede di risolvere, il bisogno di tornare a casa. È così che dalla pentatonica nasce il <b>suono pieno e affermativo</b> della scala maggiore, l'alfabeto di quasi ogni melodia che conosci.",
+  maj:{title:"Scala maggiore (ionico)", desc:"Prendi la pentatonica che hai costruito e aggiungi le <b>due note che le mancano</b>. Sono le uniche due che creano un <b>semitono</b>, e cambiano tutto: dove prima tutto galleggiava, ora compare la <b>gravità</b>. Tensione che chiede di risolvere, il bisogno di tornare a casa. È così che dalla pentatonica nasce il <b>suono pieno e affermativo</b> della scala maggiore, l'alfabeto di quasi ogni melodia che conosci.",
    levels:[
    {name:"La sensibile", th:"Ecco la <b>prima vera tensione</b>. La sensibile sta a un <b>solo semitono da casa</b>: non sta ferma, preme, tira verso l'alto, chiede di scaricarsi sulla tonica. Dopo tutto il galleggiare della pentatonica, per la prima volta senti una nota che <b>NON vuole restare dov'è</b>: è lei che rende il ritorno a casa inevitabile. La sensazione cambia: ora c'è un <b>richiamo</b>."},
    {name:"La scala completa", th:"L'ultima nota <b>chiude il cerchio</b>: tutti e sette i gradi. La sottodominante apre il viaggio armonico e, insieme alla sensibile, forma il <b>tritono nascosto</b> (fa-si), il motore segreto di ogni chiusura. Ora la scala ha <b>gravità piena</b>: ogni tensione sa dove andare. Questa è la sensazione del maggiore: affermazione, arrivo, casa."}]}},
@@ -719,7 +725,7 @@ en:{
    {name:"The arpeggio", th:"The <b>major third</b> arrives and suddenly there's an <b>identity</b>: with home and pillar it forms the major chord, its smile. It's the note that <b>turns the light on</b>. Feel how from two bare points a full, open, affirmative color is born: the sensation of the <b>rising sun</b>."},
    {name:"The step", th:"Until now the notes leaped from point to point; now comes the <b>stair-step</b> that makes them walk. This note is neither rest nor tension: it's <b>pure movement</b>. With it the melody stops jumping and starts strolling, one step after another. The sensation is a <b>gentle walk</b>."},
    {name:"The pentatonic", th:"The last note <b>completes the pentatonic</b>: five sounds, zero semitones, zero tension. It's the <b>\"fail-safe\" scale</b> where anything you play works. Feel the <b>total openness</b>, warm and weightless: nothing pulls, everything floats. Hold on to this sensation, because in the next course we'll transform it."}]},
-  maj:{title:"The major scale", desc:"Take the pentatonic you built and add the <b>two notes it's missing</b>. They're the only two that create a <b>semitone</b>, and they change everything: where before everything floated, now there's <b>gravity</b>. Tension asking to resolve, the need to get home. That's how the <b>full, affirmative sound</b> of the major scale is born from the pentatonic, the alphabet of almost every melody you know.",
+  maj:{title:"Major scale (Ionian)", desc:"Take the pentatonic you built and add the <b>two notes it's missing</b>. They're the only two that create a <b>semitone</b>, and they change everything: where before everything floated, now there's <b>gravity</b>. Tension asking to resolve, the need to get home. That's how the <b>full, affirmative sound</b> of the major scale is born from the pentatonic, the alphabet of almost every melody you know.",
    levels:[
    {name:"The leading tone", th:"Here's the <b>first real tension</b>. The leading tone sits <b>just a semitone from home</b>: it won't sit still, it presses, it pulls upward, it begs to discharge onto the tonic. After all the floating of the pentatonic, for the first time you feel a note that <b>does NOT want to stay put</b>: it's what makes the return home inevitable. The sensation shifts: now there's a <b>pull</b>."},
    {name:"The full scale", th:"The last note <b>closes the circle</b>: all seven degrees. The subdominant opens the harmonic journey and, with the leading tone, forms the <b>hidden tritone</b> (fa-ti), the secret engine of every closure. Now the scale has <b>full gravity</b>: every tension knows where to go. This is the sensation of major: affirmation, arrival, home."}]}},
@@ -1373,8 +1379,8 @@ function renderPath(){
   const eD=courseEliteDone(c), eT=S9.courses[c].levels.length, bD=localStorage.getItem('hm_boss_'+c);
   const medals='<div class="medals">'
    +'<span class="medal"><i class="ti ti-star-filled" style="color:var(--gold)"></i> '+courseStars(c)+'/'+courseMaxStars(c)+'</span>'
-   +'<span class="medal"><i class="ti ti-skull" style="color:'+(eD>0?'var(--gold)':'var(--muted)')+'"></i> '+eD+'/'+eT+'</span>'
-   +'<span class="medal"><i class="ti ti-trophy" style="color:'+(bD?'var(--gold)':'var(--muted)')+'"></i> '+(bD?(bD==='3'?'🏆':'★'):'–')+'</span>'
+   +'<span class="medal"><i class="ti ti-swords" style="color:'+(eD>0?'var(--gold)':'var(--muted)')+'"></i> '+eD+'/'+eT+'</span>'
+   +'<span class="medal"><i class="ti ti-skull" style="color:'+(bD?'var(--gold)':'var(--muted)')+'"></i> '+(bD?(bD==='3'?'🏆':'★'):'–')+'</span>'
    +'</div>';
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
    '<div class="gameslot"></div>'+
@@ -1495,7 +1501,7 @@ function showLevelDetail(c,w){
  const eu=unlockAll()||starsOf(c,w,2)>=1;
  const eDone=localStorage.getItem('hm_elite_'+c+'_'+w);
  const eb=document.createElement(eu?'button':'div'); eb.className='world levelcard elitecard'+(eu?'':' locked')+(eDone?' done':'');
- let eh='<i class="ti ti-skull eskull"></i><span class="etitle">'+S9.elite+(eDone?' <span class="estar">★</span>':'')+'</span>';
+ let eh='<i class="ti ti-swords eskull"></i><span class="etitle">'+S9.elite+(eDone?' <span class="estar">★</span>':'')+'</span>';
  if(eu){ eh+='<p class="esub">'+S9.eliteCard+'</p>'; eb.innerHTML=eh; eb.addEventListener('click',()=>beginElite(c,w)); }
  else { eh+='<p class="esub"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.eliteLocked+'</p>'; eb.innerHTML=eh; }
  md.appendChild(eb);
@@ -1541,7 +1547,7 @@ function render(){
    const free=game.kind==='free';
    const locked=free && !sc.includes(k); // nota non ancora sbloccata -> grigia
    const b=document.createElement('button'); b.className='key'+(locked?' klock':''); b.id='b'+k;
-   const bg=locked?'var(--surface2)':C[k].h, col=locked?'var(--muted)':ink(k);
+   const bg=locked?'#3b424f':C[k].h, col=locked?'#aeb4bf':ink(k); // bloccata: grigia ben visibile
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+bg+';color:'+col+(locked?'':ring(k));
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
@@ -2131,7 +2137,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.72'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.73'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
