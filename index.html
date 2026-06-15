@@ -1122,7 +1122,7 @@ function setupCardFree(c, page){
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true;
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1';
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
  if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
@@ -1199,7 +1199,7 @@ function startLevel(c,w,m,skipLoading){
  $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
- $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true;
+ $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1';
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
@@ -1727,7 +1727,7 @@ function startBossLike(g, title){
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
- $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true;
+ $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1';
  render(); renderBossBar();
  bumpPlays(g.c); bumpStreak();
  bossIntro();
@@ -1749,15 +1749,14 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){let k,g=0; do{
 function beginBoss(c){
  clearTimers(); stopAllHeld(); stopMic();
  const pool=cumSet(c,S9.courses[c].levels.length-1);
- game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7};
+ game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, melReplays:3, scaleReplays:3};
  root=0; state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent='💀 '+S9.boss+' · '+S9.courses[c].title;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
- $('rehtxt').textContent=S9.bossMelodyBtn; // 1° bottone: riascolta la MELODIA (solo a orecchio)
- $('bscale').hidden=false; $('bscaletxt').textContent=S9.bossScaleBtn; // 2° bottone: riascolta la SCALA (i cerchi si allargano)
+ $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; updateBossReplays(); // 2 riascolti, max 3 ciascuno
  render(); bumpPlays(c); bumpStreak();
  bossGrowIntro();
 }
@@ -1768,8 +1767,9 @@ function bossScaleSeq(t0){
  asc.forEach(k=>{ timers.push(setTimeout(()=>{ flash(k%12,sstep-60,true); tone(60+k,Math.max(0.2,sstep*0.8/1000));},t)); t+=sstep; }); // i cerchi si allargano: associi nota<->colore<->suono
  return t;
 }
-function bossScaleReplay(){ if(game.kind!=='bossgrow'||state==='play') return; ensureCtx(); setStatus(S9.bossScale); bossScaleSeq(120); } // scala illimitata, con flash sui cerchi
-function bossMelodyReplay(){ if(game.kind!=='bossgrow'||state!=='input') return; ensureCtx(); bossGrowPlay(); } // melodia illimitata, solo a orecchio (pulse)
+function updateBossReplays(){ if(game.kind!=='bossgrow') return; const m=game.melReplays, s=game.scaleReplays; $('rehtxt').textContent=S9.bossMelodyBtn+' '+m; $('bscaletxt').textContent=S9.bossScaleBtn+' '+s; $('rehear').style.opacity=m>0?'1':'.4'; $('bscale').style.opacity=s>0?'1':'.4'; }
+function bossScaleReplay(){ if(game.kind!=='bossgrow'||state==='play'||game.scaleReplays<=0) return; ensureCtx(); game.scaleReplays--; updateBossReplays(); setStatus(S9.bossScale); bossScaleSeq(120); } // max 3, con flash sui cerchi
+function bossMelodyReplay(){ if(game.kind!=='bossgrow'||state!=='input'||game.melReplays<=0) return; ensureCtx(); game.melReplays--; updateBossReplays(); bossGrowPlay(); } // max 3, solo a orecchio (pulse)
 function bossGrowIntro(){
  ensureCtx(); state='wait'; clearTimers(); setStatus(S9.bossScale);
  let t=bossScaleSeq(350)+250;
@@ -2248,7 +2248,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.84'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.85'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
