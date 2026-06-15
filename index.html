@@ -1406,8 +1406,8 @@ function renderPath(){
     if(cOpen) h+='<p class="wreq"><i class="ti ti-lock" style="font-size:13px;vertical-align:-2px"></i> '+S9.lockReq(i)+'</p>';
     card.innerHTML=h;
    } else {
-    const ts=levelStars(c,i);
-    h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:8px;"><span style="color:'+(ts>0?'var(--gold)':'var(--muted)')+'; font-size:14px;">★ '+ts+'/9</span><i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
+    const ts=levelStars(c,i), eD=localStorage.getItem('hm_elite_'+c+'_'+i)?1:0;
+    h+='<div style="display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-top:8px;"><span style="color:'+(ts>0?'var(--gold)':'var(--muted)')+'; font-size:14px;">★ '+ts+'/9</span><span style="color:'+(eD?'var(--gold)':'var(--muted)')+'; font-size:14px;"><i class="ti ti-swords" style="font-size:13px;vertical-align:-2px"></i> '+eD+'/1</span><i class="ti ti-chevron-right" style="color:var(--muted); font-size:18px;"></i></div>';
     card.innerHTML=h;
     card.addEventListener('click',()=>showLevelDetail(c,i));
    }
@@ -2137,7 +2137,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.73'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.74'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
