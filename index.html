@@ -512,12 +512,12 @@ it:{
  welStart:"Iniziamo", welNext:"Avanti", welTryTut:"Prova il tutorial", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Si"},
  welPre:[
-  "Premi e ascolta. Do-Sol suona <b>aperto</b>, Do-Si suona <b>teso</b>.\nLe note non sono solo note: hanno un carattere.",
-  "E se ogni suono avesse il suo <b>colore</b>?\nHuermony te li fa imparare giocando e ascoltando, <b>non con i quiz</b>. Col tempo li riconosci da solo.",
+  "Premi e ascolta. Senti? Una coppia suona <b>aperta</b>, l'altra <b>tesa</b>.\nLe note non sono solo note: hanno un carattere.",
+  "E se ogni suono avesse il suo <b>colore</b>?\nNon per decorare: per farti <b>sentire</b> la nota prima di pensarla. Si impara giocando, <b>non con i quiz</b>.",
   "Pronti? Facciamo una prova."
  ],
  welPost:[
-  "Via via aggiungerai sempre più note.\n\nCostruirai scale sempre più complesse.\n\nScoprirai sempre più <b>sapori musicali</b>.",
+  "Via via aggiungerai più note, scale, <b>sapori musicali</b>.\n\nE quello che alleni qui ti torna quando canti, suoni o registri.",
   "Che tu sia un musicista professionista o un suonatore di campanelli, ti auguro di <b>divertirti</b>, e di sbirciare anche solo per un secondo oltre al velo di mistero che a volte nasconde la musica.\n\nIn bocca al lupo!"
  ],
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Elite", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
@@ -557,7 +557,7 @@ it:{
  tut3:"Due colori, due suoni. Ora ne suono due di fila: ascoltali e ripetili toccandoli nello stesso ordine.",
  tutGo:"tocca a te: ripeti le due note",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
- tutDone:"È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
+ tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
  unlockTap:"tocca per continuare",
@@ -661,12 +661,12 @@ en:{
  welStart:"Let's start", welNext:"Next", welTryTut:"Try the tutorial", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Ti"},
  welPre:[
-  "Tap and listen. Do-Sol sounds <b>open</b>, Do-Ti sounds <b>tense</b>.\nNotes aren't just notes: they have a character.",
-  "What if every sound had its own <b>color</b>?\nHuermony makes you learn them by playing and listening, <b>not with quizzes</b>. In time you'll recognize them on your own.",
+  "Tap and listen. Hear it? One pair sounds <b>open</b>, the other <b>tense</b>.\nNotes aren't just notes: they have a character.",
+  "What if every sound had its own <b>color</b>?\nNot for decoration: to make you <b>feel</b> the note before you think it. You learn by playing, <b>not with quizzes</b>.",
   "Ready? Let's give it a try."
  ],
  welPost:[
-  "Bit by bit you'll add more notes.\n\nYou'll build ever more complex scales.\n\nYou'll discover ever more <b>musical flavors</b>.",
+  "Bit by bit you'll add more notes, scales, <b>musical flavors</b>.\n\nAnd what you train here comes back when you sing, play or record.",
   "Whether you're a professional musician or a doorbell player, I wish you <b>fun</b>, and a chance to peek, even just for a second, beyond the veil of mystery that sometimes hides music.\n\nGood luck!"
  ],
  dashTag:"Your progress", mStars:"Stars", mElite:"Elite", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
@@ -706,7 +706,7 @@ en:{
  tut3:"Two colors, two sounds. Now I'll play two in a row: listen and repeat them by tapping in the same order.",
  tutGo:"your turn: repeat the two notes",
  tutRetry:"No, the first one was home (the red one). Try again.",
- tutDone:"That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
+ tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
  unlockTap:"tap to continue",
@@ -2137,7 +2137,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.76'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.77'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
