@@ -490,7 +490,7 @@ it:{
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  boss:"Boss finale", bossScaleBtn:"Scala", bossMelodyBtn:"Melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. Riascolta la scala quando vuoi.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
- elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti.", eliteLocked:"Supera la modalità Difficile per sbloccarlo.", eliteWin:"Elite superato!",
+ elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Supera la modalità Difficile per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
  speeds:["Lento","Normale","Veloce","Turbo"],
  scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
@@ -640,7 +640,7 @@ en:{
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  boss:"Final boss", bossScaleBtn:"Scale", bossMelodyBtn:"Melody", bossCard:"Build a 7-note melody by ear only. Replay the scale anytime.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
- elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays.", eliteLocked:"Clear Hard mode to unlock it.", eliteWin:"Elite cleared!",
+ elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Clear Hard mode to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
  speeds:["Slow","Normal","Fast","Turbo"],
  scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
@@ -837,7 +837,8 @@ function courseUnlocked(c){
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
 function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
-function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||levelStars(c,w)>=1) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
+// le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
+function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
@@ -2282,7 +2283,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.88'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.89'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
