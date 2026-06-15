@@ -470,9 +470,9 @@ it:{
  lockReq:n=>'Sblocca con 2★ in "Solo orecchio" del livello '+n,
  lockMode:"1★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
- modeSuffix:["",' (la sequenza non si illumina)',' (la tonica cambia ogni round)'],
+ modeSuffix:["",' (la tonalità cambia ogni round)',' (ricostruisci a orecchio)'],
  modes:["Facile","Normale","Difficile"],
- modeDesc:["vedi i colori e ascolti","solo a orecchio, niente colori","la tonica cambia ogni volta"],
+ modeDesc:["ripeti la melodia · gli aiuti calano a ogni stella","la tonalità cambia ogni round · gli aiuti calano a ogni stella","ricostruisci la melodia a orecchio · 3 vite, 3 riascolti"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
@@ -619,9 +619,9 @@ en:{
  lockReq:n=>'Unlock with 2★ in "Ear only" of level '+n,
  lockMode:"1★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
- modeSuffix:["",' (the sequence does not light up)',' (the tonic changes every round)'],
+ modeSuffix:["",' (the key changes every round)',' (rebuild by ear)'],
  modes:["Easy","Normal","Hard"],
- modeDesc:["see the colors and listen","by ear only, no colors","the tonic changes every time"],
+ modeDesc:["repeat the melody · fewer hints each star","the key changes every round · fewer hints each star","rebuild the melody by ear · 3 lives, 3 replays"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
@@ -1189,6 +1189,7 @@ function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.o
 function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
 function startLevel(c,w,m,skipLoading){
+ if(m===2){ beginHard(c,w); return; }
  clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=0;
  const lv=S9.courses[c].levels[w];
  setView('free');
@@ -1545,12 +1546,20 @@ function render(){
   if(disp.includes(k)){
    const free=game.kind==='free';
    const locked=free && !sc.includes(k); // nota non ancora sbloccata -> grigia
+   const hardMode=game.kind==='boss'&&game.hardLevel; // Hard: solo colore, nessun simbolo/nome
+   const lvlMode=game.kind==='level'&&(game.m===0||game.m===1); // rivelazione progressiva (Facile/Normale)
    const b=document.createElement('button'); b.className='key'+(locked?' klock':''); b.id='b'+k;
    const bg=locked?'#3b424f':C[k].h, col=locked?'#aeb4bf':ink(k); // bloccata: grigia ben visibile
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+bg+';color:'+col+(locked?'':ring(k));
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
-   b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
+   if(hardMode){
+    b.innerHTML='<span class="kb">'+KB[k]+'</span>';
+   } else if(lvlMode){
+    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.05;font-weight:600">'+NOTE[(root+k)%12]+'</span><span class="kb">'+KB[k]+'</span>';
+   } else {
+    b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
+   }
    if(locked){
     b.addEventListener('click',()=>setStatus(S9.noteLocked,'err'));
    } else {
@@ -1566,6 +1575,7 @@ function render(){
    w.appendChild(d);
   }
  }
+ updateReveal();
  if((game.kind==='level'||game.kind==='free')&&(state==='idle'||state==='over')) centerPlay(); else clearCenter();
 }
 function updateNotes(){
@@ -1706,10 +1716,10 @@ function renderBossBar(){
  $('bossbar').innerHTML=h;
 }
 function startBossLike(g, title){
- game=g; root=0; state='idle'; seq=[];
+ game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent='💀 '+title;
+ $('gametop').hidden=false; $('gametitle').textContent=(g.hardLevel?'':(g.elite?'⚔ ':'💀 '))+title;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
@@ -1723,7 +1733,7 @@ function bossIntro(){
  const asc=game.notes.slice().sort((a,b)=>a-b).concat([12]);
  const sstep=Math.max(160,300/speed); let t=350;
  setStatus(S9.bossScale);
- asc.forEach(k=>{ timers.push(setTimeout(()=>{flash(k,sstep-60); tone(60+k,Math.max(0.2,sstep*0.8/1000));},t)); t+=sstep; });
+ asc.forEach(k=>{ timers.push(setTimeout(()=>{flash(k,sstep-60); tone(60+root+k,Math.max(0.2,sstep*0.8/1000));},t)); t+=sstep; });
  t+=250;
  S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
  timers.push(setTimeout(()=>bossPlay(),t));
@@ -1739,18 +1749,24 @@ function beginElite(c,w){
  const pool=cumSet(c,w);
  startBossLike({kind:'boss', elite:true, c:c, w:w, name:S9.level+' '+(w+1), seq:randMelody(pool,5), notes:pool, lives:3, replays:3}, S9.elite+' · '+S9.level+' '+(w+1));
 }
+// Hard mode: ricostruisci una melodia random a orecchio, tonalità random, 3 vite + 3 riascolti.
+function beginHard(c,w){
+ clearTimers(); stopAllHeld(); stopMic();
+ const pool=cumSet(c,w);
+ startBossLike({kind:'boss', hardLevel:true, c:c, w:w, m:2, name:S9.level+' '+(w+1), seq:randMelody(pool,5), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[2]+' · '+S9.level+' '+(w+1));
+}
 function bossPlay(keepStep){
  ensureCtx(); state='play'; clearTimers(); setStatus(S9.listen);
  if(!keepStep) step=0;
  const base=Math.max(170,320/speed); let t=Math.max(220,350/speed);
- game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{flash(k,base-70); tone(60+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
+ game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{flash(k,base-70); tone(60+root+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
  timers.push(setTimeout(()=>{state='input'; setStatus(S9.yourTurn(step,game.seq.length));},t));
 }
 function bossReplay(){ if(game.kind!=='boss'||game.replays<=0) return; if(state!=='input'&&state!=='play') return; game.replays--; renderBossBar(); bossPlay(true); }
 function bossHit(k){
  if(state!=='input') return; ensureCtx();
  if(k===game.seq[step]){
-  flash(k,300,true); tone(60+k,0.38); step++;
+  flash(k,300,true); tone(60+root+k,0.38); step++;
   if(step>=game.seq.length){ state='over'; chime(); bossWin(); }
   else setStatus(S9.yourTurn(step,game.seq.length));
  } else {
@@ -1761,6 +1777,7 @@ function bossHit(k){
  }
 }
 function bossWin(){
+ if(game.hardLevel){ bossWinHard(); return; }
  const isElite=game.elite, perfect=game.lives===3;
  if(isElite){ localStorage.setItem('hm_elite_'+game.c+'_'+game.w,'1'); }
  else { const key='hm_boss_'+game.c, prev=localStorage.getItem(key); localStorage.setItem(key, perfect?'3':(prev==='3'?'3':'1')); }
@@ -1773,6 +1790,19 @@ function bossWin(){
  $('celtap').textContent=S9.unlockTap;
  const cc=game.c, cw=game.w, el=isElite;
  celebrateCb=()=>{ el?showLevelDetail(cc,cw):showLevels(); };
+ $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+}
+function bossWinHard(){
+ const st=game.lives>=3?3:(game.lives>=2?2:1);
+ const prev=starsOf(game.c,game.w,2);
+ saveProg(game.c,'w'+game.w+'m2',{stars:Math.max(st,prev),bestRound:game.seq.length});
+ $('bossbar').hidden=true;
+ $('celico').innerHTML='<div style="display:flex;gap:5px;justify-content:center">'+[1,2,3].map(i=>'<i class="ti ti-star-filled" style="font-size:36px;color:'+(i<=st?'var(--gold)':'var(--surface2)')+'"></i>').join('')+'</div>';
+ $('celtitle').textContent=S9.modes[2]+' ✓';
+ $('celname').innerHTML='<b>'+game.name+'</b>';
+ $('celtap').textContent=S9.unlockTap;
+ const cc=game.c, cw=game.w;
+ celebrateCb=()=>showLevelDetail(cc,cw);
  $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 function bossFail(){
@@ -1805,21 +1835,35 @@ function centerPlay(){
  const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
  ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='boss'){ game.elite?beginElite(game.c,game.w):beginBoss(game.c); } else beginGame(); } };
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='boss'){ game.hardLevel?beginHard(game.c,game.w):(game.elite?beginElite(game.c,game.w):beginBoss(game.c)); } else beginGame(); } };
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
+// rivelazione progressiva (Facile/Normale): meno aiuti a ogni stella superata.
+// round <STAR1: colore+simbolo+nome · STAR1..STAR2-1: colore+nome · >=STAR2: solo colore
+function updateReveal(){
+ if(!(game.kind==='level'&&(game.m===0||game.m===1))) return;
+ const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
+ const isz=Math.round(KEY*0.32), ntsz=Math.round(KEY*0.2);
+ for(let k=0;k<12;k++){
+  const b=$('b'+k); if(!b) continue;
+  let inner='';
+  if(lv<1) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>';
+  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+NOTE[(root+k)%12]+'</span>';
+  inner+='<span class="kb">'+KB[k]+'</span>';
+  b.innerHTML=inner;
+ }
+}
 function playSeq(){
  state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML=''; updateGoal();
- if(game.kind==='level'&&game.m===2){root=Math.floor(Math.random()*12); updateNotes();}
- const silent=game.kind==='level'&&game.m===1;
+ if(game.kind==='level'&&game.m===1){root=Math.floor(Math.random()*12); updateNotes(); updateReveal();}
  const base=Math.max(420,660-seq.length*18)/speed;
  let t=250;
  seq.forEach((k,i)=>{
   const ms=base*(dur[i]||1);
   timers.push(setTimeout(()=>{
    const td=Math.max(0.18, ms*0.8/1000);
-   if(silent)pulse(ms-100); else flash(k,ms-100);
+   flash(k,ms-100);
    tone(60+root+k,td);
   },t));
   t+=ms;
@@ -2045,7 +2089,7 @@ function stopMic(){
 
 function press(k){
  if(game.kind==='tut'){tutPress(k); return;}
- if(game.kind==='boss'){ if(state==='input'){bossHit(k);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
+ if(game.kind==='boss'){ if(state==='input'){bossHit(k);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(state==='input'){hit(k); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
 }
@@ -2064,7 +2108,7 @@ function hit(k,fromMic){
     const b=+(localStorage.getItem(bestKey())||0);
     if(seq.length>b){localStorage.setItem(bestKey(),seq.length); loadBest();}
    }
-   timers.push(setTimeout(()=>{addNote(); $('round').textContent=seq.length; playSeq();},900));
+   timers.push(setTimeout(()=>{addNote(); updateReveal(); $('round').textContent=seq.length; playSeq();},900));
    state='wait';
   } else setStatus(S9.yourTurn(step,seq.length));
  } else {
@@ -2136,7 +2180,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.78'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.79'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
