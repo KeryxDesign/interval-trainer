@@ -252,7 +252,8 @@ button.levelcard:active{transform:scale(0.99);}
 .leg .sw{width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff;}
 .leg small{font-size:13px; line-height:1.3; color:var(--text);}
 .leg small b{font-weight:600;}
-#unlockrow{display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin:6px 0 0; cursor:pointer;}
+#unlockrow{display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; color:var(--muted); margin:6px 0 0; cursor:pointer; padding:8px 12px; border-radius:10px; border:1px solid transparent;}
+#unlockrow:has(#unlockall:checked){background:rgba(234,179,8,.14); border-color:var(--gold); color:var(--gold-ink); font-weight:700;}
 #timbrebox{margin-top:26px;}
 #timbrelbl{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:0 0 10px;}
 #timbres{display:flex; gap:8px;}
@@ -467,7 +468,7 @@ it:{
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
- unlock:"Sblocca tutti i livelli",
+ unlock:"Sblocca tutti i livelli", unlockOn:"⚠ Sblocco totale ATTIVO (tutto disponibile)",
  lockReq:n=>'Sblocca con 2★ in "Solo orecchio" del livello '+n,
  lockMode:"1★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
@@ -616,7 +617,7 @@ en:{
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 without Replay',
- unlock:"Unlock all levels",
+ unlock:"Unlock all levels", unlockOn:"⚠ ALL UNLOCKED is ON (everything available)",
  lockReq:n=>'Unlock with 2★ in "Ear only" of level '+n,
  lockMode:"1★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
@@ -810,6 +811,7 @@ function saveProg(c,key,entry){const p=prog(c); const old=p[key]||{stars:0,bestR
 function starsOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.stars:0;}
 function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
+function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAll()?S9.unlockOn:S9.unlock;}
 function worldUnlocked(c,i){return unlockAll()||i===0||starsOf(c,i-1,1)>=2;}
 function modeUnlocked(c,w,m){return unlockAll()||(m===0?worldUnlocked(c,w):starsOf(c,w,m-1)>=1);}
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
@@ -840,7 +842,7 @@ function applyStatic(){
  $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
  $('tab-theory').querySelector('.tablbl').textContent=S9.tabs[2];
  $('tab-profile').querySelector('.tablbl').textContent=S9.tabProfile;
- $('unlocktxt').textContent=S9.unlock;
+ updateUnlockLabel();
  $('wel-skip').textContent=S9.welSkip;
  $('mictxt').textContent=S9.mic;
  $('rehtxt').textContent=S9.rehear;
@@ -1063,7 +1065,7 @@ function renderCoursePick(){
 function showLevels(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
  setView('levels');
- $('unlockall').checked=unlockAll();
+ $('unlockall').checked=unlockAll(); updateUnlockLabel();
  renderPath();
 }
 function showFree(){
@@ -2232,6 +2234,7 @@ $('miccb').addEventListener('click',function(){ if(micOn){stopMic();} else if(lo
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
+ updateUnlockLabel();
  renderPath();
 });
 document.addEventListener('keydown',e=>{
@@ -2248,7 +2251,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.85'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.86'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
