@@ -1188,7 +1188,7 @@ function renderWelStep(){
 function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
 function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
-function startLevel(c,w,m){
+function startLevel(c,w,m,skipLoading){
  clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=0;
  const lv=S9.courses[c].levels[w];
  setView('free');
@@ -1201,7 +1201,7 @@ function startLevel(c,w,m){
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
- showLoading(beginGame);
+ if(skipLoading) beginGame(); else showLoading(beginGame);
 }
 function setStatus(txt,cls){
  const st=$('status');
@@ -1284,10 +1284,9 @@ function tutPress(k){
    if(tut.pos>=tut.expect.length){
     tut.step=4; tutAllow([-1]);
     tutMsg('star-filled', 'var(--gold)', '#14151a', S9.tutDone, [0,7]); chime();
-    localStorage.setItem('hm_tut_done','1');
-    // l'intro conta come gioco: prima stella di Livello 1 (Facile) gia' guadagnata
-    saveProg('pent','w0m0',{stars:1,bestRound:2}); bumpPlays('pent'); bumpStreak();
-    timers.push(setTimeout(()=>{ if(!localStorage.getItem('hm_intro_done')) showWelcomePost(); else showLevelDetail('pent',0); },2200));
+    localStorage.setItem('hm_tut_done','1'); bumpStreak();
+    // il tutorial sfocia nel Livello 1 vero: le stelle si guadagnano giocando (niente regalo)
+    timers.push(setTimeout(()=>{ if(!localStorage.getItem('hm_intro_done')) showWelcomePost(); else startLevel('pent',0,0,true); },2200));
    }
   } else {
    tut.pos=0; tutAllow([-1]);
@@ -2107,7 +2106,7 @@ $('wel-next').addEventListener('click',()=>{
  const list=welList();
  if(welStep<list.length-1){welStep++; renderWelStep(); return;}
  if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial(); }
- else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels(); }
+ else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
 $('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
@@ -2137,7 +2136,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.77'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.78'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
