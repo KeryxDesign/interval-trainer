@@ -500,7 +500,7 @@ it:{
  SIG:{lyd:"mezzogiorno",maj:"mattina",mixo:"pomeriggio",dor:"tramonto",min:"sera",phr:"notte",loc:"eclissi",pmaj:"cinque note, nessun semitono",pmin:"cinque note, lato minore",blM:"pentatonica maggiore più la stella",blm:"pentatonica minore più l'onda: la blue note"},
  tasteBtn:"Assaggio", tasting:"assaggio della scala…",
  prTap:"tocca per iniziare", prNew:"la nuova nota di questo livello",
- tipPractical:"Consiglio", tipScience:"Lo sapevi?",
+ tipPractical:"Consiglio", tipScience:"Lo sapevi?", tipLevel:"Questo livello", tipDist:"La distanza", tipScale:"La scala", semitones:"semitoni", toneW:"toni", fromTonic:"dalla tonica",
  tips:[
   {s:0,ic:'bulb',t:"La distanza tra tonica e mediante (la terza maggiore) è di 4 semitoni: è lei a far suonare \"maggiore\" un accordo."},
   {s:0,ic:'bulb',t:"La quinta giusta è a 7 semitoni dalla tonica: l'intervallo più stabile dopo l'ottava, il \"pilastro\"."},
@@ -651,7 +651,7 @@ en:{
  SIG:{lyd:"noon",maj:"morning",mixo:"afternoon",dor:"sunset",min:"evening",phr:"night",loc:"eclipse",pmaj:"five notes, no semitones",pmin:"five notes, minor side",blM:"major pentatonic plus the star",blm:"minor pentatonic plus the wave: the blue note"},
  tasteBtn:"Taste", tasting:"tasting the scale…",
  prTap:"tap to start", prNew:"this level's new note",
- tipPractical:"Tip", tipScience:"Did you know?",
+ tipPractical:"Tip", tipScience:"Did you know?", tipLevel:"This level", tipDist:"The distance", tipScale:"The scale", semitones:"semitones", toneW:"tones", fromTonic:"from the tonic",
  tips:[
   {s:0,ic:'bulb',t:"The distance from tonic to mediant (the major third) is 4 semitones: it's what makes a chord sound \"major\"."},
   {s:0,ic:'bulb',t:"The perfect fifth is 7 semitones from the tonic: the most stable interval after the octave, the \"pillar\"."},
@@ -2004,11 +2004,27 @@ function addNote(forceNew){
  seq.push(k);
  dur.push(rhythm?DURS[Math.floor(Math.random()*DURS.length)]:1);
 }
+function stripTags(s){return (s||'').replace(/<[^>]+>/g,'');}
+function tonesStr(k){const whole=Math.floor(k/2); return (k%2)?((whole||'')+'½'):String(whole);}
+function tipSentences(html){return stripTags(html).split(/(?<=[.!?…])\s+/).map(s=>s.trim()).filter(s=>s.length>=25&&s.length<=160);}
+// consiglio di caricamento CONTESTUALE al livello: ruolo della nota, distanza in semitoni/toni, curiosita' sulla scala (+ qualche generico)
+function loadingTip(){
+ const g=S9.tips[Math.floor(Math.random()*S9.tips.length)], gen={ic:g.ic,cat:g.s?S9.tipScience:S9.tipPractical,t:g.t};
+ if(game.kind==='level' && game.c!=null && game.w!=null && CWADD[game.c] && CWADD[game.c][game.w]){
+  const c=game.c, w=game.w, lv=S9.courses[c].levels[w], pool=[];
+  tipSentences(lv.th).forEach(s=>pool.push({ic:'music',cat:S9.tipLevel,t:s}));                 // ruolo della nota nel livello
+  CWADD[c][w].forEach(k=>{ if(k===0)return; pool.push({ic:'stairs-up',cat:S9.tipDist,t:cap(S9.NM[k])+' · '+IV[k]+' ('+INM[k]+'): '+k+' '+S9.semitones+' ('+tonesStr(k)+' '+S9.toneW+') '+S9.fromTonic}); }); // distanza
+  tipSentences(S9.courses[c].desc).forEach(s=>pool.push({ic:'bulb',cat:S9.tipScale,t:s}));       // curiosita' sulla scala
+  pool.push(gen);                                                                                 // un generico
+  if(pool.length) return pool[Math.floor(Math.random()*pool.length)];
+ }
+ return gen;
+}
 function showLoading(cb){
- const tips=S9.tips, tip=tips[Math.floor(Math.random()*tips.length)];
+ const tip=loadingTip();
  $('pr-level').textContent=(game.kind==='level')?(S9.level+' '+(game.w+1)+' · '+plainNames(game.c,game.w)):'';
  $('pr-icon').innerHTML='<i class="ti ti-'+tip.ic+'"></i>';
- $('pr-cat').textContent=tip.s?S9.tipScience:S9.tipPractical;
+ $('pr-cat').textContent=tip.cat;
  $('pr-tip').textContent=tip.t;
  $('pr-skip').textContent=S9.prTap;
  const pr=$('preroll'); pr.hidden=false;
@@ -2312,7 +2328,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.00'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.01'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){

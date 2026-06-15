@@ -1,4 +1,4 @@
-const CACHE = 'huermony-v100';
+const CACHE = 'huermony-v101';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
