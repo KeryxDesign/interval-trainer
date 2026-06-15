@@ -805,6 +805,7 @@ const CWADD={pent:[[0,7],[4],[2],[9]], maj:[[11],[5]]};
 const COURSE_IDS=['pent','maj'];
 let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
 const STAR1=5, STAR2=7;
+const WARMUP=3; // Facile: le prime note (finche' la melodia ha <WARMUP note) usano solo tonica + nota nuova
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
 let game={kind:'free'};
@@ -1965,10 +1966,16 @@ const DURS=[0.5,1,1,1,1.5,2];
 function addNote(forceNew){
  const sc=activeSet();
  let pool=sc;
- if(forceNew&&game.kind==='level'){
-  const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k));
-  const fresh=nn.filter(k=>!seq.includes(k));
-  pool=fresh.length?fresh:(nn.length?nn:sc);
+ if(game.kind==='level'){
+  // Facile: riscaldamento integrato e CONTEGGIATO -> le prime note usano solo tonica + nota nuova, poi si apre a tutte
+  if(game.m===0 && seq.length<WARMUP){
+   pool=[...new Set([0,...CWADD[game.c][game.w]])].filter(k=>sc.includes(k));
+   if(!pool.length) pool=sc;
+  } else if(forceNew){
+   const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k));
+   const fresh=nn.filter(k=>!seq.includes(k));
+   pool=fresh.length?fresh:(nn.length?nn:sc);
+  }
  }
  let k;
  do{k=pool[Math.floor(Math.random()*pool.length)];}while(seq.length&&k===seq[seq.length-1]&&pool.length>1&&Math.random()<0.6);
@@ -2283,7 +2290,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.89'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.90'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
