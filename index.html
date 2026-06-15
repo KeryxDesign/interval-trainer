@@ -1551,7 +1551,7 @@ function render(){
    b.style.cssText='left:'+(x-KEY/2)+'px;top:'+(y-KEY/2)+'px;width:'+KEY+'px;height:'+KEY+'px;background:'+bg+';color:'+col+(locked?'':ring(k));
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
-   b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
+   b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    if(locked){
     b.addEventListener('click',()=>setStatus(S9.noteLocked,'err'));
    } else {
@@ -2137,7 +2137,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.74'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.75'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
