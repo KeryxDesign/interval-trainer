@@ -826,6 +826,7 @@ let game={kind:'free'};
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2].includes(speed))speed=1;
+function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
 const TIMBRES=['pure','corda','pad','voce'];
 let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure';
@@ -1137,7 +1138,7 @@ function renderFsPreview(){
  });
 }
 function startFreeGame(){
- scale=$('fs-scale').value; root=+$('fs-tonic').value;
+ resetSpeed(); scale=$('fs-scale').value; root=+$('fs-tonic').value;
  $('scsel').value=scale; $('rootsel').value=String(root);
  $('freesetup').hidden=true;
  clearTimers(); state='idle'; seq=[];
@@ -1154,7 +1155,7 @@ function setupCardFree(c, page){
  const slot=page.querySelector('.gameslot'); if(!slot) return;
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
- scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
+ scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]}; resetSpeed();
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
@@ -1768,7 +1769,7 @@ function renderBossBar(){
  $('bossbar').innerHTML=h;
 }
 function startBossLike(g, title){
- game=g; root=g.root||0; state='idle'; seq=[];
+ resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=(g.hardLevel?'':(g.elite?'⚔ ':'💀 '))+title;
@@ -1795,7 +1796,7 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.
 // BOSS finale: costruisci nota dopo nota fino a 7, SOLO a orecchio (cerchi neutri),
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
 function beginBoss(c){
- clearTimers(); stopAllHeld(); stopMic();
+ clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
  const pool=cumSet(c,S9.courses[c].levels.length-1);
  game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=0; state='idle'; seq=[]; dur=[];
@@ -2072,7 +2073,7 @@ function showLoading(cb,ctx){
  pr.onclick=go;
 }
 function beginGame(){
- ensureCtx(); clearTimers(); stopAllHeld(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
+ ensureCtx(); clearTimers(); stopAllHeld(); resetSpeed(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
  bumpStreak();
  clearCenter(); $('round').textContent=seq.length; playSeq();
@@ -2364,7 +2365,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.05'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.06'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
