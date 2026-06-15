@@ -305,6 +305,9 @@ button.levelcard:active{transform:scale(0.99);}
       <p class="setrowlbl" id="fontlbl"></p>
       <div id="fontsizes"></div>
     </div>
+    <div id="dangerbox" style="margin-top:22px;">
+      <button class="btn" id="resetdata" style="width:100%; justify-content:center; color:#e24b4a; border-color:rgba(226,75,74,.4);"><i class="ti ti-trash"></i><span id="resetlbl"></span></button>
+    </div>
   </div>
 
   <nav class="tabs" id="tabs" hidden>
@@ -427,6 +430,13 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="mw-body" style="font-size:16px; line-height:1.65; color:var(--text); margin:0 0 26px;"></p>
   <button class="btn primary" id="mw-ok" style="justify-content:center; padding:14px; font-size:16px;"></button>
 </div>
+<div id="resetconfirm" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.98); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:60; text-align:left; padding:32px 24px; max-width:480px; margin:0 auto;">
+  <div style="font-size:40px; color:#e24b4a; text-align:center; margin:0 0 14px;"><i class="ti ti-alert-triangle"></i></div>
+  <p id="rc-title" style="font-size:22px; font-weight:700; text-align:center; margin:0 0 16px;"></p>
+  <p id="rc-body" style="font-size:16px; line-height:1.65; color:var(--text); margin:0 0 26px;"></p>
+  <button class="btn" id="rc-ok" style="justify-content:center; padding:14px; font-size:16px; background:#e24b4a; color:#fff; border-color:#e24b4a; margin:0 0 10px;"></button>
+  <button class="btn" id="rc-cancel" style="justify-content:center; padding:14px; font-size:16px;"></button>
+</div>
 <div id="preroll" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:45; text-align:center; padding:32px 28px; cursor:pointer;">
   <p id="pr-level" style="font-size:14px; color:var(--muted); margin:0 0 28px;"></p>
   <div id="pr-icon" style="font-size:42px; color:var(--gold); margin:0 0 14px; min-height:46px;"></div>
@@ -469,6 +479,7 @@ it:{
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
  unlock:"Sblocca tutti i livelli", unlockOn:"⚠ Sblocco totale ATTIVO (tutto disponibile)",
+ resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca con 2★ in "Solo orecchio" del livello '+n,
  lockMode:"1★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
@@ -618,6 +629,7 @@ en:{
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 without Replay',
  unlock:"Unlock all levels", unlockOn:"⚠ ALL UNLOCKED is ON (everything available)",
+ resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock with 2★ in "Ear only" of level '+n,
  lockMode:"1★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
@@ -925,7 +937,7 @@ function setView(name){
  if(ctx) stopAllHeld();
  parkPanel();
  $('bossbar').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
- $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true;
+ $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail');
@@ -1038,7 +1050,7 @@ function getFont(){const f=localStorage.getItem('hm_fontsize'); return FONTZ[f]?
 function applyFont(){document.documentElement.style.zoom=FONTZ[getFont()];}
 function renderSettings(){
  const box=$('fontsizes'); if(!box) return;
- $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; box.innerHTML='';
+ $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; $('resetlbl').textContent=S9.resetData; box.innerHTML='';
  const cur=getFont(), prev={n:18,g:23,x:28};
  ['n','g','x'].forEach(f=>{
   const b=document.createElement('button'); b.className='tmb'+(f===cur?' on':'');
@@ -2231,6 +2243,15 @@ $('freetonic').addEventListener('change',e=>{ root=+e.target.value; updateNotes(
 function openMicWarn(){ $('mw-title').textContent=S9.micWarnTitle; $('mw-body').innerHTML=S9.micWarnBody; $('mw-ok').textContent=S9.micWarnOk; $('micwarn').hidden=false; }
 $('mw-ok').addEventListener('click',()=>{localStorage.setItem('hm_mic_warned','1'); $('micwarn').hidden=true; startMic();});
 $('miccb').addEventListener('click',function(){ if(micOn){stopMic();} else if(localStorage.getItem('hm_mic_warned')){startMic();} else {openMicWarn();} });
+// reset dati di gioco (progressi/sblocchi/stelle/boss). Mantiene preferenze (nome, lingua, testo, timbro).
+function resetGameData(){
+ const keep=new Set(['hm_name','hm_avatar','hm_lang','hm_fontsize','hm_timbre','hm_mic_warned','it_speed','it_rhythm']);
+ Object.keys(localStorage).forEach(k=>{ if((k.startsWith('it_')||k.startsWith('hm_'))&&!keep.has(k)) localStorage.removeItem(k); });
+ location.reload();
+}
+$('resetdata').addEventListener('click',()=>{ $('rc-title').textContent=S9.resetTitle; $('rc-body').textContent=S9.resetBody; $('rc-ok').textContent=S9.resetOk; $('rc-cancel').textContent=S9.resetCancel; $('resetconfirm').hidden=false; });
+$('rc-cancel').addEventListener('click',()=>{ $('resetconfirm').hidden=true; });
+$('rc-ok').addEventListener('click',resetGameData);
 $('unlockall').addEventListener('change',e=>{
  if(e.target.checked) localStorage.setItem('it_unlockall','1');
  else localStorage.removeItem('it_unlockall');
@@ -2251,7 +2272,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.86'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.87'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
