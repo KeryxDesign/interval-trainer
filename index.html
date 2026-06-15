@@ -1818,7 +1818,7 @@ function bossGrowPress(k){
    else { state='wait'; setStatus(S9.correct,'ok'); timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },800)); }
   } else setStatus(S9.yourTurn(step,seq.length));
  } else {
-  game.lives--; buzz(); renderBossBar(); tone(60+seq[step],0.5); // risuona la nota giusta, niente colore
+  game.lives--; buzz(); renderBossBar(); flash(k,300,true); tone(60+k,0.5); // senti la nota che HAI toccato (non riveliamo la giusta)
   if(game.lives<=0){ state='over'; bossGrowFail(); }
   else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossGrowPlay(),1100)); } // perdi una vita, si riparte dal round
  }
@@ -1862,7 +1862,7 @@ function bossHit(k){
   else setStatus(S9.yourTurn(step,game.seq.length));
  } else {
   game.lives--; buzz(); renderBossBar();
-  if(game.earOnly){ tone(60+root+game.seq[step],0.5); } else { flash(game.seq[step],420); } // elite: solo audio, niente reveal
+  if(game.earOnly){ flash(k,300,true); tone(60+root+k,0.5); } else { flash(game.seq[step],420); } // elite: senti la nota che HAI toccato; Hard: mostra la giusta
   if(game.lives<=0){ state='over'; bossFail(); }
   else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossPlay(),1100)); } // riascolto automatico, si riparte da capo
  }
@@ -2310,7 +2310,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.95'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.96'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
