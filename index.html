@@ -67,6 +67,7 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 .crow.options{flex-wrap:nowrap; justify-content:center; gap:3px;}
+.crow.options.wrap{flex-wrap:wrap;}
 .crow.options .btn{padding:6px 8px; font-size:12px;}
 .crow.options .btn i{font-size:15px;}
 .crow.options .tgl{padding:6px 7px; font-size:12px; gap:5px;}
@@ -365,7 +366,7 @@ button.levelcard:active{transform:scale(0.99);}
         <button class="btn" id="tastebtn"><i class="ti ti-music"></i><span id="tastetxt"></span></button>
         <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
-      <div class="crow options">
+      <div class="crow options" id="optsrow">
         <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
         <button class="btn" id="bscale" hidden aria-label="scale"><i class="ti ti-stairs-up"></i><span id="bscaletxt"></span></button>
         <span class="spdbox"><i class="ti ti-gauge"></i><select id="spdsel" aria-label="Speed"></select></span>
@@ -489,7 +490,7 @@ it:{
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
- boss:"Boss finale", bossScaleBtn:"Scala", bossMelodyBtn:"Melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. Riascolta la scala quando vuoi.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
+ boss:"Boss finale", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. Riascolta la scala quando vuoi.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
  elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Supera la modalità Difficile per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
  speeds:["Lento","Normale","Veloce","Turbo"],
@@ -639,7 +640,7 @@ en:{
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
- boss:"Final boss", bossScaleBtn:"Scale", bossMelodyBtn:"Melody", bossCard:"Build a 7-note melody by ear only. Replay the scale anytime.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
+ boss:"Final boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. Replay the scale anytime.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
  elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Clear Hard mode to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
  speeds:["Slow","Normal","Fast","Turbo"],
@@ -1138,7 +1139,7 @@ function setupCardFree(c, page){
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1';
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
  if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
@@ -1215,7 +1216,7 @@ function startLevel(c,w,m,skipLoading){
  $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
- $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1';
+ $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
@@ -1743,7 +1744,7 @@ function startBossLike(g, title){
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
- $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1';
+ $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
  render(); renderBossBar();
  bumpPlays(g.c); bumpStreak();
  bossIntro();
@@ -1772,7 +1773,7 @@ function beginBoss(c){
  $('gametop').hidden=false; $('gametitle').textContent='💀 '+S9.boss+' · '+S9.courses[c].title;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
- $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; updateBossReplays(); // 2 riascolti, max 3 ciascuno
+ $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('wrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
  render(); bumpPlays(c); bumpStreak();
  bossGrowIntro();
 }
@@ -2295,7 +2296,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.91'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.92'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
