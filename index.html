@@ -1760,7 +1760,7 @@ function bossIntro(){
  setStatus(S9.bossScale);
  asc.forEach(k=>{ timers.push(setTimeout(()=>{flash(k,sstep-60); tone(60+root+k,Math.max(0.2,sstep*0.8/1000));},t)); t+=sstep; });
  t+=250;
- S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
+ S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(''); centerMsg(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
  timers.push(setTimeout(()=>bossPlay(),t));
 }
 function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){let k,g=0; do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && i>=2 && k===sq[i-1] && k===sq[i-2]); sq.push(k);} return sq;}
@@ -1794,7 +1794,7 @@ function bossMelodyReplay(){ if(game.kind!=='bossgrow'||state!=='input'||game.me
 function bossGrowIntro(){
  ensureCtx(); state='wait'; clearTimers(); setStatus(S9.bossScale);
  let t=bossScaleSeq(350)+250;
- S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
+ S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(''); centerMsg(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
  timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },t));
 }
 function bossGrowAdd(){
@@ -1929,6 +1929,13 @@ function pulse(ms){
  const ct=$('ctr'); if(!ct) return;
  delete ct.dataset.mode; ct.style.background='var(--surface2)'; ct.innerHTML='<i class="ti ti-ear" style="font-size:'+Math.round(S*0.12)+'px;color:var(--muted)"></i>';
  ct.style.opacity='0.95'; setTimeout(()=>{if(ct.dataset.mode!=='play')ct.style.opacity='0';},ms||300);
+}
+// testo grande al centro del cerchio (countdown pronti/partenza/via del boss/elite)
+function centerMsg(txt){
+ const ct=$('ctr'); if(!ct) return;
+ delete ct.dataset.mode; ct.style.background='var(--surface2)'; ct.style.color='var(--text)'; ct.style.pointerEvents='none';
+ ct.innerHTML='<span style="display:inline-block;font-size:'+Math.round(S*0.07)+'px;font-weight:800;text-align:center;line-height:1;animation:welIn .25s ease both">'+txt+'</span>';
+ ct.style.opacity='1';
 }
 function centerPlay(){
  const ct=$('ctr'); if(!ct) return;
@@ -2303,7 +2310,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.93'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.94'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
