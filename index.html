@@ -1579,14 +1579,14 @@ function render(){
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
    if(lvlMode){
-    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span><span class="kb">'+KB[k]+'</span>';
+    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.02;font-weight:700">'+IV[k]+'</span><span style="font-size:'+Math.round(KEY*0.115)+'px;line-height:1;opacity:.9;text-align:center;padding:0 1px">'+INM[k]+'</span><span class="kb">'+KB[k]+'</span>';
    } else {
     b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    }
    if(locked){
     b.addEventListener('click',()=>setStatus(S9.noteLocked,'err'));
    } else {
-    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||state==='input'){press(k);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}});
+    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'){press(k);} else if(state==='input'){startHold(k); press(k,true);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}}); // in gioco: tieni premuto = nota sostenuta
     b.addEventListener('pointerup',()=>stopHold(k));
     b.addEventListener('pointerleave',()=>stopHold(k));
     b.addEventListener('pointercancel',()=>stopHold(k));
@@ -1809,16 +1809,16 @@ function bossGrowPlay(){
  seq.forEach((k)=>{ timers.push(setTimeout(()=>{ pulse(base-90); tone(60+k,Math.max(0.2,base*0.82/1000)); },t)); t+=base; });
  timers.push(setTimeout(()=>{ state='input'; step=0; $('round').textContent=seq.length; setStatus(S9.yourTurn(0,seq.length)); },t));
 }
-function bossGrowPress(k){
+function bossGrowPress(k,held){
  if(state!=='input') return; ensureCtx();
  if(k===seq[step]){
-  flash(k,260,true); tone(60+k,0.36); step++;
+  flash(k,260,true); if(!held) tone(60+k,0.36); step++;
   if(step>=seq.length){
    if(seq.length>=game.target){ state='over'; chime(); bossGrowWin(); }
    else { state='wait'; setStatus(S9.correct,'ok'); timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },800)); }
   } else setStatus(S9.yourTurn(step,seq.length));
  } else {
-  game.lives--; buzz(); renderBossBar(); flash(k,300,true); tone(60+k,0.5); // senti la nota che HAI toccato (non riveliamo la giusta)
+  game.lives--; buzz(); renderBossBar(); flash(k,300,true); if(!held) tone(60+k,0.5); // senti la nota che HAI toccato (non riveliamo la giusta)
   if(game.lives<=0){ state='over'; bossGrowFail(); }
   else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossGrowPlay(),1100)); } // perdi una vita, si riparte dal round
  }
@@ -1854,15 +1854,15 @@ function bossPlay(keepStep){
  timers.push(setTimeout(()=>{state='input'; setStatus(S9.yourTurn(step,game.seq.length));},t));
 }
 function bossReplay(){ if(game.kind!=='boss'||game.replays<=0) return; if(state!=='input'&&state!=='play') return; game.replays--; renderBossBar(); bossPlay(true); }
-function bossHit(k){
+function bossHit(k,held){
  if(state!=='input') return; ensureCtx();
  if(k===game.seq[step]){
-  flash(k,300,true); tone(60+root+k,0.38); step++;
+  flash(k,300,true); if(!held) tone(60+root+k,0.38); step++;
   if(step>=game.seq.length){ state='over'; chime(); bossWin(); }
   else setStatus(S9.yourTurn(step,game.seq.length));
  } else {
   game.lives--; buzz(); renderBossBar();
-  if(game.earOnly){ flash(k,300,true); tone(60+root+k,0.5); } else { flash(game.seq[step],420); } // elite: senti la nota che HAI toccato; Hard: mostra la giusta
+  if(game.earOnly){ flash(k,300,true); if(!held) tone(60+root+k,0.5); } else { flash(game.seq[step],420); } // elite: senti la nota che HAI toccato; Hard: mostra la giusta
   if(game.lives<=0){ state='over'; bossFail(); }
   else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossPlay(),1100)); } // riascolto automatico, si riparte da capo
  }
@@ -1917,7 +1917,7 @@ function flash(k,ms,skipCenter){
    // rivelazione progressiva anche al centro: simbolo+nome -> nome -> solo colore
    const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
    if(lv>=2) inner='';
-   else if(lv===1) inner='<span style="font-size:17px;font-weight:700">'+IV[k]+'</span>';
+   else if(lv===1) inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><span style="font-size:17px;font-weight:700">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+INM[k]+'</span></div>';
    else inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.12)+'px"></i><span style="font-size:15px;font-weight:700">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+INM[k]+'</span></div>';
   } else {
    inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
@@ -1957,7 +1957,7 @@ function updateReveal(){
   const b=$('b'+k); if(!b) continue;
   let inner='';
   if(lv<1) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>';
-  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span>';
+  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.02;font-weight:700">'+IV[k]+'</span><span style="font-size:'+Math.round(KEY*0.115)+'px;line-height:1;opacity:.9;text-align:center;white-space:normal;display:block;width:100%">'+INM[k]+'</span>'; // sigla + nome completo (da fissare in mente)
   inner+='<span class="kb">'+KB[k]+'</span>';
   b.innerHTML=inner;
  }
@@ -2205,17 +2205,17 @@ function stopMic(){
  $('micline').hidden=true; $('miccb').setAttribute('aria-pressed','false');
 }
 
-function press(k){
+function press(k,held){
  if(game.kind==='tut'){tutPress(k); return;}
- if(game.kind==='boss'){ if(state==='input'){bossHit(k);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
- if(game.kind==='bossgrow'){ if(state==='input'){bossGrowPress(k);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
- if(state==='input'){hit(k); return;}
+ if(game.kind==='boss'){ if(state==='input'){bossHit(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
+ if(game.kind==='bossgrow'){ if(state==='input'){bossGrowPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
+ if(state==='input'){hit(k,false,held); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
 }
-function hit(k,fromMic){
+function hit(k,fromMic,held){
  if(state!=='input') return; ensureCtx();
  const correct=(k===seq[step]);
- flash(k,300,!correct); if(!fromMic) tone(60+root+k,0.38);
+ flash(k,300,!correct); if(!fromMic&&!held) tone(60+root+k,0.38);
  if(correct){
   step++;
   if(step===seq.length){
@@ -2310,7 +2310,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.96'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.97'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
