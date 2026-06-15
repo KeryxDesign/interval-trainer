@@ -481,8 +481,8 @@ it:{
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
  unlock:"Sblocca tutti i livelli", unlockOn:"⚠ Sblocco totale ATTIVO (tutto disponibile)",
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
- lockReq:n=>'Sblocca con ★★★ in "Normale" del livello '+n,
- lockMode:"1★ nella precedente", bestShort:"best",
+ lockReq:n=>'Sblocca battendo l\'Elite del livello '+n,
+ lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["",' (la tonalità cambia ogni round)',' (ricostruisci a orecchio)'],
  modes:["Facile","Normale","Difficile"],
@@ -491,7 +491,7 @@ it:{
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  boss:"Boss finale", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. 3 vite. Riascolti di scala e melodia limitati (3 + 3).", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
- elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Supera la modalità Difficile per sbloccarlo.", eliteWin:"Elite superato!",
+ elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Fai ★★★ in Difficile per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
  speeds:["Lento","Normale","Veloce","Turbo"],
  scales:["Maggiore (ionico)","Minore naturale (eolio)","Pentatonica magg.","Pentatonica min.","Cromatica (12)","Lidio","Misolidio","Dorico","Frigio","Locrio","Blues maggiore","Blues minore"],
@@ -632,8 +632,8 @@ en:{
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 without Replay',
  unlock:"Unlock all levels", unlockOn:"⚠ ALL UNLOCKED is ON (everything available)",
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
- lockReq:n=>'Unlock with ★★★ in "Normal" of level '+n,
- lockMode:"1★ in the previous one", bestShort:"best",
+ lockReq:n=>'Unlock by beating the Elite of level '+n,
+ lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["",' (the key changes every round)',' (rebuild by ear)'],
  modes:["Easy","Normal","Hard"],
@@ -642,7 +642,7 @@ en:{
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  boss:"Final boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. 3 lives. Limited scale and melody replays (3 + 3).", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
- elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Clear Hard mode to unlock it.", eliteWin:"Elite cleared!",
+ elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Get ★★★ in Hard to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
  speeds:["Slow","Normal","Fast","Turbo"],
  scales:["Major (Ionian)","Natural minor (Aeolian)","Major pentatonic","Minor pentatonic","Chromatic (12)","Lydian","Mixolydian","Dorian","Phrygian","Locrian","Major blues","Minor blues"],
@@ -828,8 +828,10 @@ function starsOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.stars:0;}
 function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
 function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAll()?S9.unlockOn:S9.unlock;}
-function worldUnlocked(c,i){return unlockAll()||i===0||starsOf(c,i-1,1)>=3;}
-function modeUnlocked(c,w,m){return unlockAll()||(m===0?worldUnlocked(c,w):starsOf(c,w,m-1)>=1);}
+// livello successivo: si sblocca battendo l'Elite del livello precedente (che introduce la nota)
+function worldUnlocked(c,i){return unlockAll()||i===0||!!localStorage.getItem('hm_elite_'+c+'_'+(i-1));}
+// modalità successiva: servono SEMPRE 3 stelle (★★★) sulla precedente
+function modeUnlocked(c,w,m){return unlockAll()||(m===0?worldUnlocked(c,w):starsOf(c,w,m-1)>=3);}
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
 function courseUnlocked(c){
  if(unlockAll()) return true;
@@ -1523,8 +1525,8 @@ function showLevelDetail(c,w){
   if(mu) b.addEventListener('click',()=>startLevel(c,w,m));
   md.appendChild(b);
  });
- // ELITE: mini-boss sbloccato dopo la modalità Difficile (1★). Ricostruisci la melodia SOLO a orecchio.
- const eu=unlockAll()||starsOf(c,w,2)>=1;
+ // ELITE: si sblocca con ★★★ in Difficile. Ricostruisci la melodia SOLO a orecchio. Battendolo introduci la nota nuova + sblocchi il livello successivo.
+ const eu=unlockAll()||starsOf(c,w,2)>=3;
  const eDone=localStorage.getItem('hm_elite_'+c+'_'+w);
  const eb=document.createElement(eu?'button':'div'); eb.className='world levelcard elitecard'+(eu?'':' locked')+(eDone?' done':'');
  let eh='<i class="ti ti-swords eskull"></i><span class="etitle">'+S9.elite+(eDone?' <span class="estar">★</span>':'')+'</span>';
@@ -2310,7 +2312,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.99'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.00'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
