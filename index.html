@@ -1901,7 +1901,17 @@ function flash(k,ms,skipCenter){
  if(skipCenter) return;
  const ct=$('ctr');
  if(ct){delete ct.dataset.mode; ct.style.background=C[k].h; ct.style.color=ink(k);
-  ct.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
+  let inner;
+  if(game.kind==='level'&&(game.m===0||game.m===1)){
+   // rivelazione progressiva anche al centro: simbolo+nome -> nome -> solo colore
+   const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
+   if(lv>=2) inner='';
+   else if(lv===1) inner='<span style="font-size:16px;font-weight:600">'+NOTE[(root+k)%12]+'</span>';
+   else inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+NOTE[(root+k)%12]+'</span></div>';
+  } else {
+   inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
+  }
+  ct.innerHTML=inner;
   ct.style.opacity='0.95'; setTimeout(()=>{if(ct.dataset.mode!=='play')ct.style.opacity='0';},ms||300);}
 }
 function pulse(ms){
@@ -2272,7 +2282,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.87'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.88'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
