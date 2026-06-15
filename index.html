@@ -67,7 +67,7 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .controls{display:flex; flex-direction:column; gap:12px; margin-bottom:16px;}
 .crow{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
 .crow.options{flex-wrap:nowrap; justify-content:center; gap:3px;}
-.crow.options.wrap{flex-wrap:wrap;}
+.crow.options.optswrap{flex-wrap:wrap;}
 .crow.options .btn{padding:6px 8px; font-size:12px;}
 .crow.options .btn i{font-size:15px;}
 .crow.options .tgl{padding:6px 7px; font-size:12px; gap:5px;}
@@ -1141,7 +1141,7 @@ function setupCardFree(c, page){
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]};
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
  if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
@@ -1218,7 +1218,7 @@ function startLevel(c,w,m,skipLoading){
  $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
- $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
+ $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
@@ -1747,7 +1747,7 @@ function startBossLike(g, title){
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
- $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('wrap');
+ $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
  render(); renderBossBar();
  bumpPlays(g.c); bumpStreak();
  bossIntro();
@@ -1776,7 +1776,7 @@ function beginBoss(c){
  $('gametop').hidden=false; $('gametitle').textContent='💀 '+S9.boss+' · '+S9.courses[c].title;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
- $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('wrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
+ $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
  $('bossbar').hidden=false; renderBossBar(); // 3 vite
  render(); bumpPlays(c); bumpStreak();
  bossGrowIntro();
@@ -2310,7 +2310,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.94'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.95'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
