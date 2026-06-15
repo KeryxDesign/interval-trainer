@@ -1215,7 +1215,13 @@ $('tab-free').addEventListener('click',showFree);
 $('tab-theory').addEventListener('click',showTheory);
 $('tab-guide').addEventListener('click',showGuide);
 $('tab-profile').addEventListener('click',showHome);
-$('backbtn').addEventListener('click',function(){ if(game.kind==='level') showLevelDetail(game.c,game.w); else showLevels(); });
+$('backbtn').addEventListener('click',function(){
+ clearTimers(); stopAllHeld(); stopMic(); state='idle';
+ // torna alla schermata da cui sei partito, non sempre alla home
+ if(game.kind==='level') showLevelDetail(game.c,game.w);                       // livello -> dettaglio livello
+ else if(game.kind==='boss'&&(game.hardLevel||game.elite)) showLevelDetail(game.c,game.w); // Hard/Elite -> dettaglio livello
+ else showLevels();                                                            // Boss finale / Libero -> lista livelli
+});
 $('ld-back').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showLevels);
 $('hplay').addEventListener('click',()=>{
@@ -2238,7 +2244,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.82'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.83'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
