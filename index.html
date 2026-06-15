@@ -20,7 +20,7 @@
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation;}
 .wrap{max-width:480px; margin:0 auto; padding:16px 16px 96px;}
-header{display:flex; align-items:center; justify-content:space-between; margin:4px 0 18px; background:var(--surface2); border-radius:14px; padding:12px 16px;}
+header{display:flex; align-items:center; justify-content:center; margin:4px 0 18px; background:var(--surface2); border-radius:14px; padding:12px 16px;}
 h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:pointer;}
 .lang{display:flex; gap:2px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px; font-size:13px; font-weight:600;}
 .lang button{border:none; background:transparent; color:var(--muted); padding:4px 10px; border-radius:999px; cursor:pointer; font-weight:600;}
@@ -272,8 +272,7 @@ button.levelcard:active{transform:scale(0.99);}
 <div id="ver" aria-hidden="true"></div>
 <div class="wrap">
   <header id="hdr" hidden>
-    <h1 id="brand">Huermony</h1>
-    <div class="lang" id="langsw"><button data-l="it">IT</button><button data-l="en">EN</button></div>
+    <h1 id="brand">Modalità Corso</h1>
   </header>
 
   <div id="view-home">
@@ -472,7 +471,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo",
+ tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", courseMode:"Modalità Corso",
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
  famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
@@ -629,7 +628,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile",
+ tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", courseMode:"Course Mode",
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pillar",c:"Color",t:"Tension"},
  famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
@@ -960,6 +959,7 @@ function setView(name){
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
  $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail');
+ $('brand').textContent = name==='theory'?S9.tabs[2] : name==='guide'?S9.tabs[3] : S9.courseMode;
  $('tabs').hidden=false;
  ['levels','theory','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
@@ -2350,7 +2350,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.03'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.04'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
