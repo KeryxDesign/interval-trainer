@@ -1579,7 +1579,7 @@ function render(){
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
    if(lvlMode){
-    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.02;font-weight:700">'+IV[k]+'</span><span style="font-size:'+Math.round(KEY*0.115)+'px;line-height:1;opacity:.9;text-align:center;padding:0 1px">'+INM[k]+'</span><span class="kb">'+KB[k]+'</span>';
+    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span><span class="kb">'+KB[k]+'</span>';
    } else {
     b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    }
@@ -1957,7 +1957,7 @@ function updateReveal(){
   const b=$('b'+k); if(!b) continue;
   let inner='';
   if(lv<1) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>';
-  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.02;font-weight:700">'+IV[k]+'</span><span style="font-size:'+Math.round(KEY*0.115)+'px;line-height:1;opacity:.9;text-align:center;white-space:normal;display:block;width:100%">'+INM[k]+'</span>'; // sigla + nome completo (da fissare in mente)
+  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span>'; // solo la sigla sui cerchietti (il nome esteso va al centro)
   inner+='<span class="kb">'+KB[k]+'</span>';
   b.innerHTML=inner;
  }
@@ -2310,7 +2310,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.97'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.98'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
