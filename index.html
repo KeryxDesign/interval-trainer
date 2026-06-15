@@ -1793,6 +1793,7 @@ function bossGrowIntro(){
  timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },t));
 }
 function bossGrowAdd(){
+ if(!seq.length){ seq.push(0); dur.push(1); return; } // il boss parte SEMPRE dalla tonica
  const pool=game.notes; let k,g=0;
  do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && seq.length>=2 && k===seq[seq.length-1] && k===seq[seq.length-2]);
  seq.push(k); dur.push(1);
@@ -1968,9 +1969,13 @@ function addNote(forceNew){
  let pool=sc;
  if(game.kind==='level'){
   // Facile: riscaldamento integrato e CONTEGGIATO -> le prime note usano solo tonica + nota nuova, poi si apre a tutte
+  const warmPool=[...new Set([0,...CWADD[game.c][game.w]])].filter(k=>sc.includes(k));
   if(game.m===0 && seq.length<WARMUP){
-   pool=[...new Set([0,...CWADD[game.c][game.w]])].filter(k=>sc.includes(k));
-   if(!pool.length) pool=sc;
+   pool=warmPool.length?warmPool:sc;
+  } else if(game.m===0 && seq.length===WARMUP){
+   // fine riscaldamento: forzo una nota "vecchia" cosi' l'apertura a tutte le note si sente sempre
+   const oldN=sc.filter(k=>!warmPool.includes(k));
+   pool=oldN.length?oldN:sc;
   } else if(forceNew){
    const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k));
    const fresh=nn.filter(k=>!seq.includes(k));
@@ -2290,7 +2295,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.90'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.91'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
