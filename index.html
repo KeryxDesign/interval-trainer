@@ -490,7 +490,7 @@ it:{
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
- boss:"Boss finale", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. Riascolta la scala quando vuoi.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
+ boss:"Boss finale", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. 3 vite. Riascolti di scala e melodia limitati (3 + 3).", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
  elite:"Elite", eliteCard:"Ricostruisci una melodia di 5 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Supera la modalità Difficile per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
  speeds:["Lento","Normale","Veloce","Turbo"],
@@ -581,6 +581,7 @@ it:{
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
  NOTE:['Do','Do#','Re','Re#','Mi','Fa','Fa#','Sol','Sol#','La','La#','Si'],
  IV:['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'],
+ INM:['tonica','seconda minore','seconda maggiore','terza minore','terza maggiore','quarta giusta','tritono','quinta giusta','sesta minore','sesta maggiore','settima minore','settima maggiore'],
  DEG:['tonica','sopratonica minore','sopratonica maggiore','mediante minore','mediante maggiore','sottodominante','tritono','dominante','sopradominante minore','sopradominante maggiore','sottotonica','sensibile'],
  NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','cielo','onda','fulmine'],
  courses:{
@@ -640,7 +641,7 @@ en:{
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
- boss:"Final boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. Replay the scale anytime.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
+ boss:"Final boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. 3 lives. Limited scale and melody replays (3 + 3).", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
  elite:"Elite", eliteCard:"Rebuild a 5-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Clear Hard mode to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
  speeds:["Slow","Normal","Fast","Turbo"],
@@ -731,6 +732,7 @@ en:{
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
  NOTE:['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
  IV:['T','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
+ INM:['unison','minor 2nd','major 2nd','minor 3rd','major 3rd','perfect 4th','tritone','perfect 5th','minor 6th','major 6th','minor 7th','major 7th'],
  DEG:['tonic','minor supertonic','major supertonic','minor mediant','major mediant','subdominant','tritone','dominant','minor submediant','major submediant','subtonic','leading tone'],
  NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','sky','wave','bolt'],
  courses:{
@@ -770,7 +772,7 @@ en:{
   {h:"One piece of advice", t:"tip", p:"<b>Five minutes a day</b> beats an hour on Sunday. Your ear is built by frequent repetition, not by one big effort. Keep an eye on your <b>streak</b> in the Profile: it helps you not skip days. When you catch yourself \"seeing\" the color of a sound before you even think about it, it's working."}]
 }};
 const S9=STR[lang];
-const NOTE=S9.NOTE, IV=S9.IV, DEG=S9.DEG, MODES=S9.modes;
+const NOTE=S9.NOTE, IV=S9.IV, INM=S9.INM, DEG=S9.DEG, MODES=S9.modes;
 
 const SCALES={maj:[0,2,4,5,7,9,11],min:[0,2,3,5,7,8,10],pmaj:[0,2,4,7,9],pmin:[0,3,5,7,10],chrom:[0,1,2,3,4,5,6,7,8,9,10,11],
  lyd:[0,2,4,6,7,9,11],mixo:[0,2,4,5,7,9,10],dor:[0,2,3,5,7,9,10],phr:[0,1,3,5,7,8,10],loc:[0,1,3,5,6,8,10],
@@ -1577,7 +1579,7 @@ function render(){
    b.setAttribute('aria-label',IV[k]+', '+S9.NM[k]+(locked?' (bloccata)':''));
    const isz=Math.round(KEY*(free?0.26:0.32)), ivsz=Math.round(KEY*(free?0.19:0.24)), ntsz=Math.round(KEY*0.16);
    if(lvlMode){
-    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.05;font-weight:600">'+NOTE[(root+k)%12]+'</span><span class="kb">'+KB[k]+'</span>';
+    b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i><span style="font-size:'+Math.round(KEY*0.2)+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span><span class="kb">'+KB[k]+'</span>';
    } else {
     b.innerHTML='<i class="ti ti-'+(locked?'lock':C[k].ic)+'" style="font-size:'+isz+'px"></i><span style="font-size:'+ivsz+'px;line-height:1.05">'+IV[k]+'</span>'+(free&&!locked?'<span class="nt" data-k="'+k+'" style="font-size:'+ntsz+'px;line-height:1.05;opacity:.8;font-weight:500">'+NOTE[(root+k)%12]+'</span>':'')+'<span class="kb">'+KB[k]+'</span>';
    }
@@ -1733,7 +1735,8 @@ function courseComplete(c){return unlockAll()||S9.courses[c].levels.every((_,i)=
 function renderBossBar(){
  let h='<span style="white-space:nowrap">';
  for(let i=0;i<3;i++)h+='<i class="ti ti-heart'+(i<game.lives?'-filled':'')+'" style="color:'+(i<game.lives?'#e24b4a':'var(--line)')+'"></i>';
- h+='</span><span style="color:var(--muted);white-space:nowrap"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> '+game.replays+'/3</span>';
+ h+='</span>';
+ if(game.kind!=='bossgrow') h+='<span style="color:var(--muted);white-space:nowrap"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> '+game.replays+'/3</span>'; // boss-grow usa i bottoni Riascolta
  $('bossbar').innerHTML=h;
 }
 function startBossLike(g, title){
@@ -1766,14 +1769,15 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){let k,g=0; do{
 function beginBoss(c){
  clearTimers(); stopAllHeld(); stopMic();
  const pool=cumSet(c,S9.courses[c].levels.length-1);
- game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, melReplays:3, scaleReplays:3};
+ game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=0; state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent='💀 '+S9.boss+' · '+S9.courses[c].title;
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true;
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('wrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
+ $('bossbar').hidden=false; renderBossBar(); // 3 vite
  render(); bumpPlays(c); bumpStreak();
  bossGrowIntro();
 }
@@ -1814,10 +1818,13 @@ function bossGrowPress(k){
    else { state='wait'; setStatus(S9.correct,'ok'); timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },800)); }
   } else setStatus(S9.yourTurn(step,seq.length));
  } else {
-  buzz(); tone(60+seq[step],0.5); // risuona la nota giusta, niente colore
-  state='wait'; setStatus(S9.bossWrong,'err');
-  timers.push(setTimeout(()=>bossGrowPlay(),1100)); // niente vite: si riparte dal round
+  game.lives--; buzz(); renderBossBar(); tone(60+seq[step],0.5); // risuona la nota giusta, niente colore
+  if(game.lives<=0){ state='over'; bossGrowFail(); }
+  else { state='wait'; setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>bossGrowPlay(),1100)); } // perdi una vita, si riparte dal round
  }
+}
+function bossGrowFail(){
+ $('bossbar').hidden=true; setStatus(S9.bossFail,'err'); $('reveal').innerHTML=''; centerPlay();
 }
 function bossGrowWin(){
  localStorage.setItem('hm_boss_'+game.c,'3');
@@ -1910,8 +1917,8 @@ function flash(k,ms,skipCenter){
    // rivelazione progressiva anche al centro: simbolo+nome -> nome -> solo colore
    const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
    if(lv>=2) inner='';
-   else if(lv===1) inner='<span style="font-size:16px;font-weight:600">'+NOTE[(root+k)%12]+'</span>';
-   else inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+NOTE[(root+k)%12]+'</span></div>';
+   else if(lv===1) inner='<span style="font-size:17px;font-weight:700">'+IV[k]+'</span>';
+   else inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.12)+'px"></i><span style="font-size:15px;font-weight:700">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+INM[k]+'</span></div>';
   } else {
    inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
   }
@@ -1929,7 +1936,7 @@ function centerPlay(){
  const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
  ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='boss'){ game.hardLevel?beginHard(game.c,game.w):(game.elite?beginElite(game.c,game.w):beginBoss(game.c)); } else beginGame(); } };
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.kind==='bossgrow'){ beginBoss(game.c); } else if(game.kind==='boss'){ game.hardLevel?beginHard(game.c,game.w):(game.elite?beginElite(game.c,game.w):beginBoss(game.c)); } else beginGame(); } };
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
@@ -1943,7 +1950,7 @@ function updateReveal(){
   const b=$('b'+k); if(!b) continue;
   let inner='';
   if(lv<1) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>';
-  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+NOTE[(root+k)%12]+'</span>';
+  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span>';
   inner+='<span class="kb">'+KB[k]+'</span>';
   b.innerHTML=inner;
  }
@@ -2296,7 +2303,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.92'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.93'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
