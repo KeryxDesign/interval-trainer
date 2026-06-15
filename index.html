@@ -153,6 +153,9 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .secacc summary i{color:var(--muted); font-size:18px; transition:transform .15s;}
 .secacc[open] summary i{transform:rotate(180deg);}
 .secacc .secdesc{padding:0 16px 16px; font-size:15px; line-height:1.6; color:var(--muted); margin:0;}
+#methodbody h4{font-size:16px; font-weight:700; color:var(--gold); margin:14px 0 5px;}
+#methodbody h4:first-child{margin-top:4px;}
+#methodbody p{font-size:15px; line-height:1.6; color:var(--text); margin:0;}
 .mwk{position:absolute; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#fff; padding:0;}
 .mwk:active{transform:scale(.92);}
 .mwctrl{display:flex; gap:8px; justify-content:center; margin:0 0 14px; flex-wrap:wrap;}
@@ -382,6 +385,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-theory" hidden>
+    <details id="methodbox" class="secacc" style="margin:0 0 16px;"><summary><span id="methodsum"></span><i class="ti ti-chevron-down"></i></summary><div id="methodbody" style="padding:0 16px 16px;"></div></details>
     <p id="thintro" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 14px;"></p>
     <div id="theory"></div>
   </div>
@@ -508,12 +512,9 @@ it:{
  welStart:"Iniziamo", welNext:"Avanti", welTryTut:"Prova il tutorial", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Si"},
  welPre:[
-  "Perché Do-Sol suona «<b>aperto</b>»,\nmentre Do-Si suona «<b>teso</b>»?",
-  "Questo è il segreto di chi pensa in musica.\n\nNon pensano in note, pensano in <b>relazioni</b>.\n\nHuermony nasce per aiutarti a familiarizzare con queste relazioni.",
-  "Queste relazioni tra note hanno un nome: <b>intervalli</b>.\n\nLetteralmente la distanza in frequenza tra due note, secondo precisi schemi matematici.\n\n(Più avanti, in Teoria, scoprirai che alcune combinazioni di suoni sono gradevoli per il cervello umano: è un fatto biologico.)\n\nMa c'è un problema… o forse un meraviglioso vantaggio.",
-  "La musica non è solo matematica: sarebbe troppo facile.\n\nLa musica è l'<b>emozione</b> che due note vicine generano.\n\nMa l'emozione non si impara a memoria: la devi <b>sentire</b>. E creare le tue ancore per ricordare le sensazioni che genera.",
-  "Huermony fa esattamente questo.\n\nCrea degli <b>ancoraggi</b> tramite la sinestesia: la contaminazione di sensi diversi.\n\nCosì col tempo riconoscere le note diventa <b>naturale</b>. Come una seconda lingua.",
-  "Fai subito una prova.\n\nPremi qui sotto e parte il tutorial del gioco."
+  "Premi e ascolta. Do-Sol suona <b>aperto</b>, Do-Si suona <b>teso</b>.\nLe note non sono solo note: hanno un carattere.",
+  "E se ogni suono avesse il suo <b>colore</b>?\nHuermony te li fa imparare giocando e ascoltando, <b>non con i quiz</b>. Col tempo li riconosci da solo.",
+  "Pronti? Facciamo una prova."
  ],
  welPost:[
   "Via via aggiungerai sempre più note.\n\nCostruirai scale sempre più complesse.\n\nScoprirai sempre più <b>sapori musicali</b>.",
@@ -555,11 +556,12 @@ it:{
  tut2:"Bene! Questo è il suono di casa. Ora tocca il cerchio azzurro e senti com'è diverso.",
  tut3:"Due colori, due suoni. Ora ne suono due di fila: ascoltali e ripetili toccandoli nello stesso ordine.",
  tutGo:"tocca a te: ripeti le due note",
- tutRetry:"quasi! La prima era casa, la rossa. Riprova, con calma.",
- tutDone:"Bravissima, è tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
+ tutRetry:"No, la prima era casa (la rossa). Riprova.",
+ tutDone:"È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
  unlockTap:"tocca per continuare",
+ methodTitle:"Come funziona Huermony", methodBody:"<h4>Pensare in relazioni</h4><p>Chi «pensa in musica» non pensa in note, pensa in <b>relazioni</b>. Huermony nasce per farti familiarizzare con queste relazioni.</p><h4>Gli intervalli</h4><p>Queste relazioni hanno un nome: <b>intervalli</b>. Sono la distanza in frequenza tra due note, secondo precisi schemi matematici. Alcune combinazioni di suoni sono gradevoli per il cervello umano: è un fatto biologico.</p><h4>Non solo matematica: emozione</h4><p>La musica non è solo matematica, sarebbe troppo facile. È l'<b>emozione</b> che due note vicine generano. E l'emozione non si impara a memoria: la devi sentire, e crearti delle ancore per ricordarla.</p><h4>Il metodo: la sinestesia</h4><p>Huermony crea questi <b>ancoraggi</b> tramite la sinestesia, la contaminazione di sensi diversi: ogni suono ha un colore e una forma. Così, col tempo, riconoscere le note diventa naturale. Come una seconda lingua.</p>",
  legsum:"Legenda colori", thintro:"La <b>funzione di ogni intervallo</b>: cosa fa dentro la musica, dove tira, che carattere ha. La sensazione vale ovunque; il ruolo descritto è quello nel <b>contesto maggiore/minore</b>: dentro ogni modo lo stesso intervallo può <b>cambiare mestiere</b> (la 2m nel frigio non è una tensione da risolvere, è il colore di casa).",
  semis:k=>k===0?"0 semitoni · unisono":k+(k===1?" semitono":" semitoni"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · mezzo tono";return" · "+t+(t===1?" tono":" toni")+(m?" e mezzo":"");},
@@ -659,12 +661,9 @@ en:{
  welStart:"Let's start", welNext:"Next", welTryTut:"Try the tutorial", welSkip:"Already play? Skip the intro →", prHear:"Replay",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Ti"},
  welPre:[
-  "Why does Do-Sol sound «<b>open</b>»,\nwhile Do-Ti sounds «<b>tense</b>»?",
-  "This is the secret of those who think in music.\n\nThey don't think in notes, they think in <b>relationships</b>.\n\nHuermony exists to help you get familiar with these relationships.",
-  "These relationships between notes have a name: <b>intervals</b>.\n\nLiterally the distance in frequency between two notes, following precise mathematical patterns.\n\n(Later, in Theory, you'll discover that some combinations of sounds are pleasing to the human brain: it's a biological fact.)\n\nBut there's a problem… or maybe a wonderful advantage.",
-  "Music isn't just math: that would be too easy.\n\nMusic is the <b>emotion</b> two nearby notes create.\n\nBut emotion can't be memorized: you have to <b>feel</b> it. And build your own anchors to remember the sensations it creates.",
-  "Huermony does exactly this.\n\nIt builds <b>anchors</b> through synesthesia: the blending of different senses.\n\nSo over time recognizing notes becomes <b>natural</b>. Like a second language.",
-  "Give it a try right now.\n\nTap below and the game tutorial begins."
+  "Tap and listen. Do-Sol sounds <b>open</b>, Do-Ti sounds <b>tense</b>.\nNotes aren't just notes: they have a character.",
+  "What if every sound had its own <b>color</b>?\nHuermony makes you learn them by playing and listening, <b>not with quizzes</b>. In time you'll recognize them on your own.",
+  "Ready? Let's give it a try."
  ],
  welPost:[
   "Bit by bit you'll add more notes.\n\nYou'll build ever more complex scales.\n\nYou'll discover ever more <b>musical flavors</b>.",
@@ -706,11 +705,12 @@ en:{
  tut2:"Good! That's the sound of home. Now tap the blue circle and hear how different it is.",
  tut3:"Two colors, two sounds. Now I'll play two in a row: listen and repeat them by tapping in the same order.",
  tutGo:"your turn: repeat the two notes",
- tutRetry:"almost! The first one was home, the red one. Try again, take your time.",
- tutDone:"Well done, that's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
+ tutRetry:"No, the first one was home (the red one). Try again.",
+ tutDone:"That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
  unlockTap:"tap to continue",
+ methodTitle:"How Huermony works", methodBody:"<h4>Thinking in relationships</h4><p>Those who «think in music» don't think in notes, they think in <b>relationships</b>. Huermony exists to make you familiar with these relationships.</p><h4>Intervals</h4><p>These relationships have a name: <b>intervals</b>. They're the distance in frequency between two notes, following precise mathematical patterns. Some combinations of sounds are pleasing to the human brain: it's a biological fact.</p><h4>Not just math: emotion</h4><p>Music isn't just math, that would be too easy. It's the <b>emotion</b> two nearby notes create. And emotion can't be memorized: you have to feel it, and build your own anchors to remember it.</p><h4>The method: synesthesia</h4><p>Huermony builds these <b>anchors</b> through synesthesia, the blending of different senses: every sound has a color and a shape. So over time, recognizing notes becomes natural. Like a second language.</p>",
  legsum:"Color legend", thintro:"<b>What each interval does</b> in music: where it pulls, what character it has. The sensation holds everywhere; the role described is its job in a <b>major/minor context</b>: inside each mode the same interval can <b>change jobs</b> (the m2 in Phrygian is not a tension to resolve, it is the color of home).",
  semis:k=>k===0?"0 semitones · unison":k+(k===1?" semitone":" semitones"),
  tones:k=>{if(k===0)return"";const t=Math.floor(k/2),m=k%2===1;if(t===0)return" · ½ tone";return" · "+(m?t+"½ tones":t+(t===1?" tone":" tones"));},
@@ -852,6 +852,7 @@ function applyStatic(){
  $('celtitle').textContent=S9.unlockTitle;
  $('celtap').textContent=S9.unlockTap;
  $('legsum').textContent=S9.legsum;
+ $('methodsum').textContent=S9.methodTitle; $('methodbody').innerHTML=S9.methodBody;
  $('thintro').innerHTML=paraBr(S9.thintro);
  const sc=$('scsel'); sc.innerHTML='';
  const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
@@ -1136,34 +1137,33 @@ let welStep=0, welMode='pre';
 function welList(){return welMode==='post'?S9.welPost:S9.welPre;}
 function showWelcome(){ welMode='pre'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
 function showWelcomePost(){ welMode='post'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
-function buildWelPairs(){
+function buildWelPairs(colored){
  const box=$('wel-pairs'); box.hidden=false; box.innerHTML='';
- const L=S9.welPairsLabels;
  const flashEl=el=>{el.style.transform='scale(1.16)'; setTimeout(()=>{el.style.transform='scale(1)';},220);};
- [[{k:0,l:L.do},{k:7,l:L.sol}],[{k:0,l:L.do},{k:11,l:L.si}]].forEach(pair=>{
+ [[0,7],[0,11]].forEach(pair=>{
   const row=document.createElement('div'); row.className='welpair';
-  pair.forEach((n,i)=>{
+  pair.forEach((k,i)=>{
    const b=document.createElement('button'); b.className='welnote';
-   b.style.background=C[n.k].h; b.style.color=ink(n.k);
-   b.innerHTML='<i class="ti ti-'+C[n.k].ic+'" style="font-size:22px"></i><span>'+n.l+'</span>';
-   b.addEventListener('click',()=>{ensureCtx(); tone(60+n.k,0.7); flashEl(b);});
+   if(colored){ b.style.background=C[k].h; b.style.color=ink(k); b.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i><span>'+NOTE[k]+'</span>'; }
+   else { b.style.background='var(--surface2)'; b.style.color='var(--text)'; b.innerHTML='<span style="font-size:16px">'+NOTE[k]+'</span>'; }
+   b.addEventListener('click',()=>{ensureCtx(); tone(60+k,0.7); flashEl(b);});
    row.appendChild(b);
    if(i===0){ const p=document.createElement('button'); p.className='welplay'; p.setAttribute('aria-label','play'); p.innerHTML='<i class="ti ti-player-play"></i>';
-    p.addEventListener('click',()=>{ensureCtx(); pair.forEach(x=>tone(60+x.k,1.2)); [...row.querySelectorAll('.welnote')].forEach(flashEl);});
+    p.addEventListener('click',()=>{ensureCtx(); pair.forEach(x=>tone(60+x,1.2)); [...row.querySelectorAll('.welnote')].forEach(flashEl);});
     row.appendChild(p); }
   });
   box.appendChild(row);
  });
 }
-// icone-illustrazione per le schermate scritte (indice 0 della pre = schermata coppie, niente icona)
-const WEL_IC_PRE=[null,'arrows-join','wave-sine','heart','anchor','player-play'];
+// icone per le schermate solo-testo dell'intro (le coppie sono schermate 0 e 1)
+const WEL_IC_PRE=[null,null,'player-play'];
 const WEL_IC_POST=['stairs-up','confetti'];
-const WEL_COL_PRE=[null,'#14b8a6','#3b82f6','#ef4444','#a855f7','#22c55e'];
+const WEL_COL_PRE=[null,null,'#22c55e'];
 const WEL_COL_POST=['#f59e0b','#eab308'];
 function renderWelStep(){
  const list=welList(), last=welStep===list.length-1;
- const isPairs=(welMode==='pre'&&welStep===0);
- if(isPairs) buildWelPairs(); else $('wel-pairs').hidden=true;
+ const isPairs=(welMode==='pre'&&welStep<=1);
+ if(isPairs) buildWelPairs(welStep===1); else $('wel-pairs').hidden=true;
  const ill=$('wel-ill');
  if(isPairs){ ill.hidden=true; $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>'); }
  else {
@@ -2137,7 +2137,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='0.75'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='0.76'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
