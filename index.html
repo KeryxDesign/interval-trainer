@@ -827,7 +827,7 @@ const WARMUP=3; // Facile: le prime note (finche' la melodia ha <WARMUP note) us
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
 let game={kind:'free'};
-let droneOn=(localStorage.getItem('hm_drone')||'on')==='on'; // drone tonica (default attivo)
+let droneOn=localStorage.getItem('hm_drone')==='on'; // drone tonica: opzione, default SPENTO
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2].includes(speed))speed=1;
@@ -2399,7 +2399,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.13'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.14'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
