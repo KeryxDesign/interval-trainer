@@ -830,7 +830,7 @@ let game={kind:'free'};
 let droneOn=localStorage.getItem('hm_drone')==='on'; // drone tonica: opzione, default SPENTO
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
-if(![0.5,1,1.5,2].includes(speed))speed=1;
+if(![0.5,1,1.5,2,2.5,3].includes(speed))speed=1;
 function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
 const TIMBRES=['pure','corda','pad','voce'];
@@ -905,7 +905,7 @@ function applyStatic(){
  const ft=$('freetonic'); ft.innerHTML='';
  NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; ft.appendChild(o);});
  const sp=$('spdsel'); sp.innerHTML='';
- [['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×']].forEach(([v,t])=>{const o=document.createElement('option'); o.value=v; o.textContent=t; sp.appendChild(o);});
+ [['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×'],['2.5','2.5×'],['3','3×']].forEach(([v,t])=>{const o=document.createElement('option'); o.value=v; o.textContent=t; sp.appendChild(o);});
  sp.value=String(speed);
  const lg=$('legend'); lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
@@ -2031,6 +2031,7 @@ function updateReveal(){
 function playSeq(){
  state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML=''; updateGoal();
  if(game.kind==='level'&&game.m===1){root=Math.floor(Math.random()*12); updateNotes(); updateReveal(); startDrone();}
+ if(game.kind==='free'){ speed=Math.min(3, 1+Math.floor(seq.length/5)*0.5); const sp=$('spdsel'); if(sp)sp.value=String(speed); } // libero: la velocita sale ogni 5 sequenze
  const base=Math.max(420,660-seq.length*18)/speed;
  let t=250;
  seq.forEach((k,i)=>{
@@ -2403,7 +2404,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.20'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.21'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
