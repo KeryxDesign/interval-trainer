@@ -61,14 +61,6 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #pe-avatars button.sel{border-color:var(--gold);}
 #pe-name{width:100%; background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:13px 14px; font-size:16px; margin:0 0 18px;}
 .fs-lbl{display:block; font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px;}
-.fschip{display:flex; flex-direction:column; align-items:flex-start; gap:3px; text-align:left; background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:9px 11px; cursor:pointer; color:var(--text); width:100%;}
-.fschip.on{border-color:var(--gold); background:rgba(234,179,8,.12);}
-.fschip .fsrow{display:flex; align-items:center; gap:7px;}
-.fschip .fsdot{width:13px; height:13px; border-radius:50%; flex:0 0 auto;}
-.fschip .fsnm{font-size:14px; font-weight:600; line-height:1.1;}
-.fschip .fssig{font-size:11px; color:var(--muted); line-height:1.2;}
-.fsgrp{font-size:12px; color:var(--muted); margin:10px 0 6px;}
-.fsgrid{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
 #freesetup select{background:var(--surface); color:var(--text); border:1px solid var(--line); border-radius:12px; appearance:none;}
 .fsnote{display:inline-flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:52px; height:52px; border-radius:50%; cursor:pointer; color:#fff;}
 .fsnote span{font-size:12px; font-weight:600; line-height:1;}
@@ -423,8 +415,7 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="fs-title" style="font-size:24px; font-weight:800; letter-spacing:-.02em; margin:0 0 6px;"></p>
   <p id="fs-sub" style="font-size:15px; line-height:1.5; color:var(--muted); margin:0 0 22px;"></p>
   <label class="fs-lbl" id="fs-scalelbl"></label>
-  <select id="fs-scale" style="display:none"></select>
-  <div id="fs-scale-chips" style="margin:0 0 16px;"></div>
+  <select id="fs-scale" style="width:100%; margin:0 0 16px; padding:13px 14px; font-size:16px;"></select>
   <label class="fs-lbl" id="fs-toniclbl"></label>
   <select id="fs-tonic" style="width:100%; margin:0 0 20px; padding:13px 14px; font-size:16px;"></select>
   <p class="fs-lbl" id="fs-noteslbl"></p>
@@ -1149,25 +1140,8 @@ function openFreeSetup(){
   const ft=$('fs-tonic'); NOTE.forEach((n,i)=>{const o=document.createElement('option'); o.value=i; o.textContent=n; ft.appendChild(o);});
  }
  $('fs-scale').value=scale; $('fs-tonic').value=String(root);
- renderFsScaleChips(); renderFsPreview();
+ renderFsPreview();
  $('freesetup').hidden=false; $('freesetup').scrollTop=0;
-}
-// selettore scale a chip raggruppate (al posto della tendina): nome + firma + pallino colore, selezione evidenziata
-function renderFsScaleChips(){
- const box=$('fs-scale-chips'); if(!box) return;
- const cur=$('fs-scale').value;
- const groups=[
-  [S9.pentTitle,[['pmaj',4],['pmin',3]]],
-  [S9.grpScalesModes,[['maj',4],['min',3],['lyd',6],['mixo',10],['dor',9],['phr',1],['loc',6]]],
-  [S9.grpBlues,[['blM',3],['blm',6]]],
-  [S9.grpChrom,[['chrom',-1]]]
- ];
- let h='';
- groups.forEach(([title,arr])=>{ h+='<p class="fsgrp">'+title+'</p><div class="fsgrid">';
-  arr.forEach(([v,ck])=>{ const dot=ck<0?'#7a818d':C[ck].h; h+='<button class="fschip'+(v===cur?' on':'')+'" data-v="'+v+'"><span class="fsrow"><span class="fsdot" style="background:'+dot+'"></span><span class="fsnm">'+S9.scales[SCIDX[v]]+'</span></span><span class="fssig">'+(S9.SIG[v]||'')+'</span></button>'; });
-  h+='</div>'; });
- box.innerHTML=h;
- box.querySelectorAll('.fschip').forEach(b=>b.addEventListener('click',()=>{ $('fs-scale').value=b.dataset.v; renderFsScaleChips(); renderFsPreview(); }));
 }
 function renderFsPreview(){
  const sc=$('fs-scale').value, rt=+$('fs-tonic').value, box=$('fs-preview');
@@ -2410,7 +2384,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.10'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.11'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
