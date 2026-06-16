@@ -305,6 +305,7 @@ button.levelcard:active{transform:scale(0.99);}
       <p id="setlbl"></p>
       <p class="setrowlbl" id="fontlbl"></p>
       <div id="fontsizes"></div>
+      <label id="dronerow" style="display:flex; align-items:center; gap:9px; font-size:14px; color:var(--text); margin:16px 0 0; cursor:pointer;"><input type="checkbox" id="dronechk" style="width:16px; height:16px;"> <span id="dronetxt"></span></label>
     </div>
     <div id="dangerbox" style="margin-top:22px;">
       <button class="btn" id="resetdata" style="width:100%; justify-content:center; color:#e24b4a; border-color:rgba(226,75,74,.4);"><i class="ti ti-trash"></i><span id="resetlbl"></span></button>
@@ -538,7 +539,7 @@ it:{
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
  timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce"},
- setLbl:"Impostazioni", fontLbl:"Dimensione testo", fontNames:{n:"Normale",g:"Grande",x:"Molto grande"},
+ setLbl:"Impostazioni", fontLbl:"Dimensione testo", fontNames:{n:"Normale",g:"Grande",x:"Molto grande"}, droneSetting:"Drone della tonica (nota di casa sotto al gioco)",
  courseLocked:"Completa prima il corso precedente", lockCourse:t=>"Completa «"+t+"» per sbloccarla", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
  dashStudied:"Più studiata:", contCta:"Continua", startCta:"Comincia a giocare", dashGuide:"Come funziona",
@@ -696,7 +697,7 @@ en:{
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
  timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice"},
- setLbl:"Settings", fontLbl:"Text size", fontNames:{n:"Normal",g:"Large",x:"Extra large"},
+ setLbl:"Settings", fontLbl:"Text size", fontNames:{n:"Normal",g:"Large",x:"Extra large"}, droneSetting:"Tonic drone (home note under the game)",
  courseLocked:"Finish the previous course first", lockCourse:t=>"Finish «"+t+"» to unlock it", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
  dashStudied:"Most practiced:", contCta:"Keep playing", startCta:"Start playing", dashGuide:"How it works",
@@ -826,6 +827,7 @@ const WARMUP=3; // Facile: le prime note (finche' la melodia ha <WARMUP note) us
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
 let game={kind:'free'};
+let droneOn=(localStorage.getItem('hm_drone')||'on')==='on'; // drone tonica (default attivo)
 let usedRehear=false;
 let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2].includes(speed))speed=1;
@@ -969,7 +971,7 @@ function applyStatic(){
 }
 
 function setView(name){
- if(ctx) stopAllHeld();
+ if(ctx){ stopAllHeld(); stopDrone(); }
  parkPanel();
  $('bossbar').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
@@ -1086,7 +1088,7 @@ function getFont(){const f=localStorage.getItem('hm_fontsize'); return FONTZ[f]?
 function applyFont(){document.documentElement.style.zoom=FONTZ[getFont()];}
 function renderSettings(){
  const box=$('fontsizes'); if(!box) return;
- $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; $('resetlbl').textContent=S9.resetData; box.innerHTML='';
+ $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; $('resetlbl').textContent=S9.resetData; $('dronetxt').textContent=S9.droneSetting; $('dronechk').checked=droneOn; box.innerHTML='';
  const cur=getFont(), prev={n:18,g:23,x:28};
  ['n','g','x'].forEach(f=>{
   const b=document.createElement('button'); b.className='tmb'+(f===cur?' on':'');
@@ -1161,7 +1163,7 @@ function startFreeGame(){
  $('rowsetup').hidden=false; $('scsel').hidden=true; $('rootsel').hidden=true; $('tastebtn').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
- render(); renderSig(); renderChords(); loadBest();
+ render(); renderSig(); renderChords(); loadBest(); startDrone();
 }
 // la ruota della card È la modalità libera: gioca sulla scala del corso con SOLO le note sbloccate
 function parkPanel(){ const gp=$('gamepanel'); if(gp){ gp.classList.remove('incard'); if(!$('view-game').contains(gp)) $('view-game').appendChild(gp); } }
@@ -1665,6 +1667,18 @@ function ensureMedia(){
 // sblocco audio: a OGNI interazione assicura contesto attivo + sessione "playback", cosi' la musica
 // che parte in automatico (boss, livello, tutorial) non resta muta finche' non tocchi una nota
 ['pointerdown','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,()=>{try{ensureCtx();ensureMedia();}catch(e){}},{capture:true,passive:true}));
+// DRONE della tonica: pad morbido e tenuto sulla nota di casa (un'ottava sotto), come ancora funzionale
+let droneNodes=null;
+function startDrone(){
+ if(!droneOn||!ctx) return;
+ stopDrone();
+ const f=440*Math.pow(2,(48+root-69)/12); // tonica bassa = C3 + tonica corrente
+ const g=ctx.createGain(); g.connect(ctx.destination); g.gain.value=0.0001;
+ const oscs=[]; [-6,0,6].forEach(c=>{const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f; o.detune.value=c; o.connect(g); o.start(); oscs.push(o);});
+ g.gain.setTargetAtTime(0.05,ctx.currentTime,0.5); // delicato (pad)
+ droneNodes={oscs,gain:g};
+}
+function stopDrone(){ if(!droneNodes||!ctx) return; const d=droneNodes; droneNodes=null; try{const t=ctx.currentTime; d.gain.gain.cancelScheduledValues(t); d.gain.gain.setValueAtTime(d.gain.gain.value,t); d.gain.gain.setTargetAtTime(0.0001,t,0.25); d.oscs.forEach(o=>o.stop(t+0.8));}catch(e){} }
 function tone(midi,durS){
  const f=440*Math.pow(2,(midi-69)/12), t0=ctx.currentTime+0.02;
  const g=ctx.createGain(); g.connect(ctx.destination);
@@ -1788,7 +1802,7 @@ function renderBossBar(){
  $('bossbar').innerHTML=h;
 }
 function startBossLike(g, title){
- resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
+ resetSpeed(); stopDrone(); game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=(g.hardLevel?'':(g.elite?'⚔ ':'💀 '))+title;
@@ -1815,7 +1829,7 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.
 // BOSS finale: costruisci nota dopo nota fino a 7, SOLO a orecchio (cerchi neutri),
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
 function beginBoss(c){
- clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
+ clearTimers(); stopAllHeld(); stopMic(); resetSpeed(); stopDrone();
  const pool=cumSet(c,S9.courses[c].levels.length-1);
  game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=0; state='idle'; seq=[]; dur=[];
@@ -2012,7 +2026,7 @@ function updateReveal(){
 }
 function playSeq(){
  state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML=''; updateGoal();
- if(game.kind==='level'&&game.m===1){root=Math.floor(Math.random()*12); updateNotes(); updateReveal();}
+ if(game.kind==='level'&&game.m===1){root=Math.floor(Math.random()*12); updateNotes(); updateReveal(); startDrone();}
  const base=Math.max(420,660-seq.length*18)/speed;
  let t=250;
  seq.forEach((k,i)=>{
@@ -2094,7 +2108,7 @@ function showLoading(cb,ctx){
 function beginGame(){
  ensureCtx(); clearTimers(); stopAllHeld(); resetSpeed(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
- bumpStreak();
+ bumpStreak(); startDrone();
  clearCenter(); $('round').textContent=seq.length; playSeq();
 }
 let chordSeq=[];
@@ -2357,7 +2371,7 @@ $('mw-ok').addEventListener('click',()=>{localStorage.setItem('hm_mic_warned','1
 $('miccb').addEventListener('click',function(){ if(micOn){stopMic();} else if(localStorage.getItem('hm_mic_warned')){startMic();} else {openMicWarn();} });
 // reset dati di gioco (progressi/sblocchi/stelle/boss). Mantiene preferenze (nome, lingua, testo, timbro).
 function resetGameData(){
- const keep=new Set(['hm_name','hm_avatar','hm_lang','hm_fontsize','hm_timbre','hm_mic_warned','it_speed','it_rhythm']);
+ const keep=new Set(['hm_name','hm_avatar','hm_lang','hm_fontsize','hm_timbre','hm_mic_warned','it_speed','it_rhythm','hm_drone']);
  Object.keys(localStorage).forEach(k=>{ if((k.startsWith('it_')||k.startsWith('hm_'))&&!keep.has(k)) localStorage.removeItem(k); });
  location.reload();
 }
@@ -2370,6 +2384,7 @@ $('unlockall').addEventListener('change',e=>{
  updateUnlockLabel();
  renderPath();
 });
+$('dronechk').addEventListener('change',e=>{ droneOn=e.target.checked; localStorage.setItem('hm_drone',droneOn?'on':'off'); if(droneOn){ if(game.kind==='level'||game.kind==='free') startDrone(); } else stopDrone(); });
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
@@ -2384,7 +2399,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.12'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.13'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
