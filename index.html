@@ -305,7 +305,6 @@ button.levelcard:active{transform:scale(0.99);}
       <p id="setlbl"></p>
       <p class="setrowlbl" id="fontlbl"></p>
       <div id="fontsizes"></div>
-      <label id="dronerow" style="display:flex; align-items:center; gap:9px; font-size:14px; color:var(--text); margin:16px 0 0; cursor:pointer;"><input type="checkbox" id="dronechk" style="width:16px; height:16px;"> <span id="dronetxt"></span></label>
     </div>
     <div id="dangerbox" style="margin-top:22px;">
       <button class="btn" id="resetdata" style="width:100%; justify-content:center; color:#e24b4a; border-color:rgba(226,75,74,.4);"><i class="ti ti-trash"></i><span id="resetlbl"></span></button>
@@ -372,6 +371,7 @@ button.levelcard:active{transform:scale(0.99);}
         <button class="btn" id="bscale" hidden aria-label="scale"><i class="ti ti-stairs-up"></i><span id="bscaletxt"></span></button>
         <span class="spdbox"><i class="ti ti-gauge"></i><select id="spdsel" aria-label="Speed"></select></span>
         <button class="tgl" id="miccb" aria-pressed="false"><i class="ti ti-microphone"></i><span id="mictxt"></span><span class="track"><span class="knob"></span></span></button>
+        <button class="tgl" id="dronecb" hidden aria-pressed="false" aria-label="drone tonica"><i class="ti ti-home"></i><span class="track"><span class="knob"></span></span></button>
         <span class="spdbox" id="tonbox"><i class="ti ti-music"></i><select id="freetonic" aria-label="Tonic"></select></span>
       </div>
     </div>
@@ -1088,7 +1088,7 @@ function getFont(){const f=localStorage.getItem('hm_fontsize'); return FONTZ[f]?
 function applyFont(){document.documentElement.style.zoom=FONTZ[getFont()];}
 function renderSettings(){
  const box=$('fontsizes'); if(!box) return;
- $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; $('resetlbl').textContent=S9.resetData; $('dronetxt').textContent=S9.droneSetting; $('dronechk').checked=droneOn; box.innerHTML='';
+ $('setlbl').textContent=S9.setLbl; $('fontlbl').textContent=S9.fontLbl; $('resetlbl').textContent=S9.resetData; box.innerHTML='';
  const cur=getFont(), prev={n:18,g:23,x:28};
  ['n','g','x'].forEach(f=>{
   const b=document.createElement('button'); b.className='tmb'+(f===cur?' on':'');
@@ -1163,7 +1163,7 @@ function startFreeGame(){
  $('rowsetup').hidden=false; $('scsel').hidden=true; $('rootsel').hidden=true; $('tastebtn').hidden=false;
  $('bestlbl').textContent=S9.bestScale;
  $('round').textContent='–'; setStatus(''); $('reveal').innerHTML='';
- render(); renderSig(); renderChords(); loadBest(); startDrone();
+ render(); renderSig(); renderChords(); loadBest(); startDrone(); showDroneToggle(true);
 }
 // la ruota della card È la modalità libera: gioca sulla scala del corso con SOLO le note sbloccate
 function parkPanel(){ const gp=$('gamepanel'); if(gp){ gp.classList.remove('incard'); if(!$('view-game').contains(gp)) $('view-game').appendChild(gp); } }
@@ -1174,7 +1174,7 @@ function setupCardFree(c, page){
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
  const notes=unlockedNotes(c);
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]}; resetSpeed();
- $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap'); showDroneToggle(true);
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
  if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
@@ -1679,6 +1679,7 @@ function startDrone(){
  droneNodes={oscs,gain:g};
 }
 function stopDrone(){ if(!droneNodes||!ctx) return; const d=droneNodes; droneNodes=null; try{const t=ctx.currentTime; d.gain.gain.cancelScheduledValues(t); d.gain.gain.setValueAtTime(d.gain.gain.value,t); d.gain.gain.setTargetAtTime(0.0001,t,0.25); d.oscs.forEach(o=>o.stop(t+0.8));}catch(e){} }
+function showDroneToggle(show){ const b=$('dronecb'); if(!b) return; b.hidden=!show; if(show) b.setAttribute('aria-pressed',droneOn?'true':'false'); }
 function tone(midi,durS){
  const f=440*Math.pow(2,(midi-69)/12), t0=ctx.currentTime+0.02;
  const g=ctx.createGain(); g.connect(ctx.destination);
@@ -1802,7 +1803,7 @@ function renderBossBar(){
  $('bossbar').innerHTML=h;
 }
 function startBossLike(g, title){
- resetSpeed(); stopDrone(); game=g; root=g.root||0; state='idle'; seq=[];
+ resetSpeed(); stopDrone(); showDroneToggle(false); game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=(g.hardLevel?'':(g.elite?'⚔ ':'💀 '))+title;
@@ -1829,7 +1830,7 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.
 // BOSS finale: costruisci nota dopo nota fino a 7, SOLO a orecchio (cerchi neutri),
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
 function beginBoss(c){
- clearTimers(); stopAllHeld(); stopMic(); resetSpeed(); stopDrone();
+ clearTimers(); stopAllHeld(); stopMic(); resetSpeed(); stopDrone(); showDroneToggle(false);
  const pool=cumSet(c,S9.courses[c].levels.length-1);
  game={kind:'bossgrow', c:c, name:S9.courses[c].title, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=0; state='idle'; seq=[]; dur=[];
@@ -2108,7 +2109,7 @@ function showLoading(cb,ctx){
 function beginGame(){
  ensureCtx(); clearTimers(); stopAllHeld(); resetSpeed(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
- bumpStreak(); startDrone();
+ bumpStreak(); startDrone(); showDroneToggle(true);
  clearCenter(); $('round').textContent=seq.length; playSeq();
 }
 let chordSeq=[];
@@ -2384,7 +2385,7 @@ $('unlockall').addEventListener('change',e=>{
  updateUnlockLabel();
  renderPath();
 });
-$('dronechk').addEventListener('change',e=>{ droneOn=e.target.checked; localStorage.setItem('hm_drone',droneOn?'on':'off'); if(droneOn){ if(game.kind==='level'||game.kind==='free') startDrone(); } else stopDrone(); });
+$('dronecb').addEventListener('click',()=>{ droneOn=!droneOn; localStorage.setItem('hm_drone',droneOn?'on':'off'); $('dronecb').setAttribute('aria-pressed',droneOn?'true':'false'); if(droneOn){ if(game.kind==='level'||game.kind==='free') startDrone(); } else stopDrone(); });
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
@@ -2399,7 +2400,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.14'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.15'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
