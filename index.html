@@ -841,7 +841,7 @@ function prog(c){try{return JSON.parse(localStorage.getItem('it_prog_'+c)||'{}')
 function saveProg(c,key,entry){const p=prog(c); const old=p[key]||{stars:0,bestRound:0};
  p[key]={stars:Math.max(old.stars,entry.stars), bestRound:Math.max(old.bestRound,entry.bestRound)};
  localStorage.setItem('it_prog_'+c,JSON.stringify(p));}
-function starsOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.stars:0;}
+function starsOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; const s=e?e.stars:0; return Math.min(s, m===2?1:3);} // 'A orecchio' (m2) max 1 (cap anche dati vecchi)
 function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
 function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAll()?S9.unlockOn:S9.unlock;}
@@ -863,7 +863,7 @@ function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
-function courseStars(c){const p=prog(c); let t=0; for(const k in p)t+=p[k].stars; return t;}
+function courseStars(c){let t=0; S9.courses[c].levels.forEach((_,w)=>t+=levelStars(c,w)); return t;} // somma capata (A orecchio max 1)
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
 function courseMaxStars(c){return S9.courses[c].levels.length*7;}
 function courseEliteDone(c){let n=0; S9.courses[c].levels.forEach((_,w)=>{if(localStorage.getItem('hm_elite_'+c+'_'+w))n++;}); return n;}
@@ -2400,7 +2400,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.18'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.19'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
