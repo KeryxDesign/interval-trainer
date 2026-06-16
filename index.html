@@ -1468,15 +1468,15 @@ function renderPath(){
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
    '<div class="gameslot"></div>'+
    '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
-    (cOpen?'<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>':'')+
-    (cOpen&&MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
+    '<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>'+
+    (MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '</details>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   page.innerHTML=sh;
-  if(cOpen){
+  { // la teoria (anteprima scala + assaggia + esempi) e' sempre accessibile, anche a corso bloccato
    const aw=page.querySelector('.accwheel'); miniWheel(aw, allNotes, 200);
    page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, aw));
-   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>playMelody(MELODIES[c][+b.dataset.mi].deg, aw)));
+   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>{const m=MELODIES[c][+b.dataset.mi]; playMelody(m.sem||m.deg.map(d=>D2S[d-1]), aw);}));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1800,9 +1800,10 @@ const D2S=[0,2,4,5,7,9,11];
 const MELODIES={
  pent:[{it:"Mary Had a Little Lamb",en:"Mary Had a Little Lamb",deg:[3,2,1,2,3,3,3,2,2,2,3,5,5,3,2,1,2,3,3,3,3,2,2,3,2,1]}],
  maj:[{it:"Inno alla gioia",en:"Ode to Joy",deg:[3,3,4,5,5,4,3,2,1,1,2,3,3,2,2,3,3,4,5,5,4,3,2,1,1,2,3,2,1,1]},
-      {it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}]
+      {it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}],
+ pmin:[{it:"Smoke on the Water",en:"Smoke on the Water",sem:[0,3,5,0,3,5,0,3,5,3,0]}]
 };
-function playMelody(deg,box){ensureCtx(); let t=120,base=300; deg.forEach(d=>{const k=D2S[d-1]; timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,base*0.85/1000)); flashMwk(box,k,base-50);},t)); t+=base;});}
+function playMelody(sem,box){ensureCtx(); let t=120,base=300; sem.forEach(k=>{ timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,base*0.85/1000)); flashMwk(box,k,base-50);},t)); t+=base;});}
 // BOSS finale: melodia random di 8 note dal set completo del corso (3 vite, 3 riascolti)
 function courseComplete(c){return unlockAll()||S9.courses[c].levels.every((_,i)=>levelStars(c,i)>=1);}
 function renderBossBar(){
@@ -2409,7 +2410,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.09'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.10'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
