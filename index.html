@@ -1450,7 +1450,7 @@ function renderPath(){
   { // la teoria (anteprima scala + assaggia + esempi) e' sempre accessibile, anche a corso bloccato
    const aw=page.querySelector('.accwheel'); miniWheel(aw, allNotes, 200);
    page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, aw));
-   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>{const m=MELODIES[c][+b.dataset.mi]; playMelody(m.sem||m.deg.map(d=>D2S[d-1]), aw);}));
+   if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>{const m=MELODIES[c][+b.dataset.mi]; playMelody(m.sem||m.deg.map(d=>D2S[d-1]), aw, m.dur);}));
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -1775,9 +1775,9 @@ const MELODIES={
  pent:[{it:"Mary Had a Little Lamb",en:"Mary Had a Little Lamb",deg:[3,2,1,2,3,3,3,2,2,2,3,5,5,3,2,1,2,3,3,3,3,2,2,3,2,1]}],
  maj:[{it:"Inno alla gioia",en:"Ode to Joy",deg:[3,3,4,5,5,4,3,2,1,1,2,3,3,2,2,3,3,4,5,5,4,3,2,1,1,2,3,2,1,1]},
       {it:"Twinkle Twinkle",en:"Twinkle Twinkle",deg:[1,1,5,5,6,6,5,4,4,3,3,2,2,1]}],
- pmin:[{it:"Smoke on the Water",en:"Smoke on the Water",sem:[0,3,5,0,3,5,0,3,5,3,0]}]
+ pmin:[{it:"Smoke on the Water",en:"Smoke on the Water",sem:[0,3,5,0,3,5,0,3,5,3,0],dur:[1,1,2,1,1,2,1,1,2,1,2]}]
 };
-function playMelody(sem,box){ensureCtx(); let t=120,base=300; sem.forEach(k=>{ timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,base*0.85/1000)); flashMwk(box,k,base-50);},t)); t+=base;});}
+function playMelody(sem,box,dur){ensureCtx(); let t=120,base=300; sem.forEach((k,i)=>{ const ms=base*((dur&&dur[i])?dur[i]:1); timers.push(setTimeout(()=>{tone(60+k,Math.max(0.22,ms*0.85/1000)); flashMwk(box,k,ms-50);},t)); t+=ms;});}
 // BOSS finale: melodia random di 8 note dal set completo del corso (3 vite, 3 riascolti)
 function courseComplete(c){return unlockAll()||S9.courses[c].levels.every((_,i)=>levelStars(c,i)>=1);}
 function renderBossBar(){
@@ -2384,7 +2384,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.11'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.12'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
