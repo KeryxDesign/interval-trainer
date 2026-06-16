@@ -545,6 +545,7 @@ it:{
  fsTitle:"Modalità libera", fsSub:"Scegli scala e tonica, ascolta le note, poi gioca.", fsScale:"Scala", fsTonic:"Tonica", fsNotes:"Le note", fsTaste:"Assaggia", fsPlay:"Gioca", fsChange:"Cambia", ldSeq:"In sequenza", exLbl:"Lo senti in queste melodie",
  fiBody:"Scegli scala e tonica e allena l'orecchio senza percorso, come vuoi tu.<br><br><b>Gioca</b> — ripeti la melodia che cresce a ogni round.<br><b>Assaggio</b> — ascolta il sapore della scala scelta.<br><b>Accordi</b> — toccali sotto la ruota per costruire un giro.<br><b>Canta</b> — rispondi con la voce invece dei tasti.<br><br>I colori e i simboli sono gli stessi ovunque: quello che impari qui vale nei livelli, e viceversa.",
  compLabel:"Formula:",
+ pentTitle:"Le pentatoniche",
  modesTitle:"I modi: la luce del viaggio",
  modesIntro:"Un modo è la stessa collana di note con una casa diversa: prendi le sette note della maggiore, scegli come tonica un'altra di loro, e le distanze da casa cambiano: si accende un'altra costellazione. Maggiore e minore naturale sono anche loro modi (ionico ed eolio): li chiamiamo scale solo perché sono i due di default. Stessi luoghi, luce diversa.",
  MODETH:{
@@ -702,6 +703,7 @@ en:{
  fsTitle:"Free play", fsSub:"Pick a scale and tonic, hear the notes, then play.", fsScale:"Scale", fsTonic:"Tonic", fsNotes:"The notes", fsTaste:"Taste", fsPlay:"Play", fsChange:"Change", ldSeq:"In sequence", exLbl:"You hear it in these melodies",
  fiBody:"Pick a scale and tonic and train your ear freely, no path.<br><br><b>Play</b> — repeat the melody that grows each round.<br><b>Taste</b> — hear the flavor of the chosen scale.<br><b>Chords</b> — tap them under the wheel to build a progression.<br><b>Sing</b> — answer with your voice instead of the keys.<br><br>Colors and symbols are the same everywhere: what you learn here works in the levels, and vice versa.",
  compLabel:"Formula:",
+ pentTitle:"The pentatonics",
  modesTitle:"The modes: the light of the journey",
  modesIntro:"A mode is the same necklace of notes with a different home: take the seven notes of the major scale, pick another one of them as the tonic, and the distances from home change: a different constellation lights up. Major and natural minor are modes too (Ionian and Aeolian): we call them scales only because they are the two defaults. Same places, different light.",
  MODETH:{
@@ -916,6 +918,19 @@ function applyStatic(){
    '<p style="margin:8px 0 6px 44px;font-size:13px;color:var(--muted)">'+S9.semis(k)+S9.tones(k)+'</p>'+
    '<p style="margin:0 0 0 44px;font-size:16px;line-height:1.6;color:var(--text)">'+paraBr(S9.TH[k])+'</p>';
   thBox.appendChild(d);});
+ // Pentatoniche: anteprima scala (maggiore e minore)
+ const pt=document.createElement('p'); pt.style.cssText='font-size:17px;font-weight:700;margin:22px 0 4px'; pt.textContent=S9.pentTitle; thBox.appendChild(pt);
+ [['pmaj','pent',4],['pmin','pmin',3]].forEach(([sc,course,colk])=>{
+  const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
+  d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
+   '<span style="width:34px;height:34px;border-radius:50%;background:'+C[colk].h+';display:flex;align-items:center;justify-content:center;color:'+ink(colk)+';flex-shrink:0"><i class="ti ti-'+C[colk].ic+'" style="font-size:17px"></i></span>'+
+   '<span style="font-size:17px;font-weight:600">'+S9.scales[SCIDX[sc]]+' <span style="color:var(--muted);font-weight:400;font-size:14px">· '+(S9.SIG[sc]||'')+'</span></span>'+
+   '<button class="pbtn" data-mode="'+sc+'" aria-label="play" style="margin-left:auto"><i class="ti ti-player-play"></i></button>'+
+   '<i class="ti ti-chevron-down" style="color:var(--muted);font-size:15px"></i></summary>'+
+   '<p style="margin:8px 0 8px 44px;font-size:16px;line-height:1.6;color:var(--text)">'+paraBr(S9.courses[course].desc)+'</p>'+
+   '<p style="margin:0 0 0 44px;font-size:13px;color:var(--muted)"><b style="color:var(--text)">'+S9.compLabel+'</b> '+SCALES[sc].map(k=>IV[k]).join(' · ')+'</p>';
+  thBox.appendChild(d);
+ });
  const NAMEIDX={maj:0,min:1,lyd:5,mixo:6,dor:7,phr:8,loc:9};
  const mt=document.createElement('p');
  mt.style.cssText='font-size:17px;font-weight:700;margin:22px 0 4px';
@@ -2365,7 +2380,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.06'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.07'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
