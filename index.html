@@ -140,9 +140,10 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .mapdot.off{background:var(--surface2) !important; color:#4a4e59;}
 .world{background:var(--surface); border-radius:14px; padding:14px; margin-bottom:12px;}
 .secname{font-size:28px; font-weight:800; letter-spacing:-.02em; margin:6px 0 10px; color:var(--text); text-align:center;}
-.pathdots{display:flex; gap:8px; justify-content:center; align-items:center; margin:6px 0 14px;}
-.pdot{width:9px; height:9px; border-radius:50%; border:none; background:var(--line); padding:0; cursor:pointer; transition:width .2s, background .2s; flex:0 0 auto;}
-.pdot.on{background:var(--gold); width:24px; border-radius:5px;}
+.pathdots{display:flex; gap:7px; justify-content:center; align-items:center; flex-wrap:wrap; margin:6px 0 14px;}
+.cpill{border:1.5px solid var(--line); background:var(--surface); color:var(--muted); border-radius:999px; padding:7px 13px; font-size:13px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:5px; white-space:nowrap;}
+.cpill.on{background:var(--gold); color:#14151a; border-color:var(--gold);}
+.cpill.lock{opacity:.65;}
 .medals{display:flex; gap:16px; justify-content:center; align-items:center; margin:0 0 18px; font-size:15px; font-weight:700; color:var(--text);}
 .medal{display:inline-flex; align-items:center; gap:5px;}
 .coursepage.locked .secname{color:var(--muted);}
@@ -480,7 +481,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", courseMode:"Modalità Corso",
+ tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
  famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
@@ -638,7 +639,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", courseMode:"Course Mode",
+ tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pillar",c:"Color",t:"Tension"},
  famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
@@ -1505,7 +1506,9 @@ function renderPath(){
    page.appendChild(bc);
   }
   track.appendChild(page);
-  const dot=document.createElement('button'); dot.className='pdot'; dot.setAttribute('aria-label',S9.courses[c].title); dot.addEventListener('click',()=>setPathPage(ci)); dotsbar.appendChild(dot);
+  const pill=document.createElement('button'); pill.className='cpill'+(ci===pathPage?' on':'')+(cOpen?'':' lock'); pill.setAttribute('aria-label',S9.courses[c].title);
+  pill.innerHTML=(cOpen?'':'<i class="ti ti-lock" style="font-size:13px"></i>')+'<span>'+((S9.coursesShort&&S9.coursesShort[c])||S9.courses[c].title)+'</span>';
+  pill.addEventListener('click',()=>setPathPage(ci)); dotsbar.appendChild(pill);
  });
  box.appendChild(dotsbar); box.appendChild(track);
  attachPathSwipe(track);
@@ -1515,7 +1518,7 @@ function setPathPage(i){
  const pages=document.querySelectorAll('.coursepage'); if(!pages.length) return;
  i=Math.max(0,Math.min(pages.length-1,i)); pathPage=i;
  pages.forEach((p,idx)=>{ p.hidden=idx!==i; });
- document.querySelectorAll('.pdot').forEach((d,idx)=>d.classList.toggle('on',idx===i));
+ document.querySelectorAll('.cpill').forEach((d,idx)=>d.classList.toggle('on',idx===i));
  const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
  const c=COURSE_IDS[i];
  setupCardFree(c, active);
@@ -2406,7 +2409,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.08'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.09'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
