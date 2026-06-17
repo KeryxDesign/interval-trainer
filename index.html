@@ -358,6 +358,10 @@ button.levelcard:active{transform:scale(0.99);}
     </div>
     <div id="goalbar" hidden style="font-size:13px; text-align:center; margin:0 0 12px; background:var(--surface); border-radius:10px; padding:10px 10px;"></div>
     <div id="bossbar" hidden style="display:flex; justify-content:center; align-items:center; gap:18px; font-size:16px; margin:0 0 12px;"></div>
+    <div id="freetry" hidden style="margin:0 0 14px; text-align:center;">
+      <button class="btn" id="ftbtn" style="margin:0 0 8px;"><i class="ti ti-flask"></i><span id="fttxt"></span></button>
+      <div id="ftrow" style="display:flex; justify-content:center; gap:7px; flex-wrap:wrap;"></div>
+    </div>
     <div class="controls" id="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
@@ -492,6 +496,7 @@ it:{
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
+ ftTry:"Prova le note", ftStop:"Fine prova", ftDone:"Prove finite",
  boss:"Boss finale", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo a orecchio. 3 vite. Riascolti di scala e melodia limitati (3 + 3).", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
  elite:"Elite", eliteCard:"Ricostruisci una melodia di 7 note SOLO a orecchio: la senti, non la vedi. 3 vite, 3 riascolti. Battilo per sbloccare le note nuove nel gioco libero.", eliteLocked:"Completa la modalità \"A orecchio\" per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
@@ -651,6 +656,7 @@ en:{
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
+ ftTry:"Try the notes", ftStop:"End try", ftDone:"No tries left",
  boss:"Final boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. 3 lives. Limited scale and melody replays (3 + 3).", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
  elite:"Elite", eliteCard:"Rebuild a 7-note melody by ear only: you hear it, you don't see it. 3 lives, 3 replays. Beat it to unlock the new notes in free play.", eliteLocked:"Clear \"By ear\" mode to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
@@ -976,7 +982,7 @@ function applyStatic(){
 function setView(name){
  if(ctx){ stopAllHeld(); stopDrone(); }
  parkPanel();
- $('bossbar').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
+ $('bossbar').hidden=true; $('freetry').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1807,6 +1813,31 @@ function renderBossBar(){
  if(game.kind!=='bossgrow') h+='<span style="color:var(--muted);white-space:nowrap"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> '+game.replays+'/3</span>'; // boss-grow usa i bottoni Riascolta
  $('bossbar').innerHTML=h;
 }
+// PROVA LIBERA: in Elite e Boss una riga di note suonabili per ricostruire la melodia per tentativi. 3 sessioni per partita.
+function freeTryEligible(){ return !!game && (game.elite || game.kind==='bossgrow'); }
+function setupFreeTry(){
+ if(!freeTryEligible()){ $('freetry').hidden=true; return; }
+ if(typeof game.tryLeft!=='number') game.tryLeft=3;
+ game.trying=false; renderFtRow(); $('freetry').hidden=false; updateFreeTry();
+}
+function renderFtRow(){
+ const ks=game.notes.slice().sort((a,b)=>a-b);
+ $('ftrow').innerHTML=ks.map(k=>'<button class="ftnote" data-k="'+k+'" style="width:42px;height:42px;border-radius:50%;border:none;background:'+C[k].h+';color:'+ink(k)+ring(k)+';display:inline-flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:transform .12s,opacity .12s"><i class="ti ti-'+C[k].ic+'"></i></button>').join('');
+}
+function updateFreeTry(){
+ const left=game.tryLeft||0, on=game.trying;
+ $('fttxt').textContent = on?S9.ftStop : (left>0?S9.ftTry+' · '+left : S9.ftDone);
+ $('ftbtn').style.opacity = (on||left>0)?'1':'.45';
+ $('ftrow').style.opacity = on?'1':'.4'; $('ftrow').style.pointerEvents = on?'auto':'none';
+}
+function toggleFreeTry(){
+ if(!freeTryEligible()) return;
+ if(game.trying){ game.trying=false; }
+ else { if((game.tryLeft||0)<=0) return; game.tryLeft--; game.trying=true; }
+ updateFreeTry();
+}
+function closeFreeTry(){ if(game&&game.trying){ game.trying=false; updateFreeTry(); } }
+function ftHit(k){ if(!game||!game.trying) return; ensureCtx(); tone(60+(root||0)+k,0.4); const b=$('ftrow').querySelector('.ftnote[data-k="'+k+'"]'); if(b){ b.style.transform='scale(1.18)'; setTimeout(()=>{b.style.transform='';},130);} }
 function startBossLike(g, title){
  resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
@@ -1816,7 +1847,7 @@ function startBossLike(g, title){
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
  $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
- render(); renderBossBar();
+ render(); renderBossBar(); setupFreeTry();
  bumpPlays(g.c); bumpStreak();
  startDrone(); showDroneToggle(true); // drone disponibile anche in elite/A orecchio (dopo setView)
  bossIntro();
@@ -1847,7 +1878,7 @@ function beginBoss(c){
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
  $('bossbar').hidden=false; renderBossBar(); // 3 vite
- render(); bumpPlays(c); bumpStreak();
+ render(); setupFreeTry(); bumpPlays(c); bumpStreak();
  startDrone(); showDroneToggle(true); // drone disponibile anche nel boss (dopo setView)
  bossGrowIntro();
 }
@@ -1874,7 +1905,7 @@ function bossGrowAdd(){
  seq.push(k); dur.push(1);
 }
 function bossGrowPlay(){
- ensureCtx(); state='play'; clearTimers(); setStatus(S9.listen);
+ ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
  const base=Math.max(300,520-seq.length*16)/speed; let t=300;
  seq.forEach((k)=>{ timers.push(setTimeout(()=>{ pulse(base-90); tone(60+k,Math.max(0.2,base*0.82/1000)); },t)); t+=base; });
  timers.push(setTimeout(()=>{ state='input'; step=0; $('round').textContent=seq.length; setStatus(S9.yourTurn(0,seq.length)); },t));
@@ -1894,9 +1925,10 @@ function bossGrowPress(k,held){
  }
 }
 function bossGrowFail(){
- $('bossbar').hidden=true; setStatus(S9.bossFail,'err'); $('reveal').innerHTML=''; centerPlay();
+ $('bossbar').hidden=true; $('freetry').hidden=true; setStatus(S9.bossFail,'err'); $('reveal').innerHTML=''; centerPlay();
 }
 function bossGrowWin(){
+ $('freetry').hidden=true;
  localStorage.setItem('hm_boss_'+game.c,'3');
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
  $('celtitle').textContent=S9.bossWin;
@@ -1917,7 +1949,7 @@ function beginHard(c,w){
  startBossLike({kind:'boss', hardLevel:true, c:c, w:w, m:2, name:S9.level+' '+(w+1), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[2]+' · '+S9.level+' '+(w+1));
 }
 function bossPlay(keepStep){
- ensureCtx(); state='play'; clearTimers(); setStatus(S9.listen);
+ ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
  if(!keepStep) step=0;
  const base=Math.max(170,320/speed); let t=Math.max(220,350/speed);
  game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{ game.earOnly?pulse(base-70):flash(k,base-70); tone(60+root+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
@@ -1948,7 +1980,7 @@ function bossWin(){
  else ico.innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isElite?S9.eliteWin:S9.bossWin;
  $('celname').innerHTML='<b>'+game.name+'</b>'+(!isElite&&perfect?'<br><span style="color:var(--gold);font-size:14px">'+S9.bossPerfect+'</span>':'');
- $('celtap').textContent=S9.unlockTap;
+ $('freetry').hidden=true; $('celtap').textContent=S9.unlockTap;
  const cc=game.c, cw=game.w, el=isElite;
  celebrateCb=()=>{ el?showLevelDetail(cc,cw):showLevels(); };
  $('celebrate').hidden=false; chime(); setTimeout(chime,260);
@@ -1966,7 +1998,7 @@ function bossWinHard(){
  $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 function bossFail(){
- setStatus(S9.bossFail,'err');
+ setStatus(S9.bossFail,'err'); $('freetry').hidden=true;
  const rv=$('reveal'); rv.innerHTML='';
  centerPlay();
 }
@@ -2393,6 +2425,8 @@ $('unlockall').addEventListener('change',e=>{
  renderPath();
 });
 $('dronecb').addEventListener('click',()=>{ droneOn=!droneOn; localStorage.setItem('hm_drone',droneOn?'on':'off'); $('dronecb').setAttribute('aria-pressed',droneOn?'true':'false'); if(droneOn) startDrone(); else stopDrone(); });
+$('ftbtn').addEventListener('click',toggleFreeTry);
+$('ftrow').addEventListener('click',e=>{ const b=e.target.closest('.ftnote'); if(b) ftHit(+b.dataset.k); });
 document.addEventListener('keydown',e=>{
  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey) return;
  if($('view-game').hidden) return;
@@ -2407,7 +2441,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.24'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.25'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
