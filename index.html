@@ -580,6 +580,13 @@ it:{
  tutGo:"tocca a te: ripeti le due note",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
  tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
+ casaTitle:"La casa", casaCardTitle:"La casa", casaCardSub:"Capisci la nota da cui tutto parte e a cui torni. 2 minuti.", casaNew:"Parti da qui",
+ casa1:"Questa è la tua <b>casa</b>. In musica è la nota da cui parti e a cui torni sempre. Toccala e ascoltala: questo è il suo suono.",
+ casa2:"In ogni melodia parti da casa, ti allontani e torni qui. Senti come il ritorno si posa e respira? Casa è il tuo <b>posto sicuro</b>: sai sempre dove tornare, ed è questo che rende la musica meno spaventosa.",
+ casa3:"A ogni suono diamo un <b>colore</b> e un <b>simbolo</b>. Ce li inventiamo noi, sono arbitrari. Ma a forza di rivederli il tuo orecchio impara ad associare la <b>sensazione</b> al suono: dopo un po' li riconoscerai senza pensarci.",
+ casa4:"Ora aggiungiamo il secondo mattone: il <b>Pilastro</b>. Con la casa, è la base di tutto.",
+ casaNext:"Continua", casaListen:"Ascolta di nuovo", casaStart:"Iniziamo",
+ tasteIntro:k=>"Nuovo sapore: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Guarda il suo colore qui sotto e ascoltalo: a forza di rivederlo, lo riconoscerai a orecchio.",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
  unlockTap:"tocca per continuare",
@@ -740,6 +747,13 @@ en:{
  tutGo:"your turn: repeat the two notes",
  tutRetry:"No, the first one was home (the red one). Try again.",
  tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
+ casaTitle:"Home", casaCardTitle:"Home", casaCardSub:"Get the note everything starts from and returns to. 2 minutes.", casaNew:"Start here",
+ casa1:"This is your <b>home</b>. In music it's the note you start from and always return to. Tap it and listen: this is its sound.",
+ casa2:"In every melody you leave home, wander, and come back here. Feel how the return settles and breathes? Home is your <b>safe place</b>: you always know where to return, and that's what makes music less scary.",
+ casa3:"We give every sound a <b>color</b> and a <b>symbol</b>. We make them up, they're arbitrary. But by seeing them again and again your ear learns to link the <b>feeling</b> to the sound: after a while you'll know them without thinking.",
+ casa4:"Now let's add the second brick: the <b>Pillar</b>. With home, it's the base of everything.",
+ casaNext:"Continue", casaListen:"Listen again", casaStart:"Let's start",
+ tasteIntro:k=>"New flavor: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Look at its color below and listen: by seeing it again and again, you'll know it by ear.",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
  unlockTap:"tap to continue",
@@ -867,7 +881,7 @@ function courseUnlocked(c){
  return S9.courses[prev].levels.every((_,i)=>levelStars(prev,i)>=1);
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
@@ -1265,7 +1279,8 @@ function startLevel(c,w,m,skipLoading){
  $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
- if(skipLoading) beginGame(); else showLoading(beginGame);
+ const go=()=>{ if(skipLoading) beginGame(); else showLoading(beginGame); };
+ if(needTaste(c,w)) showTaste(c,w,go); else go();
 }
 function setStatus(txt,cls){
  const st=$('status');
@@ -1311,6 +1326,57 @@ function tutMsg(ic, bg, fg, text, notes){
  const chips=(notes||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
  b.innerHTML='<div class="tut-ill" style="background:'+(bg||'var(--surface2)')+';color:'+(fg||'var(--gold)')+'"><i class="ti ti-'+ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'');
  anim(b,'tutIn .4s ease both',0); anim(b.querySelector('.tut-ill'),'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',60);
+}
+// ===== Lezione narrata (riusa #tutbox): schermata con illustrazione + testo + chip note + bottoni =====
+function lessonShow(o){
+ const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
+ const chips=(o.chips||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
+ let btns='<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
+ if(o.secondary) btns+='<button class="btn" id="lsec"><i class="ti ti-volume"></i><span>'+o.secondary.label+'</span></button>';
+ if(o.primary) btns+='<button class="btn primary" id="lpri"><span>'+o.primary.label+'</span></button>';
+ btns+='</div>';
+ b.innerHTML='<div class="tut-ill" style="background:'+(o.bg||'var(--surface2)')+';color:'+(o.fg||'var(--gold)')+'"><i class="ti ti-'+o.ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+o.text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'')+btns;
+ anim(b,'tutIn .4s ease both',0); anim(b.querySelector('.tut-ill'),'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',60);
+ if(o.primary)$('lpri').addEventListener('click',o.primary.fn);
+ if(o.secondary)$('lsec').addEventListener('click',o.secondary.fn);
+}
+// ===== Intro "La casa": fa sentire bene la tonica come punto sicuro prima del primo livello =====
+let casaS=0;
+function startCasa(){
+ clearTimers(); stopMic(); stopAllHeld(); game={kind:'casa'}; root=0; state='idle'; seq=[];
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('gametop').hidden=false; $('gametitle').textContent=S9.casaTitle; $('goalbar').hidden=true;
+ $('rowsetup').hidden=true; $('bossbar').hidden=true; $('freetry').hidden=true;
+ $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
+ $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
+ render(); clearCenter(); // render nasconde #controls per la casa
+ casaStep(1);
+}
+function casaPress(k){ if(casaS>=3) return; ensureCtx(); flash(k,360,true); tone(60+k,0.5); } // nei primi passi tocca casa per riascoltarla
+function casaReturn(){ ensureCtx(); clearTimers(); const sq=[0,7,9,7,0]; let t=200; sq.forEach((k,i)=>{ timers.push(setTimeout(()=>{flash(k,430); tone(60+k,0.5);},t)); t+=(i>=sq.length-2?540:460); }); } // parti da casa, allontanati, torna: senti il rientro
+function casaStep(n){
+ casaS=n;
+ if(n===1){ tutAllow([0]); ensureCtx(); flash(0,480); timers.push(setTimeout(()=>tone(60,0.6),120));
+  lessonShow({ic:'home', bg:C[0].h, fg:ink(0), text:S9.casa1, chips:[0], primary:{label:S9.casaNext, fn:()=>casaStep(2)}}); }
+ else if(n===2){ tutAllow([0]); casaReturn();
+  lessonShow({ic:'walk', text:S9.casa2, chips:[0], secondary:{label:S9.casaListen, fn:casaReturn}, primary:{label:S9.casaNext, fn:()=>casaStep(3)}}); }
+ else if(n===3){ tutAllow([]);
+  lessonShow({ic:'palette', text:S9.casa3, chips:[0,7], primary:{label:S9.casaNext, fn:()=>casaStep(4)}}); }
+ else if(n===4){ localStorage.setItem('hm_casa_done','1'); tutAllow([]);
+  lessonShow({ic:'stairs-up', text:S9.casa4, chips:[0,7], primary:{label:S9.casaStart, fn:()=>{ if(!localStorage.getItem('hm_tut_done')) startTutorial(); else startLevel('pent',0,0,true); }}}); }
+}
+// ===== Assaggio guidato di ogni nuova nota (alla prima apertura del livello) =====
+function tasteNotes(c,w){ return CWADD[c][w].filter(k=>k!==0); } // la tonica e' gia' la casa
+function needTaste(c,w){ return tasteNotes(c,w).length>0 && !localStorage.getItem('hm_taste_'+c+'_'+w); }
+function playTaste(k){ ensureCtx(); flash(k,470,true); tone(60+k,0.6); }
+function showTaste(c,w,then){
+ const ks=tasteNotes(c,w), k=ks[0];
+ $('controls').hidden=true; $('goalbar').hidden=true;
+ timers.push(setTimeout(()=>playTaste(k),320));
+ lessonShow({ic:C[k].ic, bg:C[k].h, fg:ink(k), text:S9.tasteIntro(k), chips:ks,
+  secondary:{label:S9.casaListen, fn:()=>playTaste(k)},
+  primary:{label:S9.casaNext, fn:()=>{ localStorage.setItem('hm_taste_'+c+'_'+w,'1'); $('tutbox').hidden=true; $('status').hidden=false; $('controls').hidden=false; then(); }}});
 }
 function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
@@ -1464,6 +1530,12 @@ function renderPath(){
    page.querySelector('.srplay').addEventListener('click',()=>playTasteNotes(allNotes, aw));
    if(MELODIES[c]) page.querySelectorAll('.exbtn').forEach(b=>b.addEventListener('click',()=>{const m=MELODIES[c][+b.dataset.mi]; playMelody(m.sem||m.deg.map(d=>D2S[d-1]), aw, m.dur);}));
   }
+  if(c===COURSE_IDS[0]){ // entry fissa "La casa" in cima al percorso, sempre accessibile e ripetibile
+   const cdone=!!localStorage.getItem('hm_casa_done');
+   const cc=document.createElement('button'); cc.className='world levelcard casacard'+(cdone?'':' nuovo');
+   cc.innerHTML='<div class="whead"><span class="wname"><span class="wint" style="background:'+C[0].h+';color:'+ink(0)+ring(0)+'"><i class="ti ti-home" style="font-size:13px"></i></span> '+S9.casaCardTitle+'</span>'+(cdone?'<i class="ti ti-rotate-clockwise" style="color:var(--muted);font-size:18px"></i>':'<span style="background:var(--gold);color:#14151a;font-size:11px;font-weight:800;border-radius:20px;padding:2px 9px">'+S9.casaNew+'</span>')+'</div><p class="wsub">'+S9.casaCardSub+'</p>';
+   cc.addEventListener('click',startCasa); page.appendChild(cc);
+  }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
    const open=cOpen&&lvOpen;
@@ -1603,7 +1675,7 @@ function renderSig(){
 }
 function render(){
  layout();
- $('controls').hidden=(game.kind==='tut'); // tutorial: niente controlli, solo la lezione
+ $('controls').hidden=(game.kind==='tut'||game.kind==='casa'); // tutorial/intro casa: niente controlli, solo la lezione
  const wb=$('wheelbox');
  wb.style.background='transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
@@ -1632,7 +1704,7 @@ function render(){
    if(locked){
     b.addEventListener('click',()=>setStatus(S9.noteLocked,'err'));
    } else {
-    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'){press(k);} else if(state==='input'){startHold(k); press(k,true);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}}); // in gioco: tieni premuto = nota sostenuta
+    b.addEventListener('pointerdown',e=>{e.preventDefault(); ensureCtx(); if(game.kind==='tut'||game.kind==='casa'){press(k);} else if(state==='input'){startHold(k); press(k,true);} else if(state==='idle'||state==='over'){flash(k,300,true); startHold(k);}}); // in gioco: tieni premuto = nota sostenuta
     b.addEventListener('pointerup',()=>stopHold(k));
     b.addEventListener('pointerleave',()=>stopHold(k));
     b.addEventListener('pointercancel',()=>stopHold(k));
@@ -2335,6 +2407,7 @@ function stopMic(){
 
 function press(k,held){
  if(game.kind==='tut'){tutPress(k); return;}
+ if(game.kind==='casa'){casaPress(k); return;}
  if(game.kind==='boss'){ if(state==='input'){bossHit(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(game.kind==='bossgrow'){ if(state==='input'){bossGrowPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
  if(state==='input'){hit(k,false,held); return;}
@@ -2396,7 +2469,7 @@ $('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{
  const list=welList();
  if(welStep<list.length-1){welStep++; renderWelStep(); return;}
- if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startTutorial(); }
+ if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; if(!localStorage.getItem('hm_casa_done')) startCasa(); else startTutorial(); }
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
@@ -2441,7 +2514,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.25'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.26'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
