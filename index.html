@@ -357,11 +357,6 @@ button.levelcard:active{transform:scale(0.99);}
       <span id="gametitle" style="font-size:14px; color:var(--text); font-weight:700;"></span>
     </div>
     <div id="goalbar" hidden style="font-size:13px; text-align:center; margin:0 0 12px; background:var(--surface); border-radius:10px; padding:10px 10px;"></div>
-    <div id="bossbar" hidden style="display:flex; justify-content:center; align-items:center; gap:18px; font-size:16px; margin:0 0 12px;"></div>
-    <div id="freetry" hidden style="margin:0 0 14px; text-align:center;">
-      <button class="btn" id="ftbtn" style="margin:0 0 8px;"><i class="ti ti-flask"></i><span id="fttxt"></span></button>
-      <div id="ftrow" style="display:flex; justify-content:center; gap:7px; flex-wrap:wrap;"></div>
-    </div>
     <div class="controls" id="controls">
       <div class="crow" id="rowsetup">
         <select id="scsel" aria-label="Scale"></select>
@@ -388,6 +383,11 @@ button.levelcard:active{transform:scale(0.99);}
     <div class="stats" id="stats">
       <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
       <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
+    </div>
+    <div id="bossbar" hidden style="display:flex; justify-content:center; align-items:center; gap:18px; font-size:16px; margin:14px 0 0;"></div>
+    <div id="freetry" hidden style="margin:12px 0 0; text-align:center;">
+      <button class="btn" id="ftbtn" style="margin:0 0 8px;"><i class="ti ti-flask"></i><span id="fttxt"></span></button>
+      <div id="ftrow" style="display:flex; justify-content:center; gap:7px; flex-wrap:wrap;"></div>
     </div>
     <div id="reveal"></div>
     <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
@@ -2516,7 +2516,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.30'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.31'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
