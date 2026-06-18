@@ -385,7 +385,7 @@ button.levelcard:active{transform:scale(0.99);}
     <p id="status"></p>
     <p id="micline" hidden style="font-size:14px; color:var(--muted); margin:-4px 0 8px; min-height:18px;"></p>
     <div id="wheelbox"><div id="wheel"></div></div>
-    <div class="stats">
+    <div class="stats" id="stats">
       <div class="stat"><p class="lbl" id="roundlbl"></p><p class="val" id="round">–</p></div>
       <div class="stat"><p class="lbl" id="bestlbl"></p><p class="val" id="best">0</p></div>
     </div>
@@ -1677,6 +1677,7 @@ function renderSig(){
 function render(){
  layout();
  $('controls').hidden=(game.kind==='tut'||game.kind==='casa'); // tutorial/intro casa: niente controlli, solo la lezione
+ $('stats').style.display=(game.kind==='tut'||game.kind==='casa')?'none':''; // lezioni: nessun punteggio (ROUND/RECORD)
  const wb=$('wheelbox');
  wb.style.background='transparent';
  const w=$('wheel'); w.innerHTML=''; micGlowed=-1;
@@ -2515,7 +2516,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.28'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.29'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
