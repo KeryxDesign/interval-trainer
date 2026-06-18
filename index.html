@@ -584,8 +584,8 @@ it:{
  casa1:"Questa è la tua <b>casa</b>. In musica è la nota da cui parti e a cui torni sempre. Toccala e ascoltala: questo è il suo suono.",
  casa2:"In ogni melodia parti da casa, ti allontani e torni qui. Senti come il ritorno si posa e respira? Casa è il tuo <b>posto sicuro</b>: sai sempre dove tornare, ed è questo che rende la musica meno spaventosa.",
  casa3:"A ogni suono diamo un <b>colore</b> e un <b>simbolo</b>. Ce li inventiamo noi, sono arbitrari. Ma a forza di rivederli il tuo orecchio impara ad associare la <b>sensazione</b> al suono: dopo un po' li riconoscerai senza pensarci.",
- casa4:"Ora che <b>senti casa</b>, cominciamo. A ogni livello aggiungiamo un nuovo suono, sempre intorno a lei: casa resta il punto a cui tornare.",
- casaNext:"Continua", casaListen:"Ascolta un'altra", casaStart:"Iniziamo", casaReplay:"Rivedi",
+ casa4:"Ora <b>prova tu</b>. Tocca i cerchi e inventa una melodia: <b>parti da casa</b>, gira tra i suoni e <b>torna a casa</b>. Senti come finire su casa dà la sensazione che la melodia sia <b>conclusa</b>. Quando sei pronto, passa al livello e divertiti.",
+ casaNext:"Continua", casaListen:"Ascolta un'altra", casaStart:"Sono pronto", casaReplay:"Rivedi",
  tasteIntro:k=>"Nuovo sapore: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Guarda il suo colore qui sotto e ascoltalo: a forza di rivederlo, lo riconoscerai a orecchio.",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
@@ -751,8 +751,8 @@ en:{
  casa1:"This is your <b>home</b>. In music it's the note you start from and always return to. Tap it and listen: this is its sound.",
  casa2:"In every melody you leave home, wander, and come back here. Feel how the return settles and breathes? Home is your <b>safe place</b>: you always know where to return, and that's what makes music less scary.",
  casa3:"We give every sound a <b>color</b> and a <b>symbol</b>. We make them up, they're arbitrary. But by seeing them again and again your ear learns to link the <b>feeling</b> to the sound: after a while you'll know them without thinking.",
- casa4:"Now that you <b>feel home</b>, let's begin. Each level adds a new sound, always around it: home stays the point you return to.",
- casaNext:"Continue", casaListen:"Hear another", casaStart:"Let's start", casaReplay:"Replay",
+ casa4:"Now <b>try it yourself</b>. Tap the circles and make a melody: <b>start from home</b>, wander between the sounds and <b>come back home</b>. Feel how ending on home gives the sense the melody is <b>finished</b>. When you're ready, move on to the level and have fun.",
+ casaNext:"Continue", casaListen:"Hear another", casaStart:"I'm ready", casaReplay:"Replay",
  tasteIntro:k=>"New flavor: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Look at its color below and listen: by seeing it again and again, you'll know it by ear.",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
@@ -1321,22 +1321,20 @@ function tutAllow(arr){
  document.querySelectorAll('#wheel .key').forEach(b=>{const k=+b.id.slice(1); b.style.opacity=(arr.length===0||arr.includes(k))?'1':'0.3';});
 }
 // presentazione grafica del tutorial: icona-illustrazione + testo + note coi colori
-function tutMsg(ic, bg, fg, text, notes){
+function tutMsg(ic, bg, fg, text, notes){ // solo testo: le note si vedono sulla ruota sotto (niente doppioni)
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
- const chips=(notes||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
- b.innerHTML='<div class="tut-ill" style="background:'+(bg||'var(--surface2)')+';color:'+(fg||'var(--gold)')+'"><i class="ti ti-'+ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'');
- anim(b,'tutIn .4s ease both',0); anim(b.querySelector('.tut-ill'),'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',60);
+ b.innerHTML='<p class="tut-txt">'+text+'</p>';
+ anim(b,'tutIn .4s ease both',0);
 }
-// ===== Lezione narrata (riusa #tutbox): schermata con illustrazione + testo + chip note + bottoni =====
+// ===== Lezione narrata (riusa #tutbox): solo testo + bottoni; le note stanno sulla ruota sotto =====
 function lessonShow(o){
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
- const chips=(o.chips||[]).map(k=>'<div class="tut-chip"><span class="c" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'" style="font-size:22px"></i></span><small>'+NOTE[(root+k)%12]+'</small></div>').join('');
- let btns='<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px">';
+ let btns='<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px">';
  if(o.secondary) btns+='<button class="btn" id="lsec"><i class="ti ti-volume"></i><span>'+o.secondary.label+'</span></button>';
  if(o.primary) btns+='<button class="btn primary" id="lpri"><span>'+o.primary.label+'</span></button>';
  btns+='</div>';
- b.innerHTML='<div class="tut-ill" style="background:'+(o.bg||'var(--surface2)')+';color:'+(o.fg||'var(--gold)')+'"><i class="ti ti-'+o.ic+'" style="font-size:38px"></i></div><p class="tut-txt">'+o.text+'</p>'+(chips?'<div class="tut-chips">'+chips+'</div>':'')+btns;
- anim(b,'tutIn .4s ease both',0); anim(b.querySelector('.tut-ill'),'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',60);
+ b.innerHTML='<p class="tut-txt">'+o.text+'</p>'+btns;
+ anim(b,'tutIn .4s ease both',0);
  if(o.primary)$('lpri').addEventListener('click',o.primary.fn);
  if(o.secondary)$('lsec').addEventListener('click',o.secondary.fn);
 }
@@ -1353,7 +1351,7 @@ function startCasa(){
  render(); clearCenter(); // render nasconde #controls per la casa
  casaStep(1);
 }
-function casaPress(k){ if(casaS>=3) return; ensureCtx(); flash(k,360,true); tone(60+k,0.5); } // nei primi passi tocca casa per riascoltarla
+function casaPress(k){ ensureCtx(); flash(k,360,true); tone(60+k,0.5); } // tocca i cerchi per suonare (intro + sandbox finale)
 let casaPhrase=0;
 const CASA_PHRASES=[[0,4,7,4,0],[0,2,4,2,0],[0,7,9,7,0],[0,9,7,4,0]]; // piccole melodie pentatoniche che TORNANO a casa
 function casaReturn(){ ensureCtx(); clearTimers(); const sq=CASA_PHRASES[casaPhrase%CASA_PHRASES.length]; casaPhrase++; let t=220;
@@ -1365,9 +1363,9 @@ function casaStep(n){
  else if(n===2){ tutAllow([0]); casaReturn();
   lessonShow({ic:'walk', text:S9.casa2, chips:[0], secondary:{label:S9.casaListen, fn:casaReturn}, primary:{label:S9.casaNext, fn:()=>casaStep(3)}}); }
  else if(n===3){ tutAllow([0]);
-  lessonShow({ic:'palette', text:S9.casa3, chips:[0], primary:{label:S9.casaNext, fn:()=>casaStep(4)}}); }
- else if(n===4){ localStorage.setItem('hm_casa_done','1'); tutAllow([0]);
-  lessonShow({ic:'player-play', text:S9.casa4, chips:[0], primary:{label:S9.casaStart, fn:()=>{ if(!localStorage.getItem('hm_tut_done')) startTutorial(); else startLevel('pent',0,0,true); }}}); }
+  lessonShow({text:S9.casa3, primary:{label:S9.casaNext, fn:()=>casaStep(4)}}); }
+ else if(n===4){ localStorage.setItem('hm_casa_done','1'); tutAllow([]); clearTimers(); // SANDBOX: ruota libera, inventa melodie che partono e tornano a casa
+  lessonShow({text:S9.casa4, primary:{label:S9.casaStart, fn:()=>{ if(!localStorage.getItem('hm_tut_done')) startTutorial(); else startLevel('pent',0,0,true); }}}); }
 }
 // ===== Assaggio guidato di ogni nuova nota (alla prima apertura del livello) =====
 function tasteNotes(c,w){ return CWADD[c][w].filter(k=>k!==0); } // la tonica e' gia' la casa
@@ -1375,11 +1373,11 @@ function needTaste(c,w){ return tasteNotes(c,w).length>0 && !localStorage.getIte
 function playTaste(k){ ensureCtx(); flash(k,470,true); tone(60+k,0.6); }
 function showTaste(c,w,then){
  const ks=tasteNotes(c,w), k=ks[0];
- $('controls').hidden=true; $('goalbar').hidden=true;
+ $('controls').hidden=true; $('goalbar').hidden=true; tutAllow(ks); // evidenzia la nuova nota sulla ruota (le altre sbiadite)
  timers.push(setTimeout(()=>playTaste(k),320));
- lessonShow({ic:C[k].ic, bg:C[k].h, fg:ink(k), text:S9.tasteIntro(k), chips:ks,
-  secondary:{label:S9.casaListen, fn:()=>playTaste(k)},
-  primary:{label:S9.casaNext, fn:()=>{ localStorage.setItem('hm_taste_'+c+'_'+w,'1'); $('tutbox').hidden=true; $('status').hidden=false; $('controls').hidden=false; then(); }}});
+ lessonShow({text:S9.tasteIntro(k),
+  secondary:{label:S9.rehear, fn:()=>playTaste(k)},
+  primary:{label:S9.casaNext, fn:()=>{ localStorage.setItem('hm_taste_'+c+'_'+w,'1'); tutAllow([]); $('tutbox').hidden=true; $('status').hidden=false; $('controls').hidden=false; then(); }}});
 }
 function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
@@ -2517,7 +2515,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.27'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.28'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
