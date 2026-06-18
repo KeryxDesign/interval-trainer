@@ -586,6 +586,7 @@ it:{
  casa3:"A ogni suono diamo un <b>colore</b> e un <b>simbolo</b>. Ce li inventiamo noi, sono arbitrari. Ma a forza di rivederli il tuo orecchio impara ad associare la <b>sensazione</b> al suono: dopo un po' li riconoscerai senza pensarci.",
  casa4:"Ora <b>prova tu</b>. Tocca i cerchi e inventa una melodia: <b>parti da casa</b>, gira tra i suoni e <b>torna a casa</b>. Senti come finire su casa dà la sensazione che la melodia sia <b>conclusa</b>. Quando sei pronto, passa al livello e divertiti.",
  casaNext:"Continua", casaListen:"Ascolta un'altra", casaStart:"Sono pronto", casaReplay:"Rivedi",
+ casaWinTitle:"Livello 0 superato!", casaWinSub:"Prima stella · casa sbloccata nel Libero",
  tasteIntro:k=>"Nuovo sapore: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Guarda il suo colore qui sotto e ascoltalo: a forza di rivederlo, lo riconoscerai a orecchio.",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
@@ -753,6 +754,7 @@ en:{
  casa3:"We give every sound a <b>color</b> and a <b>symbol</b>. We make them up, they're arbitrary. But by seeing them again and again your ear learns to link the <b>feeling</b> to the sound: after a while you'll know them without thinking.",
  casa4:"Now <b>try it yourself</b>. Tap the circles and make a melody: <b>start from home</b>, wander between the sounds and <b>come back home</b>. Feel how ending on home gives the sense the melody is <b>finished</b>. When you're ready, move on to the level and have fun.",
  casaNext:"Continue", casaListen:"Hear another", casaStart:"I'm ready", casaReplay:"Replay",
+ casaWinTitle:"Level 0 complete!", casaWinSub:"First star · home unlocked in Free play",
  tasteIntro:k=>"New flavor: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Look at its color below and listen: by seeing it again and again, you'll know it by ear.",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
@@ -886,9 +888,10 @@ function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
-function courseStars(c){let t=0; S9.courses[c].levels.forEach((_,w)=>t+=levelStars(c,w)); return t;} // somma capata (A orecchio max 1)
+function casaStar(c){return (c===COURSE_IDS[0]&&localStorage.getItem('hm_casa_done'))?1:0;} // Livello 0 "La casa" vale 1 stella nel corso iniziale
+function courseStars(c){let t=casaStar(c); S9.courses[c].levels.forEach((_,w)=>t+=levelStars(c,w)); return t;} // somma capata (A orecchio max 1)
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
-function courseMaxStars(c){return S9.courses[c].levels.length*7;}
+function courseMaxStars(c){return S9.courses[c].levels.length*7+(c===COURSE_IDS[0]?1:0);}
 function courseEliteDone(c){let n=0; S9.courses[c].levels.forEach((_,w)=>{if(localStorage.getItem('hm_elite_'+c+'_'+w))n++;}); return n;}
 function bossDone(c){return !!localStorage.getItem('hm_boss_'+c);}
 function totalElite(){let n=0; COURSE_IDS.forEach(c=>n+=courseEliteDone(c)); return n;}
@@ -1195,12 +1198,13 @@ function setupCardFree(c, page){
  clearTimers(); stopAllHeld(); stopMic();
  const slot=page.querySelector('.gameslot'); if(!slot) return;
  const gp=$('gamepanel'); gp.classList.add('incard'); slot.appendChild(gp);
- const notes=unlockedNotes(c);
+ let notes=unlockedNotes(c);
+ if(c===COURSE_IDS[0] && !localStorage.getItem('hm_casa_done')) notes=notes.filter(k=>k!==0); // casa nel Libero solo dopo il Livello 0
  scale=courseScale(c); root=0; state='idle'; seq=[]; game={kind:'free', c:c, notes:notes, allNotes:SCALES[scale]}; resetSpeed();
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('tutbox').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap'); showDroneToggle(true);
  $('freetonic').value=String(root);
  $('bestlbl').textContent=S9.bestScale; $('round').textContent='–'; $('reveal').innerHTML='';
- if(notes.length<2){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
+ if(notes.length<1){ render(); clearCenter(); const prev=COURSE_IDS[COURSE_IDS.indexOf(c)-1]; setStatus((!unlockAll()&&!courseUnlocked(c)&&prev)?S9.lockCourse(S9.courses[prev].title):S9.freeNeedLevel,'err'); }
  else { setStatus(''); render(); loadBest(); }
  startDrone(); // drone disponibile anche nel libero inline
 }
@@ -1365,7 +1369,21 @@ function casaStep(n){
  else if(n===3){ tutAllow([0]);
   lessonShow({text:S9.casa3, primary:{label:S9.casaNext, fn:()=>casaStep(4)}}); }
  else if(n===4){ localStorage.setItem('hm_casa_done','1'); tutAllow([]); clearTimers(); // SANDBOX: ruota libera, inventa melodie che partono e tornano a casa
-  lessonShow({text:S9.casa4, primary:{label:S9.casaStart, fn:()=>{ if(!localStorage.getItem('hm_tut_done')) startTutorial(); else startLevel('pent',0,0,true); }}}); }
+  lessonShow({text:S9.casa4, primary:{label:S9.casaStart, fn:casaComplete}}); }
+}
+// fine Livello 0: prima stella + casa sbloccata nel Libero, poi torna alla Home (non salta al livello successivo)
+function casaComplete(){
+ localStorage.setItem('hm_casa_done','1');
+ clearTimers(); stopAllHeld(); stopDrone(); state='over';
+ $('celico').innerHTML='<div style="display:flex;gap:10px;align-items:center;justify-content:center">'
+  +'<div style="width:64px;height:64px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-star-filled" style="font-size:34px"></i></div>'
+  +'<div style="width:64px;height:64px;border-radius:50%;background:'+C[0].h+';display:flex;align-items:center;justify-content:center;color:'+ink(0)+ring(0)+'"><i class="ti ti-home" style="font-size:30px"></i></div>'
+  +'</div>';
+ $('celtitle').textContent=S9.casaWinTitle;
+ $('celname').innerHTML='<b>'+S9.casaCardTitle+'</b><br><span style="color:var(--gold);font-size:14px">'+S9.casaWinSub+'</span>';
+ $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevels();
+ $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 // ===== Assaggio guidato di ogni nuova nota (alla prima apertura del livello) =====
 function tasteNotes(c,w){ return CWADD[c][w].filter(k=>k!==0); } // la tonica e' gia' la casa
@@ -1534,7 +1552,7 @@ function renderPath(){
   if(c===COURSE_IDS[0]){ // entry fissa "La casa" in cima al percorso, sempre accessibile e ripetibile
    const cdone=!!localStorage.getItem('hm_casa_done');
    const cc=document.createElement('button'); cc.className='world levelcard casacard'+(cdone?'':' nuovo');
-   cc.innerHTML='<div class="whead"><span class="wname">0. '+S9.casaCardTitle+'</span><span class="wints"><span class="wint" style="background:'+C[0].h+';color:'+ink(0)+ring(0)+'"><i class="ti ti-home" style="font-size:13px"></i></span></span></div><p class="wsub">'+S9.casaCardSub+'</p><div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:8px">'+(cdone?'<span style="color:var(--muted);font-size:14px"><i class="ti ti-rotate-clockwise" style="font-size:13px;vertical-align:-2px"></i> '+S9.casaReplay+'</span>':'<span style="background:var(--gold);color:#14151a;font-size:11px;font-weight:800;border-radius:20px;padding:2px 9px">'+S9.casaNew+'</span>')+'<i class="ti ti-chevron-right" style="color:var(--muted);font-size:18px"></i></div>';
+   cc.innerHTML='<div class="whead"><span class="wname">0. '+S9.casaCardTitle+'</span><span class="wints"><span class="wint" style="background:'+C[0].h+';color:'+ink(0)+ring(0)+'"><i class="ti ti-home" style="font-size:13px"></i></span></span></div><p class="wsub">'+S9.casaCardSub+'</p><div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:8px">'+(cdone?'<span style="color:var(--gold);font-size:14px">★ 1/1</span><span style="color:var(--muted);font-size:14px"><i class="ti ti-rotate-clockwise" style="font-size:13px;vertical-align:-2px"></i> '+S9.casaReplay+'</span>':'<span style="background:var(--gold);color:#14151a;font-size:11px;font-weight:800;border-radius:20px;padding:2px 9px">'+S9.casaNew+'</span>')+'<i class="ti ti-chevron-right" style="color:var(--muted);font-size:18px"></i></div>';
    cc.addEventListener('click',startCasa); page.appendChild(cc);
   }
   S9.courses[c].levels.forEach((lv,i)=>{
@@ -2471,7 +2489,7 @@ $('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{
  const list=welList();
  if(welStep<list.length-1){welStep++; renderWelStep(); return;}
- if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; if(!localStorage.getItem('hm_casa_done')) startCasa(); else startTutorial(); }
+ if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startCasa(); }
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
@@ -2516,7 +2534,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.31'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.32'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
