@@ -580,13 +580,15 @@ it:{
  tutGo:"tocca a te: ripeti le due note",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
  tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
- casaTitle:"La casa", casaCardTitle:"La casa", casaCardSub:"Capisci la nota da cui tutto parte e a cui torni. 2 minuti.", casaNew:"Parti da qui",
- casa1:"Questa è la tua <b>casa</b>. In musica è la nota da cui parti e a cui torni sempre. Toccala e ascoltala: questo è il suo suono.",
- casa2:"In ogni melodia parti da casa, ti allontani e torni qui. Senti come il ritorno si posa e respira? Casa è il tuo <b>posto sicuro</b>: sai sempre dove tornare, ed è questo che rende la musica meno spaventosa.",
- casa3:"A ogni suono diamo un <b>colore</b> e un <b>simbolo</b>. Ce li inventiamo noi, sono arbitrari. Ma a forza di rivederli il tuo orecchio impara ad associare la <b>sensazione</b> al suono: dopo un po' li riconoscerai senza pensarci.",
- casa4:"Ora <b>prova tu</b>. Tocca i cerchi e inventa una melodia: <b>parti da casa</b>, gira tra i suoni e <b>torna a casa</b>. Senti come finire su casa dà la sensazione che la melodia sia <b>conclusa</b>. Quando sei pronto, passa al livello e divertiti.",
+ casaTitle:"La casa", casaCardTitle:"La casa", casaCardSub:"La tua prima nota: la casa. 2 minuti.", casaNew:"Parti da qui",
+ casa1:"Questa è la tua <b>casa</b>. È la nota di partenza. Toccala e ascolta com'è.",
+ casa2:"La musica parte da casa, si allontana e poi torna a casa. Senti? Tornare a casa fa stare bene. Casa è il tuo <b>posto sicuro</b>.",
+ casa3:"Ogni nota ha un <b>colore</b> e un <b>disegno</b>. Li scegliamo noi. Servono a ricordare i suoni.",
+ casa4:"Ora <b>tocca a te</b>! Fai una melodia: parti da casa e torna a casa. Senti com'è bello finire a casa. Quando vuoi, vai avanti.",
  casaNext:"Continua", casaListen:"Ascolta un'altra", casaStart:"Sono pronto", casaReplay:"Rivedi",
- casaWinTitle:"Livello 0 superato!", casaWinSub:"Prima stella · casa sbloccata nel Libero",
+ casaWinTitle:"Livello 0 fatto!", casaWinSub:"Prima stella · casa sbloccata nel Libero",
+ casaLoadTitle:"Livello 0 · La casa",
+ casaTips:["Casa è la nota di partenza. La musica torna sempre a lei.","Quando una melodia finisce a casa, sembra finita davvero.","Parti da casa, gira un po' e torna a casa."],
  tasteIntro:k=>"Nuovo sapore: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Guarda il suo colore qui sotto e ascoltalo: a forza di rivederlo, lo riconoscerai a orecchio.",
  unlockTitle:"Nuovo livello sbloccato!",
  winTitle:"Hai superato il livello!", winUnlock:"Livello successivo sbloccato!",
@@ -748,13 +750,15 @@ en:{
  tutGo:"your turn: repeat the two notes",
  tutRetry:"No, the first one was home (the red one). Try again.",
  tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
- casaTitle:"Home", casaCardTitle:"Home", casaCardSub:"Get the note everything starts from and returns to. 2 minutes.", casaNew:"Start here",
- casa1:"This is your <b>home</b>. In music it's the note you start from and always return to. Tap it and listen: this is its sound.",
- casa2:"In every melody you leave home, wander, and come back here. Feel how the return settles and breathes? Home is your <b>safe place</b>: you always know where to return, and that's what makes music less scary.",
- casa3:"We give every sound a <b>color</b> and a <b>symbol</b>. We make them up, they're arbitrary. But by seeing them again and again your ear learns to link the <b>feeling</b> to the sound: after a while you'll know them without thinking.",
- casa4:"Now <b>try it yourself</b>. Tap the circles and make a melody: <b>start from home</b>, wander between the sounds and <b>come back home</b>. Feel how ending on home gives the sense the melody is <b>finished</b>. When you're ready, move on to the level and have fun.",
+ casaTitle:"Home", casaCardTitle:"Home", casaCardSub:"Your first note: home. 2 minutes.", casaNew:"Start here",
+ casa1:"This is your <b>home</b>. It's the starting note. Tap it and hear it.",
+ casa2:"Music starts at home, goes away, then comes back home. Feel it? Coming home feels good. Home is your <b>safe place</b>.",
+ casa3:"Every note has a <b>color</b> and a <b>shape</b>. We pick them. They help you remember the sounds.",
+ casa4:"Now <b>your turn</b>! Make a tune: start at home and come back home. Feel how nice it is to end at home. Go on when you want.",
  casaNext:"Continue", casaListen:"Hear another", casaStart:"I'm ready", casaReplay:"Replay",
- casaWinTitle:"Level 0 complete!", casaWinSub:"First star · home unlocked in Free play",
+ casaWinTitle:"Level 0 done!", casaWinSub:"First star · home unlocked in Free play",
+ casaLoadTitle:"Level 0 · Home",
+ casaTips:["Home is the starting note. Music always comes back to it.","When a tune ends at home, it feels finished.","Start at home, wander a bit, come back home."],
  tasteIntro:k=>"New flavor: <b>"+cap(S9.NM[k])+"</b> ("+IV[k]+" · "+DEG[k]+"). "+paras(S9.TH[k])[0]+" Look at its color below and listen: by seeing it again and again, you'll know it by ear.",
  unlockTitle:"New level unlocked!",
  winTitle:"Level complete!", winUnlock:"Next level unlocked!",
@@ -1553,7 +1557,7 @@ function renderPath(){
    const cdone=!!localStorage.getItem('hm_casa_done');
    const cc=document.createElement('button'); cc.className='world levelcard casacard'+(cdone?'':' nuovo');
    cc.innerHTML='<div class="whead"><span class="wname">0. '+S9.casaCardTitle+'</span><span class="wints"><span class="wint" style="background:'+C[0].h+';color:'+ink(0)+ring(0)+'"><i class="ti ti-home" style="font-size:13px"></i></span></span></div><p class="wsub">'+S9.casaCardSub+'</p><div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:8px">'+(cdone?'<span style="color:var(--gold);font-size:14px">★ 1/1</span><span style="color:var(--muted);font-size:14px"><i class="ti ti-rotate-clockwise" style="font-size:13px;vertical-align:-2px"></i> '+S9.casaReplay+'</span>':'<span style="background:var(--gold);color:#14151a;font-size:11px;font-weight:800;border-radius:20px;padding:2px 9px">'+S9.casaNew+'</span>')+'<i class="ti ti-chevron-right" style="color:var(--muted);font-size:18px"></i></div>';
-   cc.addEventListener('click',startCasa); page.appendChild(cc);
+   cc.addEventListener('click',()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})); page.appendChild(cc);
   }
   S9.courses[c].levels.forEach((lv,i)=>{
    const lvOpen=worldUnlocked(c,i);
@@ -2203,6 +2207,7 @@ function tipSentences(html){return stripTags(html).split(/(?<=[.!?…])\s+/).map
 function distTip(k){return {ic:'stairs-up',cat:S9.tipDist,t:cap(S9.NM[k])+' · '+IV[k]+' ('+INM[k]+'): '+k+' '+S9.semitones+' ('+tonesStr(k)+' '+S9.toneW+') '+S9.fromTonic};}
 // consiglio di caricamento CONTESTUALE: ruolo della nota, distanza in semitoni/toni, curiosita' sulla scala (+ qualche generico)
 function loadingTip(ctx){
+ if(ctx&&ctx.casa){ const t=S9.casaTips[Math.floor(Math.random()*S9.casaTips.length)]; return {ic:'home',cat:S9.tipPractical,t}; }
  const g=S9.tips[Math.floor(Math.random()*S9.tips.length)], gen={ic:g.ic,cat:g.s?S9.tipScience:S9.tipPractical,t:g.t};
  const c=ctx?ctx.c:(game.kind==='level'?game.c:null);
  const w=ctx?ctx.w:(game.kind==='level'?game.w:null);
@@ -2222,7 +2227,7 @@ function loadingTip(ctx){
 }
 function showLoading(cb,ctx){
  const tip=loadingTip(ctx);
- const lvTitle = ctx ? (ctx.w!=null ? (S9.level+' '+(ctx.w+1)+' · '+plainNames(ctx.c,ctx.w)) : S9.courses[ctx.c].title)
+ const lvTitle = ctx ? (ctx.casa ? S9.casaLoadTitle : ctx.w!=null ? (S9.level+' '+(ctx.w+1)+' · '+plainNames(ctx.c,ctx.w)) : S9.courses[ctx.c].title)
                      : (game.kind==='level' ? (S9.level+' '+(game.w+1)+' · '+plainNames(game.c,game.w)) : '');
  $('pr-level').textContent=lvTitle;
  $('pr-icon').innerHTML='<i class="ti ti-'+tip.ic+'"></i>';
@@ -2489,7 +2494,7 @@ $('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{
  const list=welList();
  if(welStep<list.length-1){welStep++; renderWelStep(); return;}
- if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; startCasa(); }
+ if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); }
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
@@ -2534,7 +2539,7 @@ applyFont();
 applyStatic();
 showLevels();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.32'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.33'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
