@@ -182,6 +182,8 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .secacc summary{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--gold); cursor:pointer; padding:14px 16px; list-style:none; display:flex; align-items:center; justify-content:space-between;}
 .secacc summary::-webkit-details-marker{display:none;}
 .secacc summary i{color:var(--muted); font-size:18px; transition:transform .15s;}
+.secacc summary.coursesum{text-transform:none; color:var(--text); padding:8px 4px; justify-content:center; gap:8px;}
+.secacc summary.coursesum .secname{margin:0;}
 .secacc[open] summary i{transform:rotate(180deg);}
 .secacc .secdesc{padding:0 16px 16px; font-size:15px; line-height:1.6; color:var(--muted); margin:0;}
 #methodbody h4{font-size:16px; font-weight:700; color:var(--gold); margin:14px 0 5px;}
@@ -1632,12 +1634,11 @@ function renderPath(){
    +'<span class="medal"><i class="ti ti-star-filled" style="color:var(--gold)"></i> '+courseStars(c)+'/'+courseMaxStars(c)+'</span>'
    +'<span class="medal"><i class="ti ti-skull" style="color:'+(eD>0?'var(--gold)':'var(--muted)')+'"></i> '+eD+'/'+eT+'</span>'
    +'</div>';
-  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
-   '<div class="gameslot"></div>'+
-   '<details class="secacc" open><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
+  let sh='<details class="secacc"><summary class="coursesum"><h2 class="secname">'+S9.courses[c].title+'</h2><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
     '<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>'+
     (MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
-   '</details>';
+   '</details>'+medals+
+   '<div class="gameslot"></div>';
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   page.innerHTML=sh;
   { // la teoria (anteprima scala + assaggia + esempi) e' sempre accessibile, anche a corso bloccato
@@ -2703,7 +2704,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.49'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.50'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
