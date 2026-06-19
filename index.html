@@ -146,6 +146,11 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .medalcell.on .mic{background:var(--gold); color:#14151a;}
 .medalcell small{font-size:11px; line-height:1.15; color:var(--muted);}
 .medalcell.on small{color:var(--text);}
+.nextcard{width:100%; text-align:left; border:none; border-radius:16px; cursor:pointer; padding:16px 18px; background:linear-gradient(135deg,var(--gold),#d99818); color:#14151a;}
+.nextcard:active{transform:scale(0.99);}
+.nextcard .nlabel{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; opacity:.7;}
+.nextcard .ntitle{font-size:19px; font-weight:800; margin-top:3px; display:flex; align-items:center; gap:8px;}
+.nextcard .nsub{font-size:14px; opacity:.8; margin-top:2px;}
 .coursepage.locked .secname{color:var(--muted);}
 .gameslot{margin:0 0 6px;}
 .accwheel{margin-top:6px;}
@@ -288,11 +293,11 @@ button.levelcard:active{transform:scale(0.99);}
     <div class="dashhead">
       <div id="emblem" aria-hidden="true" style="cursor:pointer"></div>
       <p id="hname" style="cursor:pointer">Huermony</p>
-      <i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer; margin-right:6px;"></i>
-      <div class="lang" id="hlang"><button data-l="it">IT</button><button data-l="en">EN</button></div>
+      <i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i>
     </div>
     <p id="htag"></p>
     <div id="streak" hidden></div>
+    <div id="nextbox" style="margin:8px 0 6px;"></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
@@ -303,10 +308,10 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="dash-studied" hidden></div>
     <div id="allenabox" style="margin:8px 0 4px;"></div>
     <div id="medalsbox" style="margin:4px 0 8px;"></div>
-    <button id="hplay"><i class="ti ti-player-play"></i><span id="hplaytxt"></span></button>
-    <p id="hprog"></p>
-    <button class="btn" id="htut"><i class="ti ti-school"></i><span id="htuttxt"></span></button>
-    <button id="hguide"></button>
+  </div>
+
+  <div id="view-settings" hidden>
+    <div class="lang" id="hlang" style="justify-content:center; margin:0 0 18px;"><button data-l="it">IT</button><button data-l="en">EN</button></div>
     <div id="timbrebox">
       <p id="timbrelbl"></p>
       <div id="timbres"></div>
@@ -316,22 +321,22 @@ button.levelcard:active{transform:scale(0.99);}
       <p class="setrowlbl" id="fontlbl"></p>
       <div id="fontsizes"></div>
     </div>
+    <label id="unlockrow" style="margin-top:18px;"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
     <div id="dangerbox" style="margin-top:22px;">
       <button class="btn" id="resetdata" style="width:100%; justify-content:center; color:#e24b4a; border-color:rgba(226,75,74,.4);"><i class="ti ti-trash"></i><span id="resetlbl"></span></button>
     </div>
   </div>
 
   <nav class="tabs" id="tabs" hidden>
-    <button class="tab" id="tab-home"><i class="ti ti-home"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-corso"><i class="ti ti-stairs-up"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-free"><i class="ti ti-music"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-guide"><i class="ti ti-help"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-theory"><i class="ti ti-book"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-profile"><i class="ti ti-user"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-home"><i class="ti ti-home"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-guide"><i class="ti ti-book"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-settings"><i class="ti ti-settings"></i><span class="tablbl"></span></button>
   </nav>
 
   <div id="view-levels" hidden>
     <div id="path"></div>
-    <label id="unlockrow"><input type="checkbox" id="unlockall" style="width:14px; height:14px;"> <span id="unlocktxt"></span></label>
   </div>
 
   <div id="view-leveldetail" hidden>
@@ -357,6 +362,9 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="guide-intro"></div>
     <button class="btn" id="tutbtn"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
     <div id="guide"></div>
+    <details id="methodbox" class="secacc" style="margin:18px 0 16px;"><summary><span id="methodsum"></span><i class="ti ti-chevron-down"></i></summary><div id="methodbody" style="padding:0 16px 16px;"></div></details>
+    <p id="thintro" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 14px;"></p>
+    <div id="theory"></div>
   </div>
 
   <div id="view-game" hidden>
@@ -407,11 +415,6 @@ button.levelcard:active{transform:scale(0.99);}
     </div>
   </div>
 
-  <div id="view-theory" hidden>
-    <details id="methodbox" class="secacc" style="margin:0 0 16px;"><summary><span id="methodsum"></span><i class="ti ti-chevron-down"></i></summary><div id="methodbody" style="padding:0 16px 16px;"></div></details>
-    <p id="thintro" style="font-size:15px; line-height:1.6; color:var(--text); margin:0 0 14px;"></p>
-    <div id="theory"></div>
-  </div>
 </div>
 <div id="welcome" hidden style="position:fixed; inset:0; background:var(--bg); display:flex; overflow-y:auto; z-index:60; max-width:480px; margin:0 auto;">
   <div id="wel-inner" style="margin:auto; display:flex; flex-direction:column; align-items:center; text-align:center; padding:40px 28px; width:100%;">
@@ -489,7 +492,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
+ tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", tabCorso:"Corso", tabSettings:"Opzioni", nextLabel:"Prossimo esercizio", nextDone:"Hai finito tutto! Prova una sfida.", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
  famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
@@ -663,7 +666,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
+ tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", tabCorso:"Course", tabSettings:"Options", nextLabel:"Next exercise", nextDone:"All done! Try a challenge.", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pillar",c:"Color",t:"Tension"},
  famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
@@ -923,11 +926,11 @@ function totalEliteMax(){let n=0; COURSE_IDS.forEach(c=>n+=S9.courses[c].levels.
 function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); return n;}
 
 function applyStatic(){
- $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
+ $('tab-corso').querySelector('.tablbl').textContent=S9.tabCorso;
  $('tab-free').querySelector('.tablbl').textContent=S9.tabs[1];
+ $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
  $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
- $('tab-theory').querySelector('.tablbl').textContent=S9.tabs[2];
- $('tab-profile').querySelector('.tablbl').textContent=S9.tabProfile;
+ $('tab-settings').querySelector('.tablbl').textContent=S9.tabSettings;
  updateUnlockLabel();
  $('wel-skip').textContent=S9.welSkip;
  $('mictxt').textContent=S9.mic;
@@ -1014,8 +1017,6 @@ function applyStatic(){
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
  $('htag').textContent=S9.dashTag;
  $('m-stars-l').textContent=S9.mStars; $('m-elite-l').textContent=S9.mElite; $('m-boss-l').textContent=S9.mBoss; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
- $('hguide').textContent=S9.dashGuide;
- $('htuttxt').textContent=S9.tutBtn;
  $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="heroq">'+S9.guideQ+'</div><div class="heropts">'+S9.guidePts.map(p=>'<div class="hp"><i class="ti ti-'+p.ic+'"></i><span>'+p.t+'</span></div>').join('')+'</div>';
  renderDashboard();
 }
@@ -1027,15 +1028,16 @@ function setView(name){
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
- $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail');
- $('brand').textContent = name==='theory'?S9.tabs[2] : name==='guide'?S9.tabs[3] : S9.courseMode;
+ $('view-settings').hidden=name!=='settings';
+ $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail'||name==='settings');
+ $('brand').textContent = name==='guide'?S9.tabs[3] : S9.courseMode;
  $('tabs').hidden=false;
- ['levels','theory','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
+ ['levels','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
- // mappa vista -> tab da evidenziare: Home=livelli, Profilo=dashboard
- const tabFor={levels:'home', leveldetail:'home', free:'free', guide:'guide', theory:'theory', home:'profile'};
+ // tab attivo: Corso=livelli, Home(centro)=dashboard, Impostazioni=settings
+ const tabFor={levels:'corso', leveldetail:'corso', free:'free', guide:'guide', home:'home', settings:'settings'};
  const ta=tabFor[name]||name;
- ['home','free','guide','theory','profile'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ ['corso','free','home','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
  scrollTop();
 }
 // ogni cambio pagina riparte dall'alto
@@ -1119,9 +1121,25 @@ function renderDashboard(){
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
- $('hplaytxt').textContent=totalGames()>0?S9.contCta:S9.startCta;
- renderAllena(); renderMedals();
- renderTimbres(); renderSettings();
+ renderNext(); renderAllena(); renderMedals();
+}
+function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
+ if(!localStorage.getItem('hm_casa_done')) return {casa:true};
+ for(const c of COURSE_IDS){ if(!(unlockAll()||courseUnlocked(c))) break;
+  for(let w=0; w<S9.courses[c].levels.length; w++){ if(!(unlockAll()||worldUnlocked(c,w))) break;
+   if(!localStorage.getItem('hm_elite_'+c+'_'+w)){ for(let m=0;m<3;m++){ if(starsOf(c,w,m)===0) return {c:c,w:w,m:m}; } return {c:c,w:w,boss:true}; }
+  } }
+ return null;
+}
+function renderNext(){
+ const box=$('nextbox'); if(!box) return;
+ const nx=nextExercise(); let title, sub, ic, fn;
+ if(!nx){ box.innerHTML='<button class="nextcard"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-calendar-star"></i> '+S9.dailyTitle+'</div><div class="nsub">'+S9.nextDone+'</div></button>'; box.querySelector('.nextcard').addEventListener('click',()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle})); return; }
+ if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); }
+ else if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
+ else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
+ box.innerHTML='<button class="nextcard"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></button>';
+ box.querySelector('.nextcard').addEventListener('click',fn);
 }
 function renderAllena(){
  const box=$('allenabox'); if(!box) return;
@@ -1321,7 +1339,7 @@ function renderWelStep(){
 }
 // retrigger affidabile di una CSS animation
 function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
-function showTheory(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('theory');}
+function showSettings(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderTimbres(); renderSettings(); setView('settings');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
 function startLevel(c,w,m,skipLoading){
  if(m===1){ if(skipLoading) beginNormale(c,w); else showLoading(()=>beginNormale(c,w),{c:c,w:w}); return; } // Normale = ricostruzione vista
@@ -1347,11 +1365,11 @@ function setStatus(txt,cls){
  st.hidden=!txt;
  if(typeof txt==='string'&&txt.indexOf('<')<0) st.textContent=txt; else st.innerHTML=txt;
 }
-$('tab-home').addEventListener('click',showLevels);
+$('tab-corso').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
-$('tab-theory').addEventListener('click',showTheory);
+$('tab-home').addEventListener('click',showHome);
 $('tab-guide').addEventListener('click',showGuide);
-$('tab-profile').addEventListener('click',showHome);
+$('tab-settings').addEventListener('click',showSettings);
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
@@ -1361,11 +1379,6 @@ $('backbtn').addEventListener('click',function(){
 });
 $('ld-back').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showLevels);
-$('hplay').addEventListener('click',()=>{
- if(totalStars()===0&&!localStorage.getItem('hm_tut_done')) showWelcome(); else showLevels();
-});
-$('hguide').addEventListener('click',showGuide);
-$('htut').addEventListener('click',showWelcome);
 $('emblem').addEventListener('click',openProfile);
 $('hname').addEventListener('click',openProfile);
 $('hedit').addEventListener('click',openProfile);
@@ -2653,9 +2666,9 @@ document.addEventListener('keydown',e=>{
 });
 applyFont();
 applyStatic();
-showLevels();
+showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.41'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.42'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
