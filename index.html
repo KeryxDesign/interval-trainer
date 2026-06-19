@@ -317,9 +317,7 @@ button.levelcard:active{transform:scale(0.99);}
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
-      <div class="metric"><div class="mv" id="m-boss">0</div><div class="ml" id="m-boss-l"></div></div>
       <div class="metric"><div class="mv" id="m-levels">0</div><div class="ml" id="m-levels-l"></div></div>
-      <div class="metric"><div class="mv" id="m-games">0</div><div class="ml" id="m-games-l"></div></div>
     </div>
     <div id="dash-studied" hidden></div>
     <div id="allenabox" style="margin:0 0 8px;"></div>
@@ -1032,7 +1030,7 @@ function applyStatic(){
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
  $('htag').textContent=S9.dashTag;
- $('m-stars-l').textContent=S9.mStars; $('m-elite-l').textContent=S9.mElite; $('m-boss-l').textContent=S9.mBoss; $('m-levels-l').textContent=S9.mLevels; $('m-games-l').textContent=S9.mGames;
+ $('m-stars-l').innerHTML='<i class="ti ti-star-filled" style="color:var(--gold)"></i> '+S9.mStars; $('m-elite-l').innerHTML='<i class="ti ti-skull" style="color:var(--gold)"></i> '+S9.mElite; $('m-levels-l').textContent=S9.mLevels;
  $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="heroq">'+S9.guideQ+'</div><div class="heropts">'+S9.guidePts.map(p=>'<div class="hp"><i class="ti ti-'+p.ic+'"></i><span>'+p.t+'</span></div>').join('')+'</div>';
  renderDashboard();
 }
@@ -1127,9 +1125,7 @@ function renderDashboard(){
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
  $('m-stars').textContent=totalStars();
  $('m-elite').textContent=totalElite()+'/'+totalEliteMax(); // Boss battuti (uno per livello)
- { const mb=$('m-boss'); if(mb&&mb.closest('.metric')) mb.closest('.metric').style.display='none'; } // via il vecchio conteggio boss-corso
  $('m-levels').textContent=completedLevels();
- $('m-games').textContent=totalGames();
  const stk=getStreak(); const sd=$('streak');
  if(stk>0){sd.hidden=false; sd.innerHTML='<i class="ti ti-flame"></i> '+S9.streak(stk);}
  else sd.hidden=true;
@@ -2694,7 +2690,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.46'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.47'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
