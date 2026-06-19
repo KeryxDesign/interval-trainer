@@ -313,6 +313,9 @@ button.levelcard:active{transform:scale(0.99);}
 .pnwrap{display:flex; flex-direction:column; align-items:center; position:relative;}
 .pnwrap::before{content:""; width:0; height:24px; border-left:3px dashed var(--line);}
 .pnwrap.first::before{display:none;}
+.pninner{display:flex; flex-direction:column; align-items:center;}
+.pnwrap.left .pninner{transform:translateX(-68px);}
+.pnwrap.right .pninner{transform:translateX(68px);}
 .pnode{width:70px; height:70px; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; color:#fff; padding:0; line-height:1;}
 .pnode i.pic{font-size:30px;}
 .pnode:active{transform:scale(0.95);}
@@ -1706,20 +1709,22 @@ function renderPath(){
  const box=$('path'); box.innerHTML='';
  const nx=nextExercise();
  const isNext=o=>nx&&((nx.casa&&o.casa)||(!nx.casa&&!o.casa&&nx.c===o.c&&nx.w===o.w&&((nx.boss&&o.boss)||(!nx.boss&&!o.boss&&nx.m===o.m))));
- let nextEl=null, first=true;
+ let nextEl=null, first=true, zz=0;
  const board=document.createElement('div'); board.className='board'; box.appendChild(board);
  const colOf=k=>C[k].h+';color:'+ink(k)+ring(k);
- function node(o){ // {color,ic,locked,next,label,stars,diff,onClick} -> ritorna il .pnode
-  const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':''); first=false;
+ function node(o){ // {color,ic,locked,next,label,stars,diff,onClick} -> ritorna il .pnode ; zigzag sx/dx attorno alla spina centrale
+  const side=(zz++%2===0)?' left':' right';
+  const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
+  const inner=document.createElement('div'); inner.className='pninner';
   const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'')+(o.next?' next':'');
   if(!o.locked&&o.color) btn.style.cssText='background:'+o.color;
   btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic"></i>'+(o.diff!=null&&!o.locked?'<span class="diff">'+[0,1,2].map(d=>'<i class="'+(d<=o.diff?'on':'')+'"></i>').join('')+'</span>':'');
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
   if(o.next) nextEl=btn;
-  wrap.appendChild(btn);
-  if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; wrap.appendChild(l); }
-  if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; wrap.appendChild(s); }
-  board.appendChild(wrap); return btn;
+  inner.appendChild(btn);
+  if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
+  if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; inner.appendChild(s); }
+  wrap.appendChild(inner); board.appendChild(wrap); return btn;
  }
  COURSE_IDS.forEach(c=>{
   const cOpen=unlockAll()||courseUnlocked(c);
@@ -2767,7 +2772,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.54'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.55'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
