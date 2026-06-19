@@ -41,11 +41,15 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 /* tip random */
 .tipcard{display:flex; align-items:flex-start; gap:10px; background:var(--surface2); border-radius:14px; padding:14px 16px; font-size:14px; line-height:1.5; color:var(--text);}
 .tipcard i{color:var(--gold); font-size:19px; flex:0 0 auto; margin-top:1px;}
-.dashsec{font-size:13px; color:var(--muted); font-weight:700; margin:26px 0 10px; text-transform:uppercase; letter-spacing:.5px;}
+.dashsec{display:flex; align-items:center; gap:12px; font-size:16px; color:var(--text); font-weight:800; margin:32px 0 16px; text-transform:uppercase; letter-spacing:.6px; text-align:center;}
+.dashsec::before,.dashsec::after{content:""; flex:1; height:2px; background:var(--line); border-radius:2px;}
+#medalinfo{margin-top:14px; text-align:center; font-size:14px; line-height:1.45; color:var(--muted);}
+#medalinfo b{color:var(--text);}
 .edot{position:absolute; width:12px; height:12px; border-radius:50%;}
-.dashhead{display:flex; align-items:center; gap:12px; margin:4px 0 18px;}
-.dashhead #emblem{position:relative; width:46px; height:46px; flex:0 0 auto;}
-#hname{font-size:24px; font-weight:700; letter-spacing:-0.02em; margin:0; flex:1;}
+.dashhead{display:flex; flex-direction:column; align-items:center; gap:8px; margin:6px 0 22px; text-align:center;}
+.dashhead #emblem{position:relative; width:64px; height:64px; flex:0 0 auto;}
+.dashname{display:flex; align-items:center; gap:8px; justify-content:center;}
+#hname{font-size:24px; font-weight:800; letter-spacing:-0.02em; margin:0;}
 #htag{font-size:14px; color:var(--muted); margin:0 0 14px;}
 .metrics{display:flex; flex-wrap:wrap; gap:10px; margin:0 0 14px;}
 .metric{flex:1 1 28%; min-width:90px; background:var(--surface); border-radius:14px; padding:14px 10px; text-align:center;}
@@ -152,7 +156,7 @@ button.btn.primary{background:var(--text); color:var(--bg); border-color:var(--t
 .medals{display:flex; gap:16px; justify-content:center; align-items:center; margin:0 0 18px; font-size:15px; font-weight:700; color:var(--text);}
 .medal{display:inline-flex; align-items:center; gap:5px;}
 .medalgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
-.medalcell{display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; opacity:.4;}
+.medalcell{display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center; opacity:.4; cursor:pointer;}
 .medalcell.on{opacity:1;}
 .medalcell .mic{width:48px; height:48px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:23px; color:var(--muted);}
 .medalcell.on .mic{background:var(--gold); color:#14151a;}
@@ -304,13 +308,12 @@ button.levelcard:active{transform:scale(0.99);}
   <div id="view-home">
     <div class="dashhead">
       <div id="emblem" aria-hidden="true" style="cursor:pointer"></div>
-      <p id="hname" style="cursor:pointer">Huermony</p>
-      <i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i>
+      <div class="dashname"><p id="hname" style="cursor:pointer">Huermony</p><i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i></div>
     </div>
-    <div id="streak" hidden></div>
     <div id="nextbox" style="margin:6px 0 22px;"></div>
     <div id="tipbox" style="margin:0 0 26px;"></div>
     <p id="htag" class="dashsec" style="margin-top:0;"></p>
+    <div style="text-align:center;"><div id="streak" hidden></div></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
@@ -528,7 +531,7 @@ it:{
  allenaTitle:"Allenamento", dailyTitle:"Sfida del giorno", dailyDesc:"Rifai la melodia di oggi, solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Sfida del giorno fatta!", dailyStreakLbl:"Giorni di fila",
  endlessTitle:"Infinito", endlessDesc:"La melodia cresce senza fine. Fin dove arrivi?", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
  reviewTitle:"Ripasso", reviewDesc:"Allenati sui suoni che sbagli di più.", reviewWin:"Ripasso fatto!", reviewWinSub:"Continua così.",
- medalsTitle:"Medaglie", medals:{casa:{n:"La casa",d:"Completa il Livello 0"}, firstboss:{n:"Primo Boss",d:"Batti il tuo primo Boss"}, pent:{n:"Pentatonica",d:"Finisci la pentatonica"}, maj:{n:"Maggiore",d:"Finisci la scala maggiore"}, pmin:{n:"Minore",d:"Finisci la pentatonica minore"}, perfect:{n:"Perfetto",d:"Tutte le stelle di un corso"}, endless:{n:"Maratoneta",d:"Record Infinito da 10"}, streak:{n:"Costante",d:"7 Sfide del giorno di fila"}},
+ medalsTitle:"Medaglie", medalTapHint:"Tocca una medaglia per sapere cos'è.", medals:{casa:{n:"La casa",d:"Completa il Livello 0"}, firstboss:{n:"Primo Boss",d:"Batti il tuo primo Boss"}, pent:{n:"Pentatonica",d:"Finisci la pentatonica"}, maj:{n:"Maggiore",d:"Finisci la scala maggiore"}, pmin:{n:"Minore",d:"Finisci la pentatonica minore"}, perfect:{n:"Perfetto",d:"Tutte le stelle di un corso"}, endless:{n:"Maratoneta",d:"Record Infinito da 10"}, streak:{n:"Costante",d:"7 Sfide del giorno di fila"}},
  elite:"Elite", eliteCard:"Rifai una melodia di 7 note solo con le orecchie: la senti ma non la vedi. 3 vite e 3 riascolti. Vincila per sbloccare la nota nuova nel gioco libero.", eliteLocked:"Completa la modalità \"A orecchio\" per sbloccarlo.", eliteWin:"Elite superato!",
  bossScale:"Ascolta le note…", bossCount:["Pronti","Partenza","Via!"],
  speeds:["Lento","Normale","Veloce","Turbo"],
@@ -702,7 +705,7 @@ en:{
  allenaTitle:"Training", dailyTitle:"Daily challenge", dailyDesc:"Redo today's melody, by ear only.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Daily challenge done!", dailyStreakLbl:"Day streak",
  endlessTitle:"Endless", endlessDesc:"The melody grows forever. How far can you go?", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
  reviewTitle:"Review", reviewDesc:"Practice the sounds you miss most.", reviewWin:"Review done!", reviewWinSub:"Keep it up.",
- medalsTitle:"Medals", medals:{casa:{n:"Home",d:"Finish Level 0"}, firstboss:{n:"First Boss",d:"Beat your first Boss"}, pent:{n:"Pentatonic",d:"Finish the pentatonic"}, maj:{n:"Major",d:"Finish the major scale"}, pmin:{n:"Minor",d:"Finish the minor pentatonic"}, perfect:{n:"Perfect",d:"All stars in a course"}, endless:{n:"Marathoner",d:"Endless record of 10"}, streak:{n:"Steady",d:"7 daily challenges in a row"}},
+ medalsTitle:"Medals", medalTapHint:"Tap a medal to see what it is.", medals:{casa:{n:"Home",d:"Finish Level 0"}, firstboss:{n:"First Boss",d:"Beat your first Boss"}, pent:{n:"Pentatonic",d:"Finish the pentatonic"}, maj:{n:"Major",d:"Finish the major scale"}, pmin:{n:"Minor",d:"Finish the minor pentatonic"}, perfect:{n:"Perfect",d:"All stars in a course"}, endless:{n:"Marathoner",d:"Endless record of 10"}, streak:{n:"Steady",d:"7 daily challenges in a row"}},
  elite:"Elite", eliteCard:"Redo a 7-note melody by ear only: you hear it but you don't see it. 3 lives and 3 replays. Win it to unlock the new note in free play.", eliteLocked:"Clear \"By ear\" mode to unlock it.", eliteWin:"Elite cleared!",
  bossScale:"Listen to the notes…", bossCount:["Ready","Set","Go!"],
  speeds:["Slow","Normal","Fast","Turbo"],
@@ -1120,7 +1123,7 @@ function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; ret
 function mostStudied(){const p=getPlays(); let best=null,bv=0; for(const k in p){if(p[k]>bv){bv=p[k];best=k;}} return best;}
 function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{S9.courses[c].levels.forEach((_,i)=>{if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;});}); return n;}
 function renderDashboard(){
- paintAvatar($('emblem'),getAvatar(),46);
+ paintAvatar($('emblem'),getAvatar(),60);
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
  $('m-stars').textContent=totalStars();
  $('m-elite').textContent=totalElite()+'/'+totalEliteMax(); // Boss battuti (uno per livello)
@@ -1150,8 +1153,8 @@ function renderNext(){
  if(!nx){ fn=()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}); title=S9.dailyTitle; sub=S9.nextDone; ic='calendar-star'; }
  else if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; k=0; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); noteBg=C[0].h+';color:'+ink(0)+ring(0); noteIc=C[0].ic; }
  else { k=CWADD[nx.c][nx.w][CWADD[nx.c][nx.w].length-1]; noteBg=C[k].h+';color:'+ink(k)+ring(k); noteIc=C[k].ic;
-  if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
-  else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
+  if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=S9.courses[nx.c].title+' · '+plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
+  else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.courses[nx.c].title+' · '+S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
  }
  box.innerHTML='<button class="nextcard"><div class="ntxt"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></div><span class="nnote" style="background:'+noteBg+'"><i class="ti ti-'+noteIc+'"></i></span></button>';
  box.querySelector('.nextcard').addEventListener('click',fn);
@@ -1159,13 +1162,16 @@ function renderNext(){
 function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
 function renderAllena(){
  const box=$('allenabox'); if(!box) return;
- const done=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord();
- const card=(id,ic,title,sub,right)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span><span class="stars" style="color:var(--gold);font-size:13px">'+right+'</span></div><div class="mdesc">'+sub+'</div></button>';
+ const dd=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord(), rv=reviewDoneToday(), en=endlessDoneToday();
+ const badge=d=>'<span style="color:'+(d?'var(--gold)':'var(--muted)')+';font-weight:800;font-size:14px">'+(d?'1/1':'0/1')+'</span>'; // task giornaliero
+ const card=(id,ic,title,sub,d)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span>'+badge(d)+'</div><div class="mdesc">'+sub+'</div></button>';
  const wk=weakIntervals(); const rdesc=S9.reviewDesc+(wk.length?' ('+cap(S9.NM[wk[0]])+')':'');
+ const ddesc=(dd?S9.dailyDoneTxt:S9.dailyDesc)+(dstk?' · 🔥 '+dstk:'');
+ const edesc=S9.endlessDesc+(rec?' · '+S9.record+' '+rec:'');
  box.innerHTML='<p class="dashsec">'+S9.allenaTitle+'</p>'
-  +card('al-daily','calendar-star',S9.dailyTitle, done?S9.dailyDoneTxt:S9.dailyDesc, done?'✓ '+dstk:(dstk?'🔥 '+dstk:''))
-  +card('al-review','target-arrow',S9.reviewTitle, rdesc, '')
-  +card('al-endless','infinity',S9.endlessTitle, S9.endlessDesc, rec?S9.record+' '+rec:'');
+  +card('al-daily','calendar-star',S9.dailyTitle, ddesc, dd)
+  +card('al-review','target-arrow',S9.reviewTitle, rdesc, rv)
+  +card('al-endless','infinity',S9.endlessTitle, edesc, en);
  $('al-daily').addEventListener('click',()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}));
  $('al-review').addEventListener('click',()=>showLoading(beginReview,{c:'pent',title:S9.reviewTitle}));
  $('al-endless').addEventListener('click',()=>showLoading(beginEndless,{c:'pent',title:S9.endlessTitle}));
@@ -1183,8 +1189,9 @@ const MEDALS=[
 function renderMedals(){
  const box=$('medalsbox'); if(!box) return;
  const cells=MEDALS.map(m=>{ const on=unlockAll()||m.ck(); const md=(S9.medals&&S9.medals[m.id])||{n:m.id,d:''};
-  return '<div class="medalcell'+(on?' on':'')+'" title="'+md.d+'"><span class="mic"><i class="ti ti-'+(on?m.ic:'lock')+'"></i></span><small>'+md.n+'</small></div>'; }).join('');
- box.innerHTML='<p class="dashsec">'+S9.medalsTitle+'</p><div class="medalgrid">'+cells+'</div>';
+  return '<div class="medalcell'+(on?' on':'')+'" data-id="'+m.id+'"><span class="mic"><i class="ti ti-'+(on?m.ic:'lock')+'"></i></span><small>'+md.n+'</small></div>'; }).join('');
+ box.innerHTML='<p class="dashsec">'+S9.medalsTitle+'</p><div class="medalgrid">'+cells+'</div><p id="medalinfo">'+S9.medalTapHint+'</p>';
+ box.querySelectorAll('.medalcell').forEach(el=>el.addEventListener('click',()=>{ const m=MEDALS.find(x=>x.id===el.dataset.id); if(!m)return; const md=S9.medals[m.id]||{n:m.id,d:''}; const on=unlockAll()||m.ck(); $('medalinfo').innerHTML='<b>'+md.n+'</b> — '+md.d+(on?' <span style="color:var(--gold)">✓</span>':''); }));
 }
 function renderTimbres(){
  const box=$('timbres'); if(!box) return;
@@ -2135,6 +2142,8 @@ function beginDaily(){
 }
 function dailyStreak(){ const last=localStorage.getItem('hm_daily'); const s=parseInt(localStorage.getItem('hm_dstreak')||'0',10)||0; if(!last||!s)return 0; const y=new Date(); y.setDate(y.getDate()-1); return (last===dayStr(new Date())||last===dayStr(y))?s:0; }
 function dailyDoneToday(){ return localStorage.getItem('hm_daily')===dayStr(new Date()); }
+function reviewDoneToday(){ return localStorage.getItem('hm_review')===dayStr(new Date()); }
+function endlessDoneToday(){ return localStorage.getItem('hm_endless_day')===dayStr(new Date()); }
 function dailyWin(){
  const t=dayStr(new Date());
  if(localStorage.getItem('hm_daily')!==t){ const y=new Date(); y.setDate(y.getDate()-1); const s=(localStorage.getItem('hm_daily')===dayStr(y))?dailyStreak()+1:1; localStorage.setItem('hm_dstreak',String(s)); localStorage.setItem('hm_daily',t); }
@@ -2163,7 +2172,7 @@ function beginEndless(){
 }
 function endlessOver(){
  const rec=Math.max(endlessRecord(), (seq.length-1)); const isNew=(seq.length-1)>endlessRecord();
- localStorage.setItem('hm_endless',String(rec));
+ localStorage.setItem('hm_endless',String(rec)); localStorage.setItem('hm_endless_day',dayStr(new Date())); // task giornaliero
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-infinity" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isNew?S9.endlessNew:S9.endlessOverT; $('celname').innerHTML='<b>'+S9.record+': '+rec+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2203,6 +2212,7 @@ function beginReview(){ // RIPASSO MIRATO: ricostruzione corta fatta soprattutto
  startBossLike({kind:'boss', review:true, earOnly:true, c:null, w:null, name:S9.reviewTitle, seq:sq, notes:all, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.reviewTitle);
 }
 function reviewWin(){
+ localStorage.setItem('hm_review',dayStr(new Date())); // task giornaliero
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-target-arrow" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.reviewWin; $('celname').innerHTML='<b>'+S9.reviewWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2684,7 +2694,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.43'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.44'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
