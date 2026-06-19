@@ -528,7 +528,7 @@ it:{
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  ftTry:"Prova le note", ftStop:"Fine prova", ftDone:"Prove finite",
  boss:"Boss", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 7 note solo con le orecchie. 3 vite. Puoi riascoltare scala e melodia 3 volte ciascuna.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
- allenaTitle:"Allenamento", dailyTitle:"Sfida del giorno", dailyDesc:"Rifai la melodia di oggi, solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Sfida del giorno fatta!", dailyStreakLbl:"Giorni di fila",
+ tipTitle:"Suggerimento", allenaTitle:"Allenamento", dailyTitle:"Sfida del giorno", dailyDesc:"Rifai la melodia di oggi, solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Sfida del giorno fatta!", dailyStreakLbl:"Giorni di fila",
  endlessTitle:"Infinito", endlessDesc:"La melodia cresce senza fine. Fin dove arrivi?", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
  reviewTitle:"Ripasso", reviewDesc:"Allenati sui suoni che sbagli di più.", reviewWin:"Ripasso fatto!", reviewWinSub:"Continua così.",
  medalsTitle:"Medaglie", medalTapHint:"Tocca una medaglia per sapere cos'è.", medals:{casa:{n:"La casa",d:"Completa il Livello 0"}, firstboss:{n:"Primo Boss",d:"Batti il tuo primo Boss"}, pent:{n:"Pentatonica",d:"Finisci la pentatonica"}, maj:{n:"Maggiore",d:"Finisci la scala maggiore"}, pmin:{n:"Minore",d:"Finisci la pentatonica minore"}, perfect:{n:"Perfetto",d:"Tutte le stelle di un corso"}, endless:{n:"Maratoneta",d:"Record Infinito da 10"}, streak:{n:"Costante",d:"7 Sfide del giorno di fila"}},
@@ -702,7 +702,7 @@ en:{
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  ftTry:"Try the notes", ftStop:"End try", ftDone:"No tries left",
  boss:"Boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 7-note melody by ear only. 3 lives. You can replay the scale and the melody 3 times each.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
- allenaTitle:"Training", dailyTitle:"Daily challenge", dailyDesc:"Redo today's melody, by ear only.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Daily challenge done!", dailyStreakLbl:"Day streak",
+ tipTitle:"Tip", allenaTitle:"Training", dailyTitle:"Daily challenge", dailyDesc:"Redo today's melody, by ear only.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Daily challenge done!", dailyStreakLbl:"Day streak",
  endlessTitle:"Endless", endlessDesc:"The melody grows forever. How far can you go?", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
  reviewTitle:"Review", reviewDesc:"Practice the sounds you miss most.", reviewWin:"Review done!", reviewWinSub:"Keep it up.",
  medalsTitle:"Medals", medalTapHint:"Tap a medal to see what it is.", medals:{casa:{n:"Home",d:"Finish Level 0"}, firstboss:{n:"First Boss",d:"Beat your first Boss"}, pent:{n:"Pentatonic",d:"Finish the pentatonic"}, maj:{n:"Major",d:"Finish the major scale"}, pmin:{n:"Minor",d:"Finish the minor pentatonic"}, perfect:{n:"Perfect",d:"All stars in a course"}, endless:{n:"Marathoner",d:"Endless record of 10"}, streak:{n:"Steady",d:"7 daily challenges in a row"}},
@@ -1159,7 +1159,7 @@ function renderNext(){
  box.innerHTML='<button class="nextcard"><div class="ntxt"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></div><span class="nnote" style="background:'+noteBg+'"><i class="ti ti-'+noteIc+'"></i></span></button>';
  box.querySelector('.nextcard').addEventListener('click',fn);
 }
-function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
+function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<p class="dashsec" style="margin-top:0">'+S9.tipTitle+'</p><div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
 function renderAllena(){
  const box=$('allenabox'); if(!box) return;
  const dd=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord(), rv=reviewDoneToday(), en=endlessDoneToday();
@@ -2694,7 +2694,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.44'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.45'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
