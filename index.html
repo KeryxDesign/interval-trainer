@@ -268,7 +268,7 @@ button.levelcard:active{transform:scale(0.99);}
 .wsub{font-size:13px; color:var(--muted); margin:5px 0 0;}
 .wsub b{color:var(--text); font-weight:700;}
 /* card livello = nota grande centrale + descrizione sotto */
-.lvlcard{text-align:center; display:flex; flex-direction:column; align-items:center; gap:5px; padding:22px 16px 18px;}
+.levelcard.lvlcard{text-align:center; display:flex; flex-direction:column; align-items:center; gap:5px; padding:22px 16px 18px;}
 .lvlcard .bignote{width:84px; height:84px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:6px;}
 .lvlcard.locked .bignote, .bignote.locked{background:var(--surface2); color:var(--muted); box-shadow:none;}
 .lvlname{font-size:19px; font-weight:800; color:var(--text);}
@@ -1634,7 +1634,7 @@ function renderPath(){
    +'</div>';
   let sh='<h2 class="secname">'+S9.courses[c].title+'</h2>'+medals+
    '<div class="gameslot"></div>'+
-   '<details class="secacc"><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
+   '<details class="secacc" open><summary><span>'+S9.whatIs(S9.courses[c].title)+'</span><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
     '<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>'+
     (MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
    '</details>';
@@ -2703,7 +2703,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.48'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.49'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
