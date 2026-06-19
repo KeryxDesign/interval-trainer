@@ -1721,8 +1721,8 @@ function renderPath(){
   btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic"></i>';
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
   let outer=btn;
-  if(o.diff!=null && !o.locked){ // anello che si riempie di giallo 1/3 alla volta con la difficolta'
-   const ring=document.createElement('div'); ring.className='pnring'; const deg=Math.round((o.diff+1)/3*360);
+  if(o.ring!=null && !o.locked){ // anello = stelle conquistate in quel modo (si riempie di giallo)
+   const ring=document.createElement('div'); ring.className='pnring'; const deg=Math.round(Math.max(0,Math.min(1,o.ring))*360);
    ring.style.background='conic-gradient(var(--gold) '+deg+'deg, rgba(255,255,255,.16) '+deg+'deg)'; ring.appendChild(btn); outer=ring;
   }
   if(o.next){ outer.classList.add('next'); nextEl=btn; }
@@ -1740,15 +1740,16 @@ function renderPath(){
   S9.courses[c].levels.forEach((lv,w)=>{
    const lvOpen=unlockAll()||worldUnlocked(c,w);
    const k=CWADD[c][w][CWADD[c][w].length-1];
-   const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b>'+(lvOpen?' · '+IV[k]:''); board.appendChild(nl);
-   if(!lvOpen){ node({locked:true, ic:'lock', label:S9.lockReq(w)}); return; }
-   // Teoria
-   const tbtn=node({color:colOf(k), ic:'help', label:S9.tabs[2]});
+   if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b>'; board.appendChild(nl);
+    node({locked:true, ic:'lock', label:S9.lockReq(w)}); return; }
+   // Titolo = nodo col simbolo della nota ("cosa impari"); tap = teoria
+   const tbtn=node({color:colOf(k), ic:C[k].ic, label:(w+1)+'. '+plainNames(c,w)});
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true; panel.innerHTML=buildTheoryBody(c,w); board.appendChild(panel);
    tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
-   // Facile / Normale / Difficile
+   // Facile=colori · Normale=melodia · Difficile=orecchio (anello = stelle conquistate)
+   const MODE_IC=['palette','music','ear'];
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), ic:C[k].ic, diff:m, label:S9.modes[m], stars:starsStr(sn), locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+    node({color:colOf(k), ic:MODE_IC[m], ring:sn/3, label:S9.modes[m], locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
    // Boss
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w);
    node({color:colOf(k), ic:'skull', label:S9.boss, stars:eDone?'🏆':'<span class="e">★</span>', next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
@@ -2789,7 +2790,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.57'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.58'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
