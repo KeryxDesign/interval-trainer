@@ -30,6 +30,18 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .tab{flex:1; border:none; background:transparent; color:var(--muted); font-size:12px; font-weight:600; padding:3px 0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;}
 .tab i{font-size:23px; line-height:1;}
 .tab.on{color:var(--text);}
+/* tab Home centrale: rialzato e oro, sovrapposto alla barra */
+#tab-home{justify-content:flex-end;}
+#tab-home i{background:var(--gold); color:#14151a; width:60px; height:60px; border-radius:50%; font-size:28px; display:flex; align-items:center; justify-content:center; margin-top:-30px; box-shadow:0 6px 18px rgba(0,0,0,.45); border:5px solid var(--bg);}
+#tab-home .tablbl{color:var(--gold); font-weight:800;}
+/* card prossimo esercizio: nota a destra */
+.nextcard{display:flex; align-items:center; gap:14px;}
+.nextcard .ntxt{flex:1; min-width:0;}
+.nnote{flex:0 0 auto; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:26px; background:rgba(0,0,0,.18);}
+/* tip random */
+.tipcard{display:flex; align-items:flex-start; gap:10px; background:var(--surface2); border-radius:14px; padding:14px 16px; font-size:14px; line-height:1.5; color:var(--text);}
+.tipcard i{color:var(--gold); font-size:19px; flex:0 0 auto; margin-top:1px;}
+.dashsec{font-size:13px; color:var(--muted); font-weight:700; margin:26px 0 10px; text-transform:uppercase; letter-spacing:.5px;}
 .edot{position:absolute; width:12px; height:12px; border-radius:50%;}
 .dashhead{display:flex; align-items:center; gap:12px; margin:4px 0 18px;}
 .dashhead #emblem{position:relative; width:46px; height:46px; flex:0 0 auto;}
@@ -295,9 +307,10 @@ button.levelcard:active{transform:scale(0.99);}
       <p id="hname" style="cursor:pointer">Huermony</p>
       <i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i>
     </div>
-    <p id="htag"></p>
     <div id="streak" hidden></div>
-    <div id="nextbox" style="margin:8px 0 6px;"></div>
+    <div id="nextbox" style="margin:6px 0 22px;"></div>
+    <div id="tipbox" style="margin:0 0 26px;"></div>
+    <p id="htag" class="dashsec" style="margin-top:0;"></p>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
@@ -306,8 +319,8 @@ button.levelcard:active{transform:scale(0.99);}
       <div class="metric"><div class="mv" id="m-games">0</div><div class="ml" id="m-games-l"></div></div>
     </div>
     <div id="dash-studied" hidden></div>
-    <div id="allenabox" style="margin:8px 0 4px;"></div>
-    <div id="medalsbox" style="margin:4px 0 8px;"></div>
+    <div id="allenabox" style="margin:0 0 8px;"></div>
+    <div id="medalsbox" style="margin:0 0 24px;"></div>
   </div>
 
   <div id="view-settings" hidden>
@@ -1121,7 +1134,7 @@ function renderDashboard(){
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
- renderNext(); renderAllena(); renderMedals();
+ renderNext(); renderTip(); renderAllena(); renderMedals();
 }
 function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
@@ -1133,20 +1146,23 @@ function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo mod
 }
 function renderNext(){
  const box=$('nextbox'); if(!box) return;
- const nx=nextExercise(); let title, sub, ic, fn;
- if(!nx){ box.innerHTML='<button class="nextcard"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-calendar-star"></i> '+S9.dailyTitle+'</div><div class="nsub">'+S9.nextDone+'</div></button>'; box.querySelector('.nextcard').addEventListener('click',()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle})); return; }
- if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); }
- else if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
- else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
- box.innerHTML='<button class="nextcard"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></button>';
+ const nx=nextExercise(); let title, sub, ic, fn, k=0, noteBg='rgba(0,0,0,.18)', noteIc='trophy';
+ if(!nx){ fn=()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}); title=S9.dailyTitle; sub=S9.nextDone; ic='calendar-star'; }
+ else if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; k=0; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); noteBg=C[0].h+';color:'+ink(0)+ring(0); noteIc=C[0].ic; }
+ else { k=CWADD[nx.c][nx.w][CWADD[nx.c][nx.w].length-1]; noteBg=C[k].h+';color:'+ink(k)+ring(k); noteIc=C[k].ic;
+  if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
+  else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
+ }
+ box.innerHTML='<button class="nextcard"><div class="ntxt"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></div><span class="nnote" style="background:'+noteBg+'"><i class="ti ti-'+noteIc+'"></i></span></button>';
  box.querySelector('.nextcard').addEventListener('click',fn);
 }
+function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
 function renderAllena(){
  const box=$('allenabox'); if(!box) return;
  const done=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord();
  const card=(id,ic,title,sub,right)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span><span class="stars" style="color:var(--gold);font-size:13px">'+right+'</span></div><div class="mdesc">'+sub+'</div></button>';
  const wk=weakIntervals(); const rdesc=S9.reviewDesc+(wk.length?' ('+cap(S9.NM[wk[0]])+')':'');
- box.innerHTML='<p style="font-size:13px;color:var(--muted);font-weight:700;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.5px">'+S9.allenaTitle+'</p>'
+ box.innerHTML='<p class="dashsec">'+S9.allenaTitle+'</p>'
   +card('al-daily','calendar-star',S9.dailyTitle, done?S9.dailyDoneTxt:S9.dailyDesc, done?'✓ '+dstk:(dstk?'🔥 '+dstk:''))
   +card('al-review','target-arrow',S9.reviewTitle, rdesc, '')
   +card('al-endless','infinity',S9.endlessTitle, S9.endlessDesc, rec?S9.record+' '+rec:'');
@@ -1168,7 +1184,7 @@ function renderMedals(){
  const box=$('medalsbox'); if(!box) return;
  const cells=MEDALS.map(m=>{ const on=unlockAll()||m.ck(); const md=(S9.medals&&S9.medals[m.id])||{n:m.id,d:''};
   return '<div class="medalcell'+(on?' on':'')+'" title="'+md.d+'"><span class="mic"><i class="ti ti-'+(on?m.ic:'lock')+'"></i></span><small>'+md.n+'</small></div>'; }).join('');
- box.innerHTML='<p style="font-size:13px;color:var(--muted);font-weight:700;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px">'+S9.medalsTitle+'</p><div class="medalgrid">'+cells+'</div>';
+ box.innerHTML='<p class="dashsec">'+S9.medalsTitle+'</p><div class="medalgrid">'+cells+'</div>';
 }
 function renderTimbres(){
  const box=$('timbres'); if(!box) return;
@@ -2668,7 +2684,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.42'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.43'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
