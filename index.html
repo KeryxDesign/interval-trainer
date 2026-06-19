@@ -362,6 +362,7 @@ button.levelcard:active{transform:scale(0.99);}
   </nav>
 
   <div id="view-levels" hidden>
+    <div id="corsonext" style="margin:0 0 18px;"></div>
     <div id="path"></div>
   </div>
 
@@ -394,6 +395,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-game" hidden>
+    <div id="giocapath"></div>
     <div id="gamepanel">
     <div id="gametop" hidden style="display:flex; align-items:center; gap:10px; margin:0 0 12px; background:var(--surface2); border-radius:12px; padding:9px 12px; border-left:3px solid var(--gold);">
       <button class="btn" id="backbtn" style="flex:0 0 auto; padding:8px 12px;"><i class="ti ti-arrow-left"></i></button>
@@ -518,7 +520,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Libero","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", tabCorso:"Corso", tabSettings:"Opzioni", nextLabel:"Prossimo esercizio", nextDone:"Hai finito tutto! Prova una sfida.", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
+ tabs:["Livelli","Gioca","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", tabCorso:"Corso", tabSettings:"Opzioni", nextLabel:"Prossimo esercizio", nextDone:"Hai finito tutto! Prova una sfida.", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
  famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
@@ -692,7 +694,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Free play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", tabCorso:"Course", tabSettings:"Options", nextLabel:"Next exercise", nextDone:"All done! Try a challenge.", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
+ tabs:["Levels","Play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", tabCorso:"Course", tabSettings:"Options", nextLabel:"Next exercise", nextDone:"All done! Try a challenge.", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pillar",c:"Color",t:"Tension"},
  famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
@@ -1050,7 +1052,7 @@ function applyStatic(){
 function setView(name){
  if(ctx){ stopAllHeld(); stopDrone(); }
  parkPanel();
- $('bossbar').hidden=true; $('freetry').hidden=true; $('tutbox').hidden=true; $('status').hidden=false;
+ $('bossbar').hidden=true; $('freetry').hidden=true; $('tutbox').hidden=true; $('status').hidden=false; $('giocapath').hidden=true;
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1155,8 +1157,8 @@ function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo mod
   } }
  return null;
 }
-function renderNext(){
- const box=$('nextbox'); if(!box) return;
+function renderNext(boxId){
+ const box=$(boxId||'nextbox'); if(!box) return;
  const nx=nextExercise(); let title, sub, ic, fn, k=0, noteBg='rgba(0,0,0,.18)', noteIc='trophy';
  if(!nx){ fn=()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}); title=S9.dailyTitle; sub=S9.nextDone; ic='calendar-star'; }
  else if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; k=0; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); noteBg=C[0].h+';color:'+ink(0)+ring(0); noteIc=C[0].ic; }
@@ -1244,14 +1246,48 @@ function renderCoursePick(){
 function showLevels(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
  setView('levels');
- $('unlockall').checked=unlockAll(); updateUnlockLabel();
+ renderNext('corsonext'); // riprendi da dove hai lasciato (come sul Profilo)
  renderPath();
 }
+// TAB GIOCA: gioco libero su un pager di scale (scegli scorrendo); note sbloccate dal corso, scale bloccate finche' non avanzi
 function showFree(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); game={kind:'free'};
  setView('free');
  $('gametop').hidden=true; $('goalbar').hidden=true;
- openFreeSetup();
+ renderGioca();
+}
+function renderGioca(){
+ parkPanel();
+ const box=$('giocapath'); if(!box) return; box.hidden=false; box.innerHTML='';
+ const dotsbar=document.createElement('div'); dotsbar.className='pathdots';
+ const track=document.createElement('div'); track.className='pathtrack';
+ COURSE_IDS.forEach((c,ci)=>{
+  const cOpen=unlockAll()||courseUnlocked(c);
+  const page=document.createElement('div'); page.className='coursepage'+(cOpen?'':' locked');
+  let sh='<h2 class="secname">'+S9.courses[c].title+'</h2><div class="gameslot"></div>';
+  if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
+  page.innerHTML=sh; track.appendChild(page);
+  const pill=document.createElement('button'); pill.className='cpill'+(ci===giocaPage?' on':'')+(cOpen?'':' lock'); pill.setAttribute('aria-label',S9.courses[c].title);
+  pill.innerHTML=(cOpen?'':'<i class="ti ti-lock" style="font-size:13px"></i>')+'<span>'+((S9.coursesShort&&S9.coursesShort[c])||S9.courses[c].title)+'</span>';
+  pill.addEventListener('click',()=>setGiocaPage(ci)); dotsbar.appendChild(pill);
+ });
+ box.appendChild(dotsbar); box.appendChild(track);
+ attachGiocaSwipe(track);
+ setGiocaPage(Math.min(giocaPage, COURSE_IDS.length-1));
+}
+function setGiocaPage(i){
+ const pages=$('giocapath').querySelectorAll('.coursepage'); if(!pages.length) return;
+ i=Math.max(0,Math.min(pages.length-1,i)); giocaPage=i; localStorage.setItem('hm_giocapage',String(i));
+ pages.forEach((p,idx)=>{ p.hidden=idx!==i; });
+ $('giocapath').querySelectorAll('.cpill').forEach((d,idx)=>d.classList.toggle('on',idx===i));
+ const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
+ setupCardFree(COURSE_IDS[i], active);
+ try{window.scrollTo(0,0);}catch(e){}
+}
+function attachGiocaSwipe(el){
+ let x0=null,y0=null;
+ el.addEventListener('touchstart',e=>{const t=e.touches[0]; x0=t.clientX; y0=t.clientY;},{passive:true});
+ el.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0]; const dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3) setGiocaPage(giocaPage+(dx<0?1:-1)); },{passive:true});
 }
 function openFreeSetup(){
  $('fs-title').textContent=S9.fsTitle;
@@ -1295,7 +1331,7 @@ function startFreeGame(){
  render(); renderSig(); renderChords(); loadBest(); startDrone(); showDroneToggle(true);
 }
 // la ruota della card È la modalità libera: gioca sulla scala del corso con SOLO le note sbloccate
-function parkPanel(){ const gp=$('gamepanel'); if(gp){ gp.classList.remove('incard'); if(!$('view-game').contains(gp)) $('view-game').appendChild(gp); } }
+function parkPanel(){ const gp=$('gamepanel'); if(gp){ gp.classList.remove('incard'); if(gp.parentElement!==$('view-game')) $('view-game').appendChild(gp); } } // direct child: lo tira fuori anche da #giocapath
 function setupCardFree(c, page){
  if(!page) return;
  clearTimers(); stopAllHeld(); stopMic();
@@ -1370,7 +1406,7 @@ function renderWelStep(){
 }
 // retrigger affidabile di una CSS animation
 function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
-function showSettings(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderTimbres(); renderSettings(); setView('settings');}
+function showSettings(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); $('unlockall').checked=unlockAll(); updateUnlockLabel(); renderTimbres(); renderSettings(); setView('settings');}
 function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
 function startLevel(c,w,m,skipLoading){
  if(m===1){ if(skipLoading) beginNormale(c,w); else showLoading(()=>beginNormale(c,w),{c:c,w:w}); return; } // Normale = ricostruzione vista
@@ -1618,7 +1654,8 @@ function saveCurrentGameProgress(){
  let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
  saveProg(game.c,'w'+game.w+'m'+game.m,{stars:st,bestRound:completed});
 }
-let pathPage=0;
+let pathPage=parseInt(localStorage.getItem('hm_pathpage')||'0',10)||0;
+let giocaPage=parseInt(localStorage.getItem('hm_giocapage')||'0',10)||0;
 function renderPath(){
  parkPanel();
  const box=$('path'); box.innerHTML='';
@@ -1637,8 +1674,7 @@ function renderPath(){
   let sh='<details class="secacc"><summary class="coursesum"><h2 class="secname">'+S9.courses[c].title+'</h2><i class="ti ti-chevron-down"></i></summary><p class="secdesc">'+paraBr(S9.courses[c].desc)+'</p>'+
     '<div class="accwheel mwbox"></div><div class="mwctrl"><button class="btn srplay"><i class="ti ti-volume"></i><span>'+S9.fsTaste+'</span></button></div>'+
     (MELODIES[c]?'<div class="exrow" style="padding:0 16px 16px"><span class="exlbl">'+S9.exLbl+'</span>'+MELODIES[c].map((m,mi)=>'<button class="exbtn" data-mi="'+mi+'"><i class="ti ti-player-play" style="font-size:13px"></i>'+m[lang]+'</button>').join('')+'</div>':'')+
-   '</details>'+medals+
-   '<div class="gameslot"></div>';
+   '</details>'+medals;
   if(!cOpen){const prev=COURSE_IDS[ci-1]; sh+='<p class="seclock"><i class="ti ti-lock" style="font-size:14px"></i> '+S9.lockCourse(S9.courses[prev].title)+'</p>';}
   page.innerHTML=sh;
   { // la teoria (anteprima scala + assaggia + esempi) e' sempre accessibile, anche a corso bloccato
@@ -1688,8 +1724,7 @@ function setPathPage(i){
  pages.forEach((p,idx)=>{ p.hidden=idx!==i; });
  document.querySelectorAll('.cpill').forEach((d,idx)=>d.classList.toggle('on',idx===i));
  const active=pages[i]; if(active) anim(active,'welIn .32s ease both',0);
- const c=COURSE_IDS[i];
- setupCardFree(c, active);
+ localStorage.setItem('hm_pathpage',String(i)); // riprendi sull'ultima scala
  try{window.scrollTo(0,0);}catch(e){}
 }
 function attachPathSwipe(el){
@@ -2704,7 +2739,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.50'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.52'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
