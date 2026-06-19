@@ -321,10 +321,8 @@ button.levelcard:active{transform:scale(0.99);}
 .pnode i.pic{font-size:30px;}
 .pnode:active{transform:scale(0.95);}
 .pnode.locked{background:var(--surface2)!important; color:var(--muted); cursor:default;}
-.pnode.next{box-shadow:0 0 0 4px var(--gold);}
-.pnode .diff{display:flex; gap:3px; margin-top:3px;}
-.pnode .diff i{width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,.35);}
-.pnode .diff i.on{background:#fff;}
+.pnring{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.pnode.next, .pnring.next{box-shadow:0 0 0 3px var(--gold), 0 0 16px 2px rgba(234,179,8,.5);}
 .pnlbl{font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;}
 .pnstars{font-size:12px; color:var(--gold); letter-spacing:1px; min-height:14px;}
 .pnstars .e{color:var(--line);}
@@ -1718,12 +1716,17 @@ function renderPath(){
   const side=(zz++%2===0)?' left':' right';
   const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
   const inner=document.createElement('div'); inner.className='pninner';
-  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'')+(o.next?' next':'');
+  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'');
   if(!o.locked&&o.color) btn.style.cssText='background:'+o.color;
-  btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic"></i>'+(o.diff!=null&&!o.locked?'<span class="diff">'+[0,1,2].map(d=>'<i class="'+(d<=o.diff?'on':'')+'"></i>').join('')+'</span>':'');
+  btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic"></i>';
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
-  if(o.next) nextEl=btn;
-  inner.appendChild(btn);
+  let outer=btn;
+  if(o.diff!=null && !o.locked){ // anello che si riempie di giallo 1/3 alla volta con la difficolta'
+   const ring=document.createElement('div'); ring.className='pnring'; const deg=Math.round((o.diff+1)/3*360);
+   ring.style.background='conic-gradient(var(--gold) '+deg+'deg, rgba(255,255,255,.16) '+deg+'deg)'; ring.appendChild(btn); outer=ring;
+  }
+  if(o.next){ outer.classList.add('next'); nextEl=btn; }
+  inner.appendChild(outer);
   if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
   if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; inner.appendChild(s); }
   wrap.appendChild(inner); board.appendChild(wrap); return btn;
@@ -2786,7 +2789,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.56'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.57'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
