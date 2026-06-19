@@ -46,8 +46,8 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #medalinfo{margin-top:14px; text-align:center; font-size:14px; line-height:1.45; color:var(--muted);}
 #medalinfo b{color:var(--text);}
 .edot{position:absolute; width:12px; height:12px; border-radius:50%;}
-.dashhead{display:flex; flex-direction:column; align-items:center; gap:8px; margin:6px 0 22px; text-align:center;}
-.dashhead #emblem{position:relative; width:64px; height:64px; flex:0 0 auto;}
+.dashhead{display:flex; flex-direction:column; align-items:center; gap:10px; margin:28px 0 24px; text-align:center;}
+.dashhead #emblem{position:relative; width:128px; height:128px; flex:0 0 auto;}
 .dashname{display:flex; align-items:center; gap:8px; justify-content:center;}
 #hname{font-size:24px; font-weight:800; letter-spacing:-0.02em; margin:0;}
 #htag{font-size:14px; color:var(--muted); margin:0 0 14px;}
@@ -1123,7 +1123,7 @@ function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; ret
 function mostStudied(){const p=getPlays(); let best=null,bv=0; for(const k in p){if(p[k]>bv){bv=p[k];best=k;}} return best;}
 function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{S9.courses[c].levels.forEach((_,i)=>{if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;});}); return n;}
 function renderDashboard(){
- paintAvatar($('emblem'),getAvatar(),60);
+ paintAvatar($('emblem'),getAvatar(),120);
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
  $('m-stars').textContent=totalStars();
  $('m-elite').textContent=totalElite()+'/'+totalEliteMax(); // Boss battuti (uno per livello)
@@ -2694,7 +2694,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.45'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.46'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
