@@ -305,14 +305,15 @@ button.levelcard:active{transform:scale(0.99);}
 .stepth summary .si{color:var(--gold); font-size:18px; width:20px; text-align:center;}
 .stepth>div{padding:0 12px 12px;}
 /* tabellone gioco-dell-oca: nodi cerchio collegati da linee tratteggiate */
-.board{display:flex; flex-direction:column; align-items:center;}
-.boardhdr{font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--text); margin:26px 0 4px; text-align:center;}
+.board{display:flex; flex-direction:column; align-items:center; position:relative; padding-top:20px;}
+#boardlines{position:absolute; left:0; top:0; pointer-events:none; z-index:0;}
+#boardlines line{stroke:var(--line); stroke-width:3; stroke-dasharray:4 8; stroke-linecap:round;}
+.boardhdr{font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--text); margin:28px 0 4px; text-align:center; position:relative; z-index:1;}
 .boardhdr.locked{color:var(--muted);}
-.notelbl{font-size:13px; font-weight:700; color:var(--muted); margin:16px 0 2px; text-align:center;}
+.notelbl{font-size:13px; font-weight:700; color:var(--muted); margin:16px 0 2px; text-align:center; position:relative; z-index:1;}
 .notelbl b{color:var(--text);}
-.pnwrap{display:flex; flex-direction:column; align-items:center; position:relative;}
-.pnwrap::before{content:""; width:0; height:24px; border-left:3px dashed var(--line);}
-.pnwrap.first::before{display:none;}
+.pnwrap{display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; margin-top:24px;}
+.pnwrap.first{margin-top:0;}
 .pninner{display:flex; flex-direction:column; align-items:center;}
 .pnwrap.left .pninner{transform:translateX(-68px);}
 .pnwrap.right .pninner{transform:translateX(68px);}
@@ -1711,6 +1712,7 @@ function renderPath(){
  const isNext=o=>nx&&((nx.casa&&o.casa)||(!nx.casa&&!o.casa&&nx.c===o.c&&nx.w===o.w&&((nx.boss&&o.boss)||(!nx.boss&&!o.boss&&nx.m===o.m))));
  let nextEl=null, first=true, zz=0;
  const board=document.createElement('div'); board.className='board'; box.appendChild(board);
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.id='boardlines'; board.appendChild(svg);
  const colOf=k=>C[k].h+';color:'+ink(k)+ring(k);
  function node(o){ // {color,ic,locked,next,label,stars,diff,onClick} -> ritorna il .pnode ; zigzag sx/dx attorno alla spina centrale
   const side=(zz++%2===0)?' left':' right';
@@ -1740,7 +1742,7 @@ function renderPath(){
    // Teoria
    const tbtn=node({color:colOf(k), ic:'help', label:S9.tabs[2]});
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true; panel.innerHTML=buildTheoryBody(c,w); board.appendChild(panel);
-   tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
+   tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    // Facile / Normale / Difficile
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
     node({color:colOf(k), ic:C[k].ic, diff:m, label:S9.modes[m], stars:starsStr(sn), locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
@@ -1750,7 +1752,19 @@ function renderPath(){
   });
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
- if(nextEl) setTimeout(()=>{ try{ nextEl.scrollIntoView({block:'center'}); }catch(e){} },70);
+ setTimeout(()=>{ drawBoardLines(board); if(nextEl){ try{ nextEl.scrollIntoView({block:'center'}); }catch(e){} } },80);
+}
+// disegna le linee tratteggiate che collegano i nodi in sequenza (zigzag), dietro ai cerchi
+function drawBoardLines(board){
+ const svg=board&&board.querySelector('#boardlines'); if(!svg) return;
+ const nodes=[...board.querySelectorAll('.pnode')]; if(nodes.length<2){ svg.innerHTML=''; return; }
+ const br=board.getBoundingClientRect();
+ const pt=n=>{ const r=n.getBoundingClientRect(); return [Math.round(r.left-br.left+r.width/2), Math.round(r.top-br.top+r.height/2)]; };
+ const W=board.clientWidth, H=board.scrollHeight;
+ svg.setAttribute('width',W); svg.setAttribute('height',H); svg.setAttribute('viewBox','0 0 '+W+' '+H);
+ let d='', prev=pt(nodes[0]);
+ for(let i=1;i<nodes.length;i++){ const p=pt(nodes[i]); d+='<line x1="'+prev[0]+'" y1="'+prev[1]+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; prev=p; }
+ svg.innerHTML=d;
 }
 function setPathPage(i){
  const pages=document.querySelectorAll('.coursepage'); if(!pages.length) return;
@@ -2772,7 +2786,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.55'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.56'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
