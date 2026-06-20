@@ -312,8 +312,10 @@ button.levelcard:active{transform:scale(0.99);}
 .board .boardhdr:first-of-type{margin-top:14px;}
 .boardhdr.locked{color:var(--muted); font-size:18px;}
 .boardgap{height:30px;}
-.thgot{display:block; width:100%; margin-top:14px; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
-.thgot:active{transform:scale(0.98);}
+.throw{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
+.thgame{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
+.thgot{width:100%; background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:12px; padding:11px; font-size:14px; font-weight:700; cursor:pointer;}
+.thgame:active,.thgot:active{transform:scale(0.98);}
 .notelbl{font-size:13px; font-weight:700; color:var(--muted); margin:16px 0 2px; text-align:center; position:relative; z-index:1;}
 .notelbl b{color:var(--text);}
 .pnwrap{display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; margin-top:24px;}
@@ -584,7 +586,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], thGot:"Ho capito",
+ modes:["Facile","Normale","Difficile"], thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
@@ -758,7 +760,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], thGot:"Got it",
+ modes:["Easy","Normal","Hard"], thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
@@ -1753,8 +1755,9 @@ function renderPath(){
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const tbtn=node({color:colOf(k), ic:C[k].ic, size:72, label:(w+1)+'. '+plainNames(c,w), ring:thDone?1:null});
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
-   panel.innerHTML=buildTheoryBody(c,w)+'<button class="thgot" type="button">'+S9.thGot+'</button>'; board.appendChild(panel);
+   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+S9.thPlay+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
    tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
+   panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
    // Facile/Normale/Difficile: stesso simbolo nota, difficolta' = dimensione crescente; anello = stelle
    const SIZES=[56,70,84];
@@ -2194,7 +2197,7 @@ function bossGrowAdd(){
 function bossGrowPlay(){
  ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
  const base=Math.max(300,520-seq.length*16)/speed; let t=300;
- seq.forEach((k)=>{ timers.push(setTimeout(()=>{ pulse(base-90); tone(60+root+k,Math.max(0.2,base*0.82/1000)); },t)); t+=base; });
+ seq.forEach((k)=>{ timers.push(setTimeout(()=>{ game.shown?flash(k,base-90,true):pulse(base-90); tone(60+root+k,Math.max(0.2,base*0.82/1000)); },t)); t+=base; });
  timers.push(setTimeout(()=>{ state='input'; step=0; $('round').textContent=seq.length; setStatus(S9.yourTurn(0,seq.length)); },t));
 }
 function bossGrowPress(k,held){
@@ -2217,8 +2220,33 @@ function bossGrowFail(){
  $('bossbar').hidden=true; $('freetry').hidden=true; setStatus(S9.bossFail,'err'); $('reveal').innerHTML=''; centerPlay();
 }
 function bossGrowWin(){ // DIFFICILE: costruzione nota per nota a orecchio
+ if(game.warmup){ warmupWin(); return; } // riscaldamento teoria: niente stelle, segna teoria fatta
  const st=(game.melReplays===3&&game.scaleReplays===3)?3:2; saveProg(game.c,'w'+game.w+'m2',{stars:st,bestRound:game.target}); dominateBelow(game.c,game.w,2);
  modeWinCelebrate(2,st);
+}
+// RISCALDAMENTO della teoria: melodia che cresce 1->7 con SOLO casa + la nota nuova, MOSTRATA, per abituarsi alla sensazione
+function beginWarmup(c,w){
+ clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
+ const k=CWADD[c][w][CWADD[c][w].length-1]; const pool=[0,k].sort((a,b)=>a-b); // casa + la nota nuova
+ game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:S9.thPlay+' · '+plainNames(c,w), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
+ root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('gametop').hidden=false; $('gametitle').textContent=S9.thPlay+' · '+plainNames(c,w);
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
+ $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
+ $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays();
+ $('bossbar').hidden=false; renderBossBar();
+ render(); setupFreeTry(); bumpPlays(c); bumpStreak();
+ startDrone(); showDroneToggle(true);
+ bossGrowIntro();
+}
+function warmupWin(){
+ localStorage.setItem('it_th_'+game.c+'_'+game.w,'1'); // teoria completata -> anello giallo nel corso
+ $('bossbar').hidden=true; $('freetry').hidden=true;
+ $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-ear" style="font-size:38px"></i></div>';
+ $('celtitle').textContent=S9.thWinT; $('celname').innerHTML='<b>'+game.name+'</b>'; $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 function beginElite(c,w){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio, tonica random; batterlo sblocca nota + livello
  clearTimers(); stopAllHeld(); stopMic();
@@ -2800,7 +2828,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.59'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.60'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
