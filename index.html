@@ -329,7 +329,9 @@ button.levelcard:active{transform:scale(0.99);}
 .pnode.locked{background:var(--surface2)!important; color:var(--muted); cursor:default;}
 .pnring{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .pnode.next, .pnring.next{box-shadow:0 0 0 3px var(--gold), 0 0 16px 2px rgba(234,179,8,.5);}
-.pnlbl{font-size:12px; font-weight:700; color:var(--muted); margin-top:5px;}
+.pnlbl{font-size:13px; font-weight:700; color:var(--muted); margin-top:6px;}
+.pndiff{display:flex; align-items:center; justify-content:center; color:var(--gold); margin-top:6px; font-size:22px; line-height:1; letter-spacing:1px;}
+.pndiff.lock{color:var(--muted); opacity:.5;}
 .pnstars{font-size:12px; color:var(--gold); letter-spacing:1px; min-height:14px;}
 .pnstars .e{color:var(--line);}
 .theorypanel{width:100%; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin:8px 0 0;}
@@ -1723,7 +1725,7 @@ function renderPath(){
   const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
   const inner=document.createElement('div'); inner.className='pninner';
   const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'');
-  const sz=o.size||70;
+  const sz=o.size||88; // tutti i nodi alla stessa dimensione (ex-boss)
   btn.style.cssText=(o.locked?'':'background:'+o.color+';')+'width:'+sz+'px;height:'+sz+'px';
   btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*0.42)+'px"></i>';
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
@@ -1735,7 +1737,8 @@ function renderPath(){
   }
   if(o.next){ outer.classList.add('next'); nextEl=btn; }
   inner.appendChild(outer);
-  if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
+  if(o.diff){ const l=document.createElement('div'); l.className='pndiff'+(o.locked?' lock':''); l.textContent='♪'.repeat(o.diff); inner.appendChild(l); } // difficolta' = numero di ottavi (1=liv.1, 2=liv.2, ...)
+  else if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
   if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; inner.appendChild(s); }
   wrap.appendChild(inner); board.appendChild(wrap); return btn;
  }
@@ -1743,7 +1746,7 @@ function renderPath(){
   const cOpen=unlockAll()||courseUnlocked(c);
   const hd=document.createElement('div'); hd.className='boardhdr'+(cOpen?'':' locked'); hd.innerHTML=S9.courses[c].title+(cOpen?'':' <i class="ti ti-lock" style="font-size:14px"></i>'); board.appendChild(hd);
   if(c===COURSE_IDS[0]){ const cdone=!!localStorage.getItem('hm_casa_done');
-   node({color:colOf(0), ic:'home', size:78, label:'0. '+S9.casaCardTitle, ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
+   node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
    const sp=document.createElement('div'); sp.className='boardgap'; board.appendChild(sp); } // casa staccata
   if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
   S9.courses[c].levels.forEach((lv,w)=>{
@@ -1753,19 +1756,18 @@ function renderPath(){
     node({locked:true, ic:'lock', label:S9.lockReq(w)}); return; }
    // Titolo/Teoria = nodo col simbolo della nota; tap apre la teoria, "Ho capito" -> anello giallo
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
-   const tbtn=node({color:colOf(k), ic:C[k].ic, size:72, label:(w+1)+'. '+plainNames(c,w), ring:thDone?1:null});
+   const tbtn=node({color:colOf(k), ic:C[k].ic, label:(w+1)+'. '+plainNames(c,w), ring:thDone?1:null});
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
    panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+S9.thPlay+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
    tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
-   // Facile/Normale/Difficile: stesso simbolo nota, difficolta' = dimensione crescente; anello = stelle
-   const SIZES=[56,70,84];
+   // Modi: stessa dimensione e simbolo nota; difficolta' = numero di note musicali (1=liv.1, 2=liv.2, 3=liv.3); anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), ic:C[k].ic, size:SIZES[m], ring:sn/3, label:S9.modes[m], locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+    node({color:colOf(k), ic:C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
    // Boss: fatto = anello giallo pieno; da fare = nessuna traccia (no trofeo)
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w);
-   node({color:colOf(k), ic:'skull', size:92, label:S9.boss, ring:eDone?1:null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
+   node({color:colOf(k), ic:'skull', label:S9.boss, ring:eDone?1:null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
   });
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
@@ -2828,7 +2830,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.60'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.61'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
