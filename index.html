@@ -322,8 +322,7 @@ button.levelcard:active{transform:scale(0.99);}
 .pnwrap{display:flex; flex-direction:column; align-items:center; position:relative; z-index:1; margin-top:24px;}
 .pnwrap.first{margin-top:0;}
 .pninner{display:flex; flex-direction:column; align-items:center;}
-.pnwrap.left .pninner{transform:translateX(-68px);}
-.pnwrap.right .pninner{transform:translateX(68px);}
+.pnwrap.left .pninner,.pnwrap.right .pninner{transform:none;} /* niente zigzag: nodi in colonna dritta */
 .pnode{width:70px; height:70px; border-radius:50%; border:none; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; color:#fff; padding:0; line-height:1;}
 .pnode i.pic{font-size:30px;}
 .pnode:active{transform:scale(0.95);}
@@ -590,7 +589,7 @@ it:{
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
  modes:["Facile","Normale","Difficile"], thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
- chordSec:"Triadi", chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
+ chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
@@ -765,7 +764,7 @@ en:{
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
  modes:["Easy","Normal","Hard"], thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
- chordSec:"Triads", chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
+ chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
@@ -959,13 +958,27 @@ const CBASE={pent:[0], maj:[0,2,4,7,9], pmin:[0]}; // la casa (tonica) e' sempre
 const CWADD={pent:[[7],[4],[2],[9]], maj:[[11],[5]], pmin:[[7],[3],[5],[10]]};
 // ACCORDI come "livelli" extra dopo le note del corso: pool ristretta ai gradi dell'accordo (movable-do). notes = semitoni dalla tonica
 const CHORDS={ maj:[
- {n:'I',   sub:'do mi sol', q:'maj', notes:[0,4,7]},
- {n:'IV',  sub:'fa la do',  q:'maj', notes:[5,9,0]},
- {n:'V',   sub:'sol si re', q:'maj', notes:[7,11,2]},
- {n:'vi',  sub:'la do mi',  q:'min', notes:[9,0,4]},
- {n:'ii',  sub:'re fa la',  q:'min', notes:[2,5,9]},
- {n:'iii', sub:'mi sol si', q:'min', notes:[4,7,11]},
- {n:'vii°',sub:'si re fa',  q:'dim', notes:[11,2,5]},
+ // TRIADI
+ {sec:'tri', n:'I',   sub:'do mi sol', q:'maj', notes:[0,4,7]},
+ {sec:'tri', n:'IV',  sub:'fa la do',  q:'maj', notes:[5,9,0]},
+ {sec:'tri', n:'V',   sub:'sol si re', q:'maj', notes:[7,11,2]},
+ {sec:'tri', n:'vi',  sub:'la do mi',  q:'min', notes:[9,0,4]},
+ {sec:'tri', n:'ii',  sub:'re fa la',  q:'min', notes:[2,5,9]},
+ {sec:'tri', n:'iii', sub:'mi sol si', q:'min', notes:[4,7,11]},
+ {sec:'tri', n:'vii°',sub:'si re fa',  q:'dim', notes:[11,2,5]},
+ // SETTIME (4 note)
+ {sec:'sev', n:'Imaj7',  sub:'do mi sol si', q:'sevM',    notes:[0,4,7,11]},
+ {sec:'sev', n:'IVmaj7', sub:'fa la do mi',  q:'sevM',    notes:[5,9,0,4]},
+ {sec:'sev', n:'V7',     sub:'sol si re fa', q:'sev7',    notes:[7,11,2,5]},
+ {sec:'sev', n:'vi7',    sub:'la do mi sol', q:'sevm',    notes:[9,0,4,7]},
+ {sec:'sev', n:'ii7',    sub:'re fa la do',  q:'sevm',    notes:[2,5,9,0]},
+ {sec:'sev', n:'iii7',   sub:'mi sol si re', q:'sevm',    notes:[4,7,11,2]},
+ {sec:'sev', n:'viiø7',  sub:'si re fa la',  q:'semidim', notes:[11,2,5,9]},
+ // SESTE (4 note, solo diatoniche)
+ {sec:'six', n:'I6',  sub:'do mi sol la', q:'six', notes:[0,4,7,9]},
+ {sec:'six', n:'IV6', sub:'fa la do re',  q:'six', notes:[5,9,0,2]},
+ {sec:'six', n:'V6',  sub:'sol si re mi', q:'six', notes:[7,11,2,4]},
+ {sec:'six', n:'ii6', sub:'re fa la si',  q:'six', notes:[2,5,9,11]},
 ]};
 const COURSE_IDS=['pent','maj','pmin'];
 let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
@@ -1774,7 +1787,7 @@ function renderPath(){
   if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
   for(let w=0; w<totLevels(c); w++){
    const ch=isChord(c,w)?chordAt(c,w):null;
-   if(w===noteLevels(c) && chordList(c).length){ const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSec; board.appendChild(sh); } // sezione Triadi
+   if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; board.appendChild(sh); } } // intestazione sezione (Triadi/Settime/Seste)
    const k=ch?ch.notes[0]:CWADD[c][w][CWADD[c][w].length-1]; // colore = radice dell'accordo / nota nuova
    const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
@@ -1792,9 +1805,9 @@ function renderPath(){
    // Modi: stessa dimensione e simbolo; difficolta' = numero di ottavi; anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
     node({color:colOf(k), ic:C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
-   // Boss: fatto = anello giallo pieno; da fare = nessuna traccia
+   // Boss: fatto = anello giallo pieno + stella vicino alla dicitura; da fare = nessuna traccia
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w);
-   node({color:colOf(k), ic:'skull', label:S9.boss, ring:eDone?1:null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
+   node({color:colOf(k), ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
   }
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
@@ -2861,7 +2874,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.62'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.63'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
