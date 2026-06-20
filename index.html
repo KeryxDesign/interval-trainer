@@ -312,6 +312,7 @@ button.levelcard:active{transform:scale(0.99);}
 .board .boardhdr:first-of-type{margin-top:14px;}
 .boardhdr.locked{color:var(--muted); font-size:18px;}
 .boardgap{height:30px;}
+.boardsub{font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--gold); margin:42px 0 6px; text-align:center; position:relative; z-index:1;}
 .throw{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
 .thgame{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
 .thgot{width:100%; background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:12px; padding:11px; font-size:14px; font-weight:700; cursor:pointer;}
@@ -589,6 +590,7 @@ it:{
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
  modes:["Facile","Normale","Difficile"], thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ chordSec:"Triadi", chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
@@ -763,6 +765,7 @@ en:{
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
  modes:["Easy","Normal","Hard"], thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ chordSec:"Triads", chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
@@ -954,6 +957,16 @@ function ring(k){return k===0?';box-shadow:0 0 0 2.5px rgba(255,255,255,.72)':''
 // CBASE = note sempre presenti nel corso (la base da cui si parte). CWADD = note aggiunte livello per livello.
 const CBASE={pent:[0], maj:[0,2,4,7,9], pmin:[0]}; // la casa (tonica) e' sempre presente: si impara nel Livello 0 "La casa", non e' nota nuova di nessun livello
 const CWADD={pent:[[7],[4],[2],[9]], maj:[[11],[5]], pmin:[[7],[3],[5],[10]]};
+// ACCORDI come "livelli" extra dopo le note del corso: pool ristretta ai gradi dell'accordo (movable-do). notes = semitoni dalla tonica
+const CHORDS={ maj:[
+ {n:'I',   sub:'do mi sol', q:'maj', notes:[0,4,7]},
+ {n:'IV',  sub:'fa la do',  q:'maj', notes:[5,9,0]},
+ {n:'V',   sub:'sol si re', q:'maj', notes:[7,11,2]},
+ {n:'vi',  sub:'la do mi',  q:'min', notes:[9,0,4]},
+ {n:'ii',  sub:'re fa la',  q:'min', notes:[2,5,9]},
+ {n:'iii', sub:'mi sol si', q:'min', notes:[4,7,11]},
+ {n:'vii°',sub:'si re fa',  q:'dim', notes:[11,2,5]},
+]};
 const COURSE_IDS=['pent','maj','pmin'];
 let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
 const STAR1=5, STAR2=7;
@@ -984,6 +997,16 @@ function worldUnlocked(c,i){return unlockAll()||i===0||!!localStorage.getItem('h
 // modi in ordine (Facile->Normale->Difficile); il Boss invece e' sempre tentabile (test-out) -> gestito a parte
 function modeUnlocked(c,w,m){ if(!(unlockAll()||worldUnlocked(c,w))) return false; if(m===0) return true; return starsOf(c,w,m-1)>=1; }
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
+// livelli = note (CWADD) + accordi (CHORDS) in coda. w continuo: i primi sono note, poi accordi
+function noteLevels(c){return S9.courses[c].levels.length;}
+function chordList(c){return CHORDS[c]||[];}
+function totLevels(c){return noteLevels(c)+chordList(c).length;}
+function isChord(c,w){return w>=noteLevels(c);}
+function chordAt(c,w){return chordList(c)[w-noteLevels(c)];}
+function chordNotes(c,w){return [...new Set(chordAt(c,w).notes)].sort((a,b)=>a-b);}
+function levelPool(c,w){return isChord(c,w)?chordNotes(c,w):cumSet(c,w);} // note giocabili del livello (accordo = note dell'accordo)
+function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+chordAt(c,w).n):plainNames(c,w);}
+function startNote(pool){return pool.includes(0)?0:pool[0];} // melodia parte dalla casa se c'e', altrimenti dalla prima nota dell'accordo
 function courseUnlocked(c){
  if(unlockAll()) return true;
  const idx=COURSE_IDS.indexOf(c);
@@ -993,19 +1016,19 @@ function courseUnlocked(c){
  return !!localStorage.getItem('hm_elite_'+prev+'_'+last); // scala successiva: solo finendo la precedente (battuto il Boss dell'ultimo livello)
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):cumSet(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):levelPool(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
 function starsStr(n){let s=''; for(let i=1;i<=3;i++)s+=i<=n?'★':'<span class="e">★</span>'; return s;}
 function casaStar(c){return (c===COURSE_IDS[0]&&localStorage.getItem('hm_casa_done'))?1:0;} // Livello 0 "La casa" vale 1 stella nel corso iniziale
-function courseStars(c){let t=casaStar(c); S9.courses[c].levels.forEach((_,w)=>t+=levelStars(c,w)); return t;} // somma capata (A orecchio max 1)
+function courseStars(c){let t=casaStar(c); for(let w=0;w<totLevels(c);w++)t+=levelStars(c,w); return t;} // somma capata (A orecchio max 1)
 function totalStars(){let t=0; COURSE_IDS.forEach(c=>t+=courseStars(c)); return t;}
-function courseMaxStars(c){return S9.courses[c].levels.length*9+(c===COURSE_IDS[0]?1:0);}
+function courseMaxStars(c){return totLevels(c)*9+(c===COURSE_IDS[0]?1:0);}
 function courseEliteDone(c){let n=0; S9.courses[c].levels.forEach((_,w)=>{if(localStorage.getItem('hm_elite_'+c+'_'+w))n++;}); return n;}
 function bossDone(c){return !!localStorage.getItem('hm_boss_'+c);}
 function totalElite(){let n=0; COURSE_IDS.forEach(c=>n+=courseEliteDone(c)); return n;}
-function totalEliteMax(){let n=0; COURSE_IDS.forEach(c=>n+=S9.courses[c].levels.length); return n;}
+function totalEliteMax(){let n=0; COURSE_IDS.forEach(c=>n+=totLevels(c)); return n;}
 function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); return n;}
 
 function applyStatic(){
@@ -1188,7 +1211,7 @@ function getPlays(){try{return JSON.parse(localStorage.getItem('hm_plays')||'{}'
 function bumpPlays(id){const p=getPlays(); p[id]=(p[id]||0)+1; localStorage.setItem('hm_plays',JSON.stringify(p));}
 function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; return t;}
 function mostStudied(){const p=getPlays(); let best=null,bv=0; for(const k in p){if(p[k]>bv){bv=p[k];best=k;}} return best;}
-function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{S9.courses[c].levels.forEach((_,i)=>{if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;});}); return n;}
+function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{for(let i=0;i<totLevels(c);i++){if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;}}); return n;}
 function renderDashboard(){
  paintAvatar($('emblem'),getAvatar(),120);
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
@@ -1207,7 +1230,7 @@ function renderDashboard(){
 function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
  for(const c of COURSE_IDS){ if(!(unlockAll()||courseUnlocked(c))) break;
-  for(let w=0; w<S9.courses[c].levels.length; w++){ if(!(unlockAll()||worldUnlocked(c,w))) break;
+  for(let w=0; w<totLevels(c); w++){ if(!(unlockAll()||worldUnlocked(c,w))) break;
    if(!localStorage.getItem('hm_elite_'+c+'_'+w)){ for(let m=0;m<3;m++){ if(starsOf(c,w,m)===0) return {c:c,w:w,m:m}; } return {c:c,w:w,boss:true}; }
   } }
  return null;
@@ -1217,9 +1240,9 @@ function renderNext(boxId){
  const nx=nextExercise(); let title, sub, ic, fn, k=0, noteBg='rgba(0,0,0,.18)', noteIc='trophy';
  if(!nx){ fn=()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}); title=S9.dailyTitle; sub=S9.nextDone; ic='calendar-star'; }
  else if(nx.casa){ title=S9.casaCardTitle; sub=S9.casaLoadTitle; ic='home'; k=0; fn=()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); noteBg=C[0].h+';color:'+ink(0)+ring(0); noteIc=C[0].ic; }
- else { k=CWADD[nx.c][nx.w][CWADD[nx.c][nx.w].length-1]; noteBg=C[k].h+';color:'+ink(k)+ring(k); noteIc=C[k].ic;
-  if(nx.boss){ title=S9.boss+' · '+S9.level+' '+(nx.w+1); sub=S9.courses[nx.c].title+' · '+plainNames(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
-  else { title=S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w); sub=S9.courses[nx.c].title+' · '+S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
+ else { k=isChord(nx.c,nx.w)?chordAt(nx.c,nx.w).notes[0]:CWADD[nx.c][nx.w][CWADD[nx.c][nx.w].length-1]; noteBg=C[k].h+';color:'+ink(k)+ring(k); noteIc=C[k].ic;
+  if(nx.boss){ title=S9.boss+' · '+(isChord(nx.c,nx.w)?levelName(nx.c,nx.w):(S9.level+' '+(nx.w+1))); sub=S9.courses[nx.c].title+' · '+levelName(nx.c,nx.w); ic='skull'; fn=()=>showLoading(()=>beginElite(nx.c,nx.w),{c:nx.c,w:nx.w}); }
+  else { title=(isChord(nx.c,nx.w)?levelName(nx.c,nx.w):(S9.level+' '+(nx.w+1)+' · '+plainNames(nx.c,nx.w))); sub=S9.courses[nx.c].title+' · '+S9.modes[nx.m]; ic='player-play'; fn=()=>startLevel(nx.c,nx.w,nx.m); }
  }
  box.innerHTML='<button class="nextcard"><div class="ntxt"><div class="nlabel">'+S9.nextLabel+'</div><div class="ntitle"><i class="ti ti-'+ic+'"></i> '+title+'</div><div class="nsub">'+sub+'</div></div><span class="nnote" style="background:'+noteBg+'"><i class="ti ti-'+noteIc+'"></i></span></button>';
  box.querySelector('.nextcard').addEventListener('click',fn);
@@ -1470,7 +1493,7 @@ function startLevel(c,w,m,skipLoading){
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  $('gametop').hidden=false;
- $('gametitle').textContent=S9.level+' '+(w+1)+' · '+plainNames(c,w)+' · '+MODES[m];
+ $('gametitle').textContent=(isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+MODES[m];
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
@@ -1576,7 +1599,7 @@ function casaComplete(){
 }
 // ===== Assaggio guidato di ogni nuova nota (alla prima apertura del livello) =====
 function tasteNotes(c,w){ return CWADD[c][w].filter(k=>k!==0); } // la tonica e' gia' la casa
-function needTaste(c,w){ return tasteNotes(c,w).length>0 && !localStorage.getItem('hm_taste_'+c+'_'+w); }
+function needTaste(c,w){ return !isChord(c,w) && tasteNotes(c,w).length>0 && !localStorage.getItem('hm_taste_'+c+'_'+w); }
 function playTaste(k){ ensureCtx(); flash(k,470,true); tone(60+k,0.6); }
 function showTaste(c,w,then){
  const ks=tasteNotes(c,w), k=ks[0];
@@ -1644,7 +1667,7 @@ function tutPress(k){
 let celebrateCb=null;
 function celIcons(c,i){
  const ico=$('celico'); ico.innerHTML='';
- CWADD[c][i].forEach(k=>{
+ (isChord(c,i)?chordNotes(c,i):CWADD[c][i]).forEach(k=>{
   const d=document.createElement('div');
   d.style.cssText='width:64px;height:64px;border-radius:50%;background:'+C[k].h+';display:flex;align-items:center;justify-content:center;color:'+ink(k);
   d.innerHTML='<i class="ti ti-'+C[k].ic+'" style="font-size:30px"></i>';
@@ -1654,7 +1677,7 @@ function showCelebrate(c,i){
  celebrateCb=null;
  celIcons(c,i);
  $('celtitle').textContent=S9.unlockTitle;
- $('celname').textContent=(i+1)+'. '+plainNames(c,i);
+ $('celname').textContent=isChord(c,i)?levelName(c,i):((i+1)+'. '+plainNames(c,i));
  $('celtap').textContent=S9.unlockTap;
  $('celebrate').hidden=false;
  chime(); setTimeout(chime,400);
@@ -1677,7 +1700,7 @@ function finishLevel(){
 function showLevelWin(c,w,st,unlockMsg){
  celIcons(c,w);
  $('celtitle').textContent=S9.winTitle;
- $('celname').innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b> &nbsp; <span style="color:var(--gold);letter-spacing:2px;font-size:21px">'+starsStr(st)+'</span>'+(unlockMsg?'<br><span style="color:var(--gold);font-size:14px">'+unlockMsg+'</span>':'');
+ $('celname').innerHTML='<b>'+(isChord(c,w)?levelName(c,w):((w+1)+'. '+plainNames(c,w)))+'</b> &nbsp; <span style="color:var(--gold);letter-spacing:2px;font-size:21px">'+starsStr(st)+'</span>'+(unlockMsg?'<br><span style="color:var(--gold);font-size:14px">'+unlockMsg+'</span>':'');
  $('celtap').textContent=S9.unlockTap;
  celebrateCb=()=>showLevels();
  $('celebrate').hidden=false;
@@ -1749,26 +1772,30 @@ function renderPath(){
    node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
    const sp=document.createElement('div'); sp.className='boardgap'; board.appendChild(sp); } // casa staccata
   if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
-  S9.courses[c].levels.forEach((lv,w)=>{
+  for(let w=0; w<totLevels(c); w++){
+   const ch=isChord(c,w)?chordAt(c,w):null;
+   if(w===noteLevels(c) && chordList(c).length){ const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSec; board.appendChild(sh); } // sezione Triadi
+   const k=ch?ch.notes[0]:CWADD[c][w][CWADD[c][w].length-1]; // colore = radice dell'accordo / nota nuova
+   const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
-   const k=CWADD[c][w][CWADD[c][w].length-1];
-   if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+(w+1)+'. '+plainNames(c,w)+'</b>'; board.appendChild(nl);
-    node({locked:true, ic:'lock', label:S9.lockReq(w)}); return; }
-   // Titolo/Teoria = nodo col simbolo della nota; tap apre la teoria, "Ho capito" -> anello giallo
+   if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; board.appendChild(nl);
+    node({locked:true, ic:'lock', label:S9.lockReq(w)}); continue; }
+   // Titolo/Teoria = nodo col simbolo (nota o radice accordo); tap apre la teoria, "Ho capito" -> anello giallo
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
-   const tbtn=node({color:colOf(k), ic:C[k].ic, label:(w+1)+'. '+plainNames(c,w), ring:thDone?1:null});
+   const tbtn=node({color:colOf(k), ic:C[k].ic, label:nm, ring:thDone?1:null});
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
-   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+S9.thPlay+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
+   const playLbl=ch?S9.thPlayChord:S9.thPlay;
+   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+playLbl+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
    tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
-   // Modi: stessa dimensione e simbolo nota; difficolta' = numero di note musicali (1=liv.1, 2=liv.2, 3=liv.3); anello = stelle
+   // Modi: stessa dimensione e simbolo; difficolta' = numero di ottavi; anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
     node({color:colOf(k), ic:C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
-   // Boss: fatto = anello giallo pieno; da fare = nessuna traccia (no trofeo)
+   // Boss: fatto = anello giallo pieno; da fare = nessuna traccia
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w);
    node({color:colOf(k), ic:'skull', label:S9.boss, ring:eDone?1:null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
-  });
+  }
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
  setTimeout(()=>{ drawBoardLines(board); if(nextEl){ try{ nextEl.scrollIntoView({block:'center'}); }catch(e){} } },80);
@@ -1805,11 +1832,13 @@ function paras(t,mx){mx=mx||130; const out=[]; let cur=''; t.split(/(?<=[.!?])\s
 function paraBr(t,mx){return paras(t,mx).join('<br><br>');}
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
 function buildTheoryBody(c,w){
- const lv=S9.courses[c].levels[w];
+ const ch=isChord(c,w)?chordAt(c,w):null;
+ const notes=ch?chordNotes(c,w):CWADD[c][w];
+ const intro=ch?(S9.chordWord+' <b>'+ch.n+'</b> ('+ch.sub+') · '+S9.qual[ch.q]+'.<br><br>'+S9.chordIntro):paraBr(S9.courses[c].levels[w].th);
  // Teoria IN CHIARO sempre aperta: intro + ruolo di ogni suono (con ascolto) + dettaglio semitoni
- let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+paraBr(lv.th)+'</p>';
+ let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+intro+'</p>';
  let blocks='';
- CWADD[c][w].forEach(k=>{
+ notes.forEach(k=>{
   blocks+='<div style="margin:0 0 18px;">'+
    '<div style="display:flex; align-items:center; gap:11px; margin-bottom:7px;">'+
     '<span style="width:40px;height:40px;border-radius:50%;background:'+C[k].h+';color:'+ink(k)+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-'+C[k].ic+'" style="font-size:19px"></i></span>'+
@@ -1822,7 +1851,7 @@ function buildTheoryBody(c,w){
  body+=blocks;
  // dettaglio semitoni, sempre aperto (niente fisarmoniche)
  body+='<div style="border-top:1px solid var(--line); margin-top:4px; padding-top:14px;">';
- CWADD[c][w].forEach(k=>{body+='<p style="margin:0 0 6px; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
+ notes.forEach(k=>{body+='<p style="margin:0 0 6px; font-size:13px; color:var(--muted)">'+cap(S9.NM[k])+' = <b style="color:var(--text)">'+IV[k]+'</b> ('+DEG[k]+') · '+S9.semis(k)+S9.tones(k)+'</p>';});
  body+='</div>';
  return body;
 }
@@ -2160,12 +2189,12 @@ function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
 function beginDifficile(c,w){ // DIFFICILE: costruisci la melodia una nota alla volta, SOLO a orecchio, tonica random
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
- const pool=cumSet(c,w);
- game={kind:'bossgrow', c:c, w:w, m:2, name:S9.level+' '+(w+1), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
+ const pool=levelPool(c,w);
+ game={kind:'bossgrow', c:c, w:w, m:2, name:levelName(c,w), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+S9.level+' '+(w+1);
+ $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+levelName(c,w);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
@@ -2191,7 +2220,7 @@ function bossGrowIntro(){
  timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },t));
 }
 function bossGrowAdd(){
- if(!seq.length){ seq.push(0); dur.push(1); return; } // il boss parte SEMPRE dalla tonica
+ if(!seq.length){ seq.push(startNote(game.notes)); dur.push(1); return; } // parte dalla casa se c'e', altrimenti dalla prima nota della pool (accordi)
  const pool=game.notes; let k,g=0;
  do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && seq.length>=2 && k===seq[seq.length-1] && k===seq[seq.length-2]);
  seq.push(k); dur.push(1);
@@ -2229,12 +2258,13 @@ function bossGrowWin(){ // DIFFICILE: costruzione nota per nota a orecchio
 // RISCALDAMENTO della teoria: melodia che cresce 1->7 con SOLO casa + la nota nuova, MOSTRATA, per abituarsi alla sensazione
 function beginWarmup(c,w){
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
- const k=CWADD[c][w][CWADD[c][w].length-1]; const pool=[0,k].sort((a,b)=>a-b); // casa + la nota nuova
- game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:S9.thPlay+' · '+plainNames(c,w), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
+ const pool=isChord(c,w)?chordNotes(c,w):[...new Set([0,...CWADD[c][w]])].sort((a,b)=>a-b); // accordo: le sue note; nota: casa + la nota nuova
+ const lbl=(isChord(c,w)?S9.thPlayChord:S9.thPlay)+' · '+levelName(c,w);
+ game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:lbl, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.thPlay+' · '+plainNames(c,w);
+ $('gametop').hidden=false; $('gametitle').textContent=lbl;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays();
@@ -2252,13 +2282,13 @@ function warmupWin(){
 }
 function beginElite(c,w){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio, tonica random; batterlo sblocca nota + livello
  clearTimers(); stopAllHeld(); stopMic();
- const pool=cumSet(c,w);
- startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:S9.level+' '+(w+1), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+S9.level+' '+(w+1));
+ const pool=levelPool(c,w);
+ startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
 }
 function beginNormale(c,w){ // NORMALE: ricostruzione da 7 che VEDI (flash), tonica random
  clearTimers(); stopAllHeld(); stopMic();
- const pool=cumSet(c,w);
- startBossLike({kind:'boss', m:1, c:c, w:w, name:S9.level+' '+(w+1), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+S9.level+' '+(w+1));
+ const pool=levelPool(c,w);
+ startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+levelName(c,w));
 }
 function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,bestRound:7}); if(m==='boss'){set(0);set(1);set(2);} else if(m===1||m===2){set(0);} } // generoso: chi puo' il piu' regala ★★★ ai modi dominati
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
@@ -2470,7 +2500,8 @@ const DURS=[0.5,1,1,1,1.5,2];
 function addNote(forceNew){
  const sc=activeSet();
  let pool=sc;
- if(game.kind==='level'){
+ if(game.kind==='level' && isChord(game.c,game.w)){ pool=sc; } // accordo: melodie con le sole note dell'accordo
+ else if(game.kind==='level'){
   // Facile: riscaldamento integrato e CONTEGGIATO -> le prime note usano solo tonica + nota nuova, poi si apre a tutte
   const warmPool=[...new Set([0,...CWADD[game.c][game.w]])].filter(k=>sc.includes(k));
   if(game.m===0 && seq.length<WARMUP){
@@ -2517,8 +2548,8 @@ function loadingTip(ctx){
 }
 function showLoading(cb,ctx){
  const tip=loadingTip(ctx);
- const lvTitle = ctx ? (ctx.title ? ctx.title : ctx.casa ? S9.casaLoadTitle : ctx.w!=null ? (S9.level+' '+(ctx.w+1)+' · '+plainNames(ctx.c,ctx.w)) : S9.courses[ctx.c].title)
-                     : (game.kind==='level' ? (S9.level+' '+(game.w+1)+' · '+plainNames(game.c,game.w)) : '');
+ const lvTitle = ctx ? (ctx.title ? ctx.title : ctx.casa ? S9.casaLoadTitle : ctx.w!=null ? (isChord(ctx.c,ctx.w)?levelName(ctx.c,ctx.w):(S9.level+' '+(ctx.w+1)+' · '+plainNames(ctx.c,ctx.w))) : S9.courses[ctx.c].title)
+                     : (game.kind==='level' ? (isChord(game.c,game.w)?levelName(game.c,game.w):(S9.level+' '+(game.w+1)+' · '+plainNames(game.c,game.w))) : '');
  $('pr-level').textContent=lvTitle;
  $('pr-icon').innerHTML='<i class="ti ti-'+tip.ic+'"></i>';
  $('pr-cat').textContent=tip.cat;
@@ -2533,7 +2564,7 @@ function showLoading(cb,ctx){
  pr.onclick=go;
 }
 function beginGame(){
- ensureCtx(); clearTimers(); stopAllHeld(); resetSpeed(); usedRehear=false; seq=[0]; dur=[1]; addNote(true);
+ ensureCtx(); clearTimers(); stopAllHeld(); resetSpeed(); usedRehear=false; seq=[startNote(activeSet())]; dur=[1]; addNote(true);
  if(game.kind==='level') bumpPlays(game.c); else if(game.kind==='free') bumpPlays(scale);
  bumpStreak(); startDrone(); showDroneToggle(true);
  clearCenter(); $('round').textContent=seq.length; playSeq();
@@ -2830,7 +2861,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.61'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.62'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
