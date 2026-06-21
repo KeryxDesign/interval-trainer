@@ -306,6 +306,7 @@ button.levelcard:active{transform:scale(0.99);}
 .stepth>div{padding:0 12px 12px;}
 /* tabellone gioco-dell-oca: nodi cerchio collegati da linee tratteggiate */
 .board{display:flex; flex-direction:column; align-items:center; position:relative; padding-top:20px;}
+.boardsec{display:flex; flex-direction:column; align-items:center; width:100%; border-radius:22px; padding:8px 0 28px; margin:0 0 2px;} /* sfondo leggermente diverso per sezione */
 #boardlines{position:absolute; left:0; top:0; pointer-events:none; z-index:0;}
 #boardlines line{stroke:var(--line); stroke-width:3; stroke-dasharray:4 8; stroke-linecap:round;}
 .boardhdr{font-size:24px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--text); margin:56px 0 8px; text-align:center; position:relative; z-index:1; line-height:1.15;}
@@ -339,7 +340,7 @@ button.levelcard:active{transform:scale(0.99);}
 .pnring{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .pnode.next, .pnring.next{box-shadow:0 0 0 3px var(--gold), 0 0 16px 2px rgba(234,179,8,.5);}
 .pnlbl{font-size:13px; font-weight:700; color:var(--muted); margin-top:6px;}
-.pndiff-in{font-size:15px; line-height:1; letter-spacing:1px; margin-top:2px; color:inherit;} /* difficolta' dentro al cerchio */
+.pndiff-in{font-size:17px; line-height:1; margin-top:3px; color:inherit; opacity:.92;} /* simbolo esercizio dentro al cerchio */
 .pnsub{font-size:11px; color:var(--muted); margin-top:1px;}
 .pnstars{font-size:12px; color:var(--gold); letter-spacing:1px; min-height:14px;}
 .pnstars .e{color:var(--line);}
@@ -387,9 +388,7 @@ button.levelcard:active{transform:scale(0.99);}
       <div id="emblem" aria-hidden="true" style="cursor:pointer"></div>
       <div class="dashname"><p id="hname" style="cursor:pointer">Huermony</p><i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i></div>
     </div>
-    <div id="nextbox" style="margin:6px 0 22px;"></div>
-    <div id="tipbox" style="margin:0 0 26px;"></div>
-    <p id="htag" class="dashsec" style="margin-top:0;"></p>
+    <p id="htag" class="dashsec" style="margin-top:22px;"></p>
     <div style="text-align:center;"><div id="streak" hidden></div></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
@@ -397,6 +396,7 @@ button.levelcard:active{transform:scale(0.99);}
       <div class="metric"><div class="mv" id="m-levels">0</div><div class="ml" id="m-levels-l"></div></div>
     </div>
     <div id="dash-studied" hidden></div>
+    <div id="tipbox" style="margin:26px 0 26px;"></div>
     <div id="allenabox" style="margin:0 0 8px;"></div>
     <div id="medalsbox" style="margin:0 0 24px;"></div>
   </div>
@@ -1014,7 +1014,7 @@ function bestOf(c,w,m){const e=prog(c)['w'+w+'m'+m]; return e?e.bestRound:0;}
 function unlockAll(){return localStorage.getItem('it_unlockall')==='1';}
 function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAll()?S9.unlockOn:S9.unlock;}
 // livello successivo: si sblocca battendo l'Elite del livello precedente (che introduce la nota)
-function worldUnlocked(c,i){return unlockAll()||i===0||!!localStorage.getItem('hm_elite_'+c+'_'+(i-1));}
+function worldUnlocked(c,i){ if(unlockAll()) return true; if(i===0) return c!==COURSE_IDS[0] || !!localStorage.getItem('hm_casa_done'); return !!localStorage.getItem('hm_elite_'+c+'_'+(i-1)); } // il primo livello si sblocca solo dopo la casa (Livello 0)
 // modi in ordine (Facile->Normale->Difficile); il Boss invece e' sempre tentabile (test-out) -> gestito a parte
 function modeUnlocked(c,w,m){ if(!(unlockAll()||worldUnlocked(c,w))) return false; if(m===0) return true; return starsOf(c,w,m-1)>=1; }
 function bossUnlocked(c,w){ return unlockAll() || starsOf(c,w,2)>=1; } // niente skip: il Boss si sblocca solo dopo aver fatto i 3 modi
@@ -1247,7 +1247,7 @@ function renderDashboard(){
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
- renderNext(); renderTip(); renderAllena(); renderMedals();
+ renderTip(); renderAllena(); renderMedals(); // "Prossimo esercizio" rimosso dal Profilo
 }
 function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
@@ -1765,6 +1765,10 @@ function renderPath(){
  const board=document.createElement('div'); board.className='board'; box.appendChild(board);
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.id='boardlines'; board.appendChild(svg);
  const colOf=k=>C[k].h+';color:'+ink(k)+ring(k);
+ // ogni sezione ha uno sfondo leggermente diverso
+ const SEC_BG=['rgba(70,110,255,.06)','rgba(120,210,140,.06)','rgba(255,180,40,.06)','rgba(190,110,255,.06)','rgba(255,110,150,.07)','rgba(80,210,210,.06)'];
+ let curSec=board, secIdx=0;
+ const startSec=()=>{ const s=document.createElement('div'); s.className='boardsec'; s.style.background=SEC_BG[secIdx++%SEC_BG.length]; board.appendChild(s); curSec=s; return s; };
  function node(o){ // {color,ic,locked,next,label,stars,diff,onClick} -> ritorna il .pnode ; zigzag sx/dx attorno alla spina centrale
   const side=(zz++%2===0)?' left':' right';
   const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
@@ -1773,8 +1777,8 @@ function renderPath(){
   const sz=o.size||88; // tutti i nodi alla stessa dimensione (ex-boss)
   const bg = o.locked ? '' : (o.pie ? 'background:'+pieBg(o.pie)+';color:#fff;' : 'background:'+o.color+';');
   btn.style.cssText=bg+'width:'+sz+'px;height:'+sz+'px';
-  let ih=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*(o.diff?0.36:0.42))+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
-  if(o.diff) ih+='<span class="pndiff-in">'+'♪'.repeat(o.diff)+'</span>'; // difficolta' DENTRO al cerchio (1=liv.1, 2=liv.2, ...)
+  let ih=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*(o.ex?0.36:0.42))+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
+  if(o.ex) ih+='<i class="ti ti-'+o.ex+' pndiff-in"></i>'; // simbolo univoco dell'esercizio DENTRO al cerchio
   btn.innerHTML=ih;
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
   let outer=btn;
@@ -1788,40 +1792,42 @@ function renderPath(){
   if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
   if(o.sub){ const s=document.createElement('div'); s.className='pnsub'; s.textContent=o.sub; inner.appendChild(s); } // seconda riga (es. intervallo "tonica")
   if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; inner.appendChild(s); }
-  wrap.appendChild(inner); board.appendChild(wrap); return btn;
+  wrap.appendChild(inner); curSec.appendChild(wrap); return btn;
  }
+ const MODE_EX=['eye','music','ear']; // simbolo univoco per esercizio: vedi / melodia / orecchio
  COURSE_IDS.forEach(c=>{
   const cOpen=unlockAll()||courseUnlocked(c);
-  const hd=document.createElement('div'); hd.className='boardhdr'+(cOpen?'':' locked'); hd.innerHTML=S9.courses[c].title+(cOpen?'':' <i class="ti ti-lock" style="font-size:14px"></i>'); board.appendChild(hd);
+  startSec(); // nuova sezione con sfondo diverso per ogni corso
+  const hd=document.createElement('div'); hd.className='boardhdr'+(cOpen?'':' locked'); hd.innerHTML=S9.courses[c].title+(cOpen?'':' <i class="ti ti-lock" style="font-size:14px"></i>'); curSec.appendChild(hd);
   if(c===COURSE_IDS[0]){ const cdone=!!localStorage.getItem('hm_casa_done');
    node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, sub:S9.INM[0], ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
-   const sp=document.createElement('div'); sp.className='boardgap'; board.appendChild(sp); } // casa staccata
+   const sp=document.createElement('div'); sp.className='boardgap'; curSec.appendChild(sp); } // casa staccata
   if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
   for(let w=0; w<totLevels(c); w++){
    const ch=isChord(c,w)?chordAt(c,w):null;
-   if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; board.appendChild(sh); } } // intestazione sezione (Triadi/Settime/Seste)
+   if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ startSec(); const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; curSec.appendChild(sh); } } // sezione accordi (Triadi/Settime/Seste) con sfondo proprio
    const k=ch?ch.notes[0]:CWADD[c][w][CWADD[c][w].length-1]; // colore = radice dell'accordo / nota nuova
    const pie=ch?chordNotes(c,w).map(n=>C[n].h):null; // torta coi colori delle note dell'accordo
    const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
-   if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; board.appendChild(nl);
+   if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; curSec.appendChild(nl);
     node({locked:true, ic:'lock', label:S9.lockReq(w)}); continue; }
    // Titolo della nota = intestazione tappabile per la teoria (OPZIONALE, non un livello): il primo livello e' subito il gioco
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
    const hicon=ch?'<span class="nh-pie" style="background:'+pieBg(pie)+'"></span>':'<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i>';
-   const ivname=ch?ch.sub:S9.INM[k]; // sotto al nome: nome dell'intervallo (o le note dell'accordo)
+   const ivname=ch?ch.sub:(S9.INM[k]+(S9.DEG[k]&&S9.DEG[k]!==S9.INM[k]?' · '+S9.DEG[k]:'')); // sotto al nome: intervallo + ruolo (es. quinta giusta · dominante)
    hdr.innerHTML='<span class="nh-top">'+hicon+'<span class="nh-name">'+nm+'</span><i class="ti ti-book-2 nh-ch"></i></span><span class="nh-iv">'+ivname+'</span>';
-   board.appendChild(hdr);
+   curSec.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
    const playLbl=ch?S9.thPlayChord:S9.thPlay;
-   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+playLbl+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
+   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+playLbl+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; curSec.appendChild(panel);
    hdr.addEventListener('click',()=>{ panel.hidden=!panel.hidden; hdr.classList.toggle('open',!panel.hidden); drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
-   // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Difficolta' = ottavi, anello = stelle
+   // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Esercizio = icona univoca, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
    // Boss: bloccato finche' i 3 modi non sono fatti (niente skip). Fatto = anello giallo + stella
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bLock=!bossUnlocked(c,w);
    node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, locked:bLock, next:!bLock&&isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
@@ -2162,7 +2168,7 @@ function layoutAids(){
 }
 function updateEliteReplay(){ if(game.kind!=='boss') return; $('rehtxt').textContent=S9.rehear+' '+game.replays; $('rehear').style.opacity=game.replays>0?'1':'.4'; } // conteggio sul bottone (elite/hard)
 // PROVA LIBERA: in Elite e Boss una riga di note suonabili per ricostruire la melodia per tentativi. 3 sessioni per partita.
-function freeTryEligible(){ return !!game && (game.elite || game.daily || game.review || game.kind==='bossgrow'); }
+function freeTryEligible(){ return !!game && !game.elite && (game.daily || game.review || game.kind==='bossgrow'); } // niente "Prova le note" come aiuto nel Boss/Elite
 function setupFreeTry(){
  const boss=(game.kind==='boss'||game.kind==='bossgrow'); // zona aiuti in basso per tutte le modalità boss-like
  if(!boss){ $('freetry').hidden=true; return; }
@@ -2891,7 +2897,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.67'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.68'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
