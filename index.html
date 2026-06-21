@@ -318,6 +318,8 @@ button.levelcard:active{transform:scale(0.99);}
 .notehdr .nh-ch{font-size:15px; color:var(--muted);}
 .notehdr.open .nh-ch{color:var(--gold);}
 .notehdr.done .nh-ch{color:var(--gold);}
+.nh-pie{width:18px; height:18px; border-radius:50%; display:inline-block; flex-shrink:0;}
+.pnode.pie i.pic{color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6);}
 .throw{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
 .thgame{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
 .thgot{width:100%; background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:12px; padding:11px; font-size:14px; font-weight:700; cursor:pointer;}
@@ -499,7 +501,6 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="reveal"></div>
     <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
     <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
-    <details class="legbox"><summary id="legsum"></summary><div id="legend"></div></details>
     </div>
   </div>
 
@@ -1014,6 +1015,7 @@ function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAl
 function worldUnlocked(c,i){return unlockAll()||i===0||!!localStorage.getItem('hm_elite_'+c+'_'+(i-1));}
 // modi in ordine (Facile->Normale->Difficile); il Boss invece e' sempre tentabile (test-out) -> gestito a parte
 function modeUnlocked(c,w,m){ if(!(unlockAll()||worldUnlocked(c,w))) return false; if(m===0) return true; return starsOf(c,w,m-1)>=1; }
+function bossUnlocked(c,w){ return unlockAll() || starsOf(c,w,2)>=1; } // niente skip: il Boss si sblocca solo dopo aver fatto i 3 modi
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
 // livelli = note (CWADD) + accordi (CHORDS) in coda. w continuo: i primi sono note, poi accordi
 function noteLevels(c){return S9.courses[c].levels.length;}
@@ -1025,6 +1027,7 @@ function chordNotes(c,w){return [...new Set(chordAt(c,w).notes)].sort((a,b)=>a-b
 function levelPool(c,w){return isChord(c,w)?chordNotes(c,w):cumSet(c,w);} // note giocabili del livello (accordo = note dell'accordo)
 function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+chordAt(c,w).n):plainNames(c,w);}
 function startNote(pool){return pool.includes(0)?0:pool[0];} // melodia parte dalla casa se c'e', altrimenti dalla prima nota dell'accordo
+function pieBg(cols){const n=cols.length; let s='conic-gradient('; for(let i=0;i<n;i++){const a=Math.round(i*360/n), b=Math.round((i+1)*360/n); s+=cols[i]+' '+a+'deg '+b+'deg'+(i<n-1?', ':'');} return s+')';} // torta a fette uguali coi colori delle note dell'accordo
 function courseUnlocked(c){
  if(unlockAll()) return true;
  const idx=COURSE_IDS.indexOf(c);
@@ -1084,10 +1087,10 @@ function applyStatic(){
  const sp=$('spdsel'); sp.innerHTML='';
  [['0.5','0.5×'],['1','1×'],['1.5','1.5×'],['2','2×'],['2.5','2.5×'],['3','3×']].forEach(([v,t])=>{const o=document.createElement('option'); o.value=v; o.textContent=t; sp.appendChild(o);});
  sp.value=String(speed);
- const lg=$('legend'); lg.innerHTML='';
+ const lg=$('legend'); if(lg){ lg.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('div'); d.className='leg';
   d.innerHTML='<span class="sw" style="background:'+c.h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+c.ic+'" style="font-size:14px"></i></span><small><b>'+IV[k]+' · '+S9.NM[k]+'</b><br><span style="color:var(--muted)">'+DEG[k]+'</span></small>';
-  lg.appendChild(d);});
+  lg.appendChild(d);}); }
  const thBox=$('theory'); thBox.innerHTML='';
  C.forEach((c,k)=>{const d=document.createElement('details'); d.className='world'; d.style.padding='10px 14px';
   d.innerHTML='<summary style="display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none">'+
@@ -1765,10 +1768,11 @@ function renderPath(){
   const side=(zz++%2===0)?' left':' right';
   const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
   const inner=document.createElement('div'); inner.className='pninner';
-  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'');
+  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'')+(o.pie&&!o.locked?' pie':'');
   const sz=o.size||88; // tutti i nodi alla stessa dimensione (ex-boss)
-  btn.style.cssText=(o.locked?'':'background:'+o.color+';')+'width:'+sz+'px;height:'+sz+'px';
-  btn.innerHTML='<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*0.42)+'px"></i>';
+  const bg = o.locked ? '' : (o.pie ? 'background:'+pieBg(o.pie)+';color:#fff;' : 'background:'+o.color+';');
+  btn.style.cssText=bg+'width:'+sz+'px;height:'+sz+'px';
+  btn.innerHTML=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*0.42)+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
   let outer=btn;
   if(o.ring!=null && !o.locked){ // anello giallo = completato (boss/teoria pieno; modi = frazione stelle)
@@ -1794,6 +1798,7 @@ function renderPath(){
    const ch=isChord(c,w)?chordAt(c,w):null;
    if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; board.appendChild(sh); } } // intestazione sezione (Triadi/Settime/Seste)
    const k=ch?ch.notes[0]:CWADD[c][w][CWADD[c][w].length-1]; // colore = radice dell'accordo / nota nuova
+   const pie=ch?chordNotes(c,w).map(n=>C[n].h):null; // torta coi colori delle note dell'accordo
    const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
    if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; board.appendChild(nl);
@@ -1801,7 +1806,8 @@ function renderPath(){
    // Titolo della nota = intestazione tappabile per la teoria (OPZIONALE, non un livello): il primo livello e' subito il gioco
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
-   hdr.innerHTML='<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i><span>'+nm+'</span><i class="ti ti-book-2 nh-ch"></i>';
+   const hicon=ch?'<span class="nh-pie" style="background:'+pieBg(pie)+'"></span>':'<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i>';
+   hdr.innerHTML=hicon+'<span>'+nm+'</span><i class="ti ti-book-2 nh-ch"></i>';
    board.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
    const playLbl=ch?S9.thPlayChord:S9.thPlay;
@@ -1809,12 +1815,12 @@ function renderPath(){
    hdr.addEventListener('click',()=>{ panel.hidden=!panel.hidden; hdr.classList.toggle('open',!panel.hidden); drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
-   // Modi: stessa dimensione e simbolo; difficolta' = numero di ottavi; anello = stelle
+   // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Difficolta' = ottavi, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), ic:C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
-   // Boss: fatto = anello giallo pieno + stella vicino alla dicitura; da fare = nessuna traccia
-   const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w);
-   node({color:colOf(k), ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
+    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, diff:m+1, ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+   // Boss: bloccato finche' i 3 modi non sono fatti (niente skip). Fatto = anello giallo + stella
+   const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bLock=!bossUnlocked(c,w);
+   node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, locked:bLock, next:!bLock&&isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
   }
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
@@ -2881,7 +2887,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.64'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.65'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
