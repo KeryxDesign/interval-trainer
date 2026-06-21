@@ -44,6 +44,14 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #dailysheetclose{background:var(--surface2); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
 #locktip{position:fixed; z-index:80; display:none; transform:translate(-50%,-100%); background:#f4f6fb; color:#14151a; font-size:13px; font-weight:700; padding:8px 12px; border-radius:12px; max-width:220px; text-align:center; line-height:1.3; box-shadow:0 6px 20px rgba(0,0,0,.45); pointer-events:none;}
 #locktip::after{content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); border:7px solid transparent; border-top-color:#f4f6fb; border-bottom:0;}
+#xpbar{margin:18px 0 4px;}
+.xprow{display:flex; justify-content:space-between; align-items:baseline; margin:0 0 6px;}
+.xplvl{font-size:15px; font-weight:800; color:var(--gold);}
+.xpnum{font-size:12px; color:var(--muted); font-weight:600;}
+.xptrack{height:12px; background:var(--surface2); border-radius:8px; overflow:hidden;}
+.xpfill{height:100%; background:var(--gold); border-radius:8px; transition:width .4s ease;}
+#xptoast{position:fixed; left:50%; top:64px; transform:translateX(-50%); z-index:90; display:none; background:var(--gold); color:#1b1206; font-weight:800; font-size:16px; padding:9px 16px; border-radius:20px; box-shadow:0 6px 18px rgba(0,0,0,.4); pointer-events:none;}
+@keyframes xppop{0%{opacity:0; transform:translate(-50%,-10px)} 15%{opacity:1; transform:translate(-50%,0)} 80%{opacity:1} 100%{opacity:0; transform:translate(-50%,-8px)}}
 /* card prossimo esercizio: nota a destra */
 .nextcard{display:flex; align-items:center; gap:14px;}
 .nextcard .ntxt{flex:1; min-width:0;}
@@ -405,6 +413,7 @@ button.levelcard:active{transform:scale(0.99);}
       <div id="emblem" aria-hidden="true" style="cursor:pointer"></div>
       <div class="dashname"><p id="hname" style="cursor:pointer">Huermony</p><i class="ti ti-pencil" id="hedit" style="color:var(--muted); font-size:15px; cursor:pointer;"></i></div>
     </div>
+    <div id="xpbar"></div>
     <p id="htag" class="dashsec" style="margin-top:22px;"></p>
     <div style="text-align:center;"><div id="streak" hidden></div></div>
     <div class="metrics">
@@ -615,7 +624,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], trainTitle:"Training", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
@@ -791,7 +800,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], trainTitle:"Training", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
@@ -1075,6 +1084,11 @@ function bossDone(c){return !!localStorage.getItem('hm_boss_'+c);}
 function totalElite(){let n=0; COURSE_IDS.forEach(c=>n+=courseEliteDone(c)); return n;}
 function totalEliteMax(){let n=0; COURSE_IDS.forEach(c=>n+=totLevels(c)); return n;}
 function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); return n;}
+// XP alla Duolingo: accumuli esperienza completando esercizi e sfide; sali di livello
+function getXP(){ return parseInt(localStorage.getItem('hm_xp')||'0',10)||0; }
+function xpInfo(){ const xp=getXP(); let lvl=1, need=100, acc=0; while(xp>=acc+need){ acc+=need; lvl++; need=lvl*100; } return {xp:xp, lvl:lvl, into:xp-acc, need:need, pct:Math.round((xp-acc)/need*100)}; }
+function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); xpToast(n, xpInfo().lvl>before); }
+function xpToast(n, levelUp){ let t=document.getElementById('xptoast'); if(!t){ t=document.createElement('div'); t.id='xptoast'; document.body.appendChild(t); } t.innerHTML='+'+n+' XP'+(levelUp?' &middot; <b>'+S9.xpLevel+' '+xpInfo().lvl+'!</b>':''); t.style.display='block'; t.style.animation='none'; void t.offsetWidth; t.style.animation='xppop 1.9s ease forwards'; clearTimeout(t._t); t._t=setTimeout(()=>{t.style.display='none';},1950); }
 
 function paintDots12(el,size){ if(!el)return; el.innerHTML=''; const r=size/2-2.5, cx=size/2, ds=Math.max(3,size*0.16);
  for(let k=0;k<12;k++){const an=(-90+k*30)*Math.PI/180,x=cx+r*Math.cos(an),y=cx+r*Math.sin(an); const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-ds/2)+'px;top:'+(y-ds/2)+'px;width:'+ds+'px;height:'+ds+'px;border-radius:50%;background:'+C[k].h; el.appendChild(d);} }
@@ -1260,9 +1274,11 @@ function bumpPlays(id){const p=getPlays(); p[id]=(p[id]||0)+1; localStorage.setI
 function totalGames(){const p=getPlays(); let t=0; for(const k in p)t+=p[k]; return t;}
 function mostStudied(){const p=getPlays(); let best=null,bv=0; for(const k in p){if(p[k]>bv){bv=p[k];best=k;}} return best;}
 function completedLevels(){let n=0; COURSE_IDS.forEach(c=>{for(let i=0;i<totLevels(c);i++){if(starsOf(c,i,0)>=1||starsOf(c,i,1)>=1||starsOf(c,i,2)>=1)n++;}}); return n;}
+function renderXPbar(){ const b=$('xpbar'); if(!b)return; const x=xpInfo(); b.innerHTML='<div class="xprow"><span class="xplvl">'+S9.xpLevel+' '+x.lvl+'</span><span class="xpnum">'+x.into+' / '+x.need+' XP</span></div><div class="xptrack"><div class="xpfill" style="width:'+x.pct+'%"></div></div>'; }
 function renderDashboard(){
  paintAvatar($('emblem'),getAvatar(),120);
  const nm=getName(); $('hname').textContent=nm||S9.defaultName;
+ renderXPbar();
  $('m-stars').textContent=totalStars();
  $('m-elite').textContent=totalElite()+'/'+totalEliteMax(); // Boss battuti (uno per livello)
  $('m-levels').textContent=completedLevels();
@@ -1642,6 +1658,7 @@ function casaStep(n){
 }
 // fine Livello 0: prima stella + casa sbloccata nel Libero, poi torna alla Home (non salta al livello successivo)
 function casaComplete(){
+ if(!localStorage.getItem('hm_casa_xp')){ localStorage.setItem('hm_casa_xp','1'); addXP(20); } // XP casa una volta sola
  localStorage.setItem('hm_casa_done','1');
  clearTimers(); stopAllHeld(); stopDrone(); state='over';
  $('celico').innerHTML='<div style="display:flex;gap:10px;align-items:center;justify-content:center">'
@@ -1762,6 +1779,7 @@ function showLevelWin(c,w,st,unlockMsg){
  celebrateCb=()=>showLevels();
  $('celebrate').hidden=false;
  chime(); setTimeout(chime,260); setTimeout(chime,520);
+ addXP(10+5*st); // XP per Training/Facile completati
 }
 
 function bestKey(){return 'it_best_'+scale;}
@@ -2394,7 +2412,7 @@ function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,best
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="display:flex;justify-content:center"><span style="color:var(--gold);letter-spacing:3px;font-size:34px">'+starsStr(st)+'</span></div>';
  $('celtitle').textContent=S9.modes[m]+' ✓'; $('celname').innerHTML='<b>'+game.name+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260); }
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260); addXP(10+5*st); } // XP per Normale/Difficile
 // ===== ALLENAMENTO: note sbloccate su tutti i corsi =====
 function allUnlockedNotes(){ const s=new Set([0]); COURSE_IDS.forEach(c=>{ if(unlockAll()||courseUnlocked(c)){ (CBASE[c]||[]).forEach(k=>s.add(k)); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); } }); return [...s].sort((a,b)=>a-b); }
 function seededRand(seed){ let x=(seed||1)&0x7fffffff; return ()=>{ x=(x*1103515245+12345)&0x7fffffff; return x/0x7fffffff; }; }
@@ -2413,7 +2431,9 @@ function reviewDoneToday(){ return localStorage.getItem('hm_review')===dayStr(ne
 function endlessDoneToday(){ return localStorage.getItem('hm_endless_day')===dayStr(new Date()); }
 function dailyWin(){
  const t=dayStr(new Date());
- if(localStorage.getItem('hm_daily')!==t){ const y=new Date(); y.setDate(y.getDate()-1); const s=(localStorage.getItem('hm_daily')===dayStr(y))?dailyStreak()+1:1; localStorage.setItem('hm_dstreak',String(s)); localStorage.setItem('hm_daily',t); }
+ const firstToday=localStorage.getItem('hm_daily')!==t;
+ if(firstToday){ const y=new Date(); y.setDate(y.getDate()-1); const s=(localStorage.getItem('hm_daily')===dayStr(y))?dailyStreak()+1:1; localStorage.setItem('hm_dstreak',String(s)); localStorage.setItem('hm_daily',t); }
+ if(firstToday) addXP(25); // XP sfida del giorno (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-calendar-star" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.dailyWin; $('celname').innerHTML='<b>'+S9.dailyStreakLbl+': '+dailyStreak()+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2439,7 +2459,9 @@ function beginEndless(){
 }
 function endlessOver(){
  const rec=Math.max(endlessRecord(), (seq.length-1)); const isNew=(seq.length-1)>endlessRecord();
+ const firstToday=localStorage.getItem('hm_endless_day')!==dayStr(new Date());
  localStorage.setItem('hm_endless',String(rec)); localStorage.setItem('hm_endless_day',dayStr(new Date())); // task giornaliero
+ if(firstToday) addXP(25); // XP Infinito (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-infinity" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isNew?S9.endlessNew:S9.endlessOverT; $('celname').innerHTML='<b>'+S9.record+': '+rec+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2479,7 +2501,9 @@ function beginReview(){ // RIPASSO MIRATO: ricostruzione corta fatta soprattutto
  startBossLike({kind:'boss', review:true, earOnly:true, c:null, w:null, name:S9.reviewTitle, seq:sq, notes:all, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.reviewTitle);
 }
 function reviewWin(){
+ const firstToday=localStorage.getItem('hm_review')!==dayStr(new Date());
  localStorage.setItem('hm_review',dayStr(new Date())); // task giornaliero
+ if(firstToday) addXP(20); // XP ripasso (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-target-arrow" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.reviewWin; $('celname').innerHTML='<b>'+S9.reviewWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2493,7 +2517,7 @@ function bossWin(){
   modeWinCelebrate(1,st); return;
  }
  // BOSS (ex Elite): sblocca nota + livello, 9/9 generoso
- localStorage.setItem('hm_elite_'+game.c+'_'+game.w,'1'); dominateBelow(game.c,game.w,'boss');
+ localStorage.setItem('hm_elite_'+game.c+'_'+game.w,'1'); dominateBelow(game.c,game.w,'boss'); addXP(50); // XP Boss
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
  $('celtitle').textContent=S9.bossWin;
@@ -2968,7 +2992,7 @@ applyFont();
 applyStatic();
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.77'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.78'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
