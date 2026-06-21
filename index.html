@@ -42,6 +42,8 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #dailysheethead{display:flex; align-items:center; justify-content:space-between; margin:0 0 12px;}
 #dailysheettitle{font-size:18px; font-weight:800;}
 #dailysheetclose{background:var(--surface2); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+#locktip{position:fixed; z-index:80; display:none; transform:translate(-50%,-100%); background:#f4f6fb; color:#14151a; font-size:13px; font-weight:700; padding:8px 12px; border-radius:12px; max-width:220px; text-align:center; line-height:1.3; box-shadow:0 6px 20px rgba(0,0,0,.45); pointer-events:none;}
+#locktip::after{content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); border:7px solid transparent; border-top-color:#f4f6fb; border-bottom:0;}
 /* card prossimo esercizio: nota a destra */
 .nextcard{display:flex; align-items:center; gap:14px;}
 .nextcard .ntxt{flex:1; min-width:0;}
@@ -604,6 +606,7 @@ it:{
  unlock:"Sblocca tutti i livelli", unlockOn:"⚠ Sblocco totale ATTIVO (tutto disponibile)",
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca battendo il Boss del livello '+n,
+ ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi',
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
@@ -779,6 +782,7 @@ en:{
  unlock:"Unlock all levels", unlockOn:"⚠ ALL UNLOCKED is ON (everything available)",
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock by beating the Boss of level '+n,
+ ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first',
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
@@ -1070,7 +1074,7 @@ function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); retu
 function paintDots12(el,size){ if(!el)return; el.innerHTML=''; const r=size/2-2.5, cx=size/2, ds=Math.max(3,size*0.16);
  for(let k=0;k<12;k++){const an=(-90+k*30)*Math.PI/180,x=cx+r*Math.cos(an),y=cx+r*Math.sin(an); const d=document.createElement('div'); d.style.cssText='position:absolute;left:'+(x-ds/2)+'px;top:'+(y-ds/2)+'px;width:'+ds+'px;height:'+ds+'px;border-radius:50%;background:'+C[k].h; el.appendChild(d);} }
 function applyStatic(){
- const cd=$('tab-corso').querySelector('.corsodisc'); if(cd){cd.style.position='relative'; paintDots12(cd,44);} // simbolo Corso = 12 pallini in cerchio
+ const cd=$('tab-corso').querySelector('.corsodisc'); if(cd){cd.innerHTML='<span class="cddots"></span>'; const dd=cd.querySelector('.cddots'); dd.style.cssText='position:relative;display:block;width:42px;height:42px;'; paintDots12(dd,42);} // 12 pallini in cerchio, centrati nel disco (flex)
  $('tab-corso').querySelector('.tablbl').textContent=S9.tabCorso;
  $('tab-free').querySelector('.tablbl').textContent=S9.tabs[1];
  $('tab-home').querySelector('.tablbl').textContent=S9.tabProfile;
@@ -1558,6 +1562,7 @@ $('tab-free').addEventListener('click',showFree);
 $('tab-home').addEventListener('click',showHome);
 $('tab-guide').addEventListener('click',showGuide);
 $('tab-settings').addEventListener('click',showSettings);
+window.addEventListener('scroll',hideLockTip,true); // la nuvoletta sparisce allo scroll
 $('dailyfab').addEventListener('click',openDailySheet);
 $('dailysheetclose').addEventListener('click',closeDailySheet);
 $('dailysheet').addEventListener('click',e=>{ if(e.target===$('dailysheet')) closeDailySheet(); });
@@ -1780,6 +1785,17 @@ function saveCurrentGameProgress(){
 }
 let pathPage=parseInt(localStorage.getItem('hm_pathpage')||'0',10)||0;
 let giocaPage=parseInt(localStorage.getItem('hm_giocapage')||'0',10)||0;
+// nuvoletta con la condizione di sblocco, sopra il nodo bloccato toccato
+let lockTipEl=null, lockTipTimer=null;
+function showLockTip(btn,msg){
+ if(!lockTipEl){ lockTipEl=document.createElement('div'); lockTipEl.id='locktip'; document.body.appendChild(lockTipEl); }
+ lockTipEl.textContent=msg; lockTipEl.style.display='block';
+ const r=btn.getBoundingClientRect();
+ lockTipEl.style.left=Math.round(r.left+r.width/2)+'px';
+ lockTipEl.style.top=Math.round(r.top-10)+'px';
+ clearTimeout(lockTipTimer); lockTipTimer=setTimeout(()=>{ if(lockTipEl)lockTipEl.style.display='none'; },2800);
+}
+function hideLockTip(){ if(lockTipEl)lockTipEl.style.display='none'; }
 // CORSO = tabellone gioco-dell-oca: nodi cerchio (Teoria=?, Facile/Normale/Difficile=simbolo+difficolta', Boss=teschio) collegati da linee tratteggiate; colori che salgono di difficolta'; auto-scroll al prossimo
 function renderPath(){
  parkPanel();
@@ -1806,6 +1822,7 @@ function renderPath(){
   if(o.ex) ih+='<i class="ti ti-'+o.ex+' pndiff-in"></i>'; // simbolo univoco dell'esercizio DENTRO al cerchio
   btn.innerHTML=ih;
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
+  else if(o.locked&&o.lockMsg) btn.addEventListener('click',e=>{e.stopPropagation(); showLockTip(btn,o.lockMsg);}); // nodo bloccato: nuvoletta con la condizione di sblocco
   let outer=btn;
   if(o.ring!=null && !o.locked){ // anello giallo = completato (boss/teoria pieno; modi = frazione stelle)
    const ring=document.createElement('div'); ring.className='pnring'; const deg=Math.round(Math.max(0,Math.min(1,o.ring))*360);
@@ -1827,7 +1844,7 @@ function renderPath(){
   if(c===COURSE_IDS[0]){ const cdone=!!localStorage.getItem('hm_casa_done');
    node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, sub:S9.INM[0], ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
    const sp=document.createElement('div'); sp.className='boardgap'; curSec.appendChild(sp); } // casa staccata
-  if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
+  if(!cOpen){ const pm=S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title); node({locked:true, ic:'lock', label:pm, lockMsg:pm}); return; }
   for(let w=0; w<totLevels(c); w++){
    const ch=isChord(c,w)?chordAt(c,w):null;
    if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ startSec(); const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; curSec.appendChild(sh); } } // sezione accordi (Triadi/Settime/Seste) con sfondo proprio
@@ -1835,8 +1852,9 @@ function renderPath(){
    const pie=ch?chordNotes(c,w).map(n=>C[n].h):null; // torta coi colori delle note dell'accordo
    const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
+   const lvReason=(w===0&&c===COURSE_IDS[0])?S9.ulCasa:S9.ulPrevBoss; // perche' il livello e' bloccato
    if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; curSec.appendChild(nl);
-    node({locked:true, ic:'lock', label:S9.lockReq(w)}); continue; }
+    node({locked:true, ic:'lock', label:S9.lockReq(w), lockMsg:lvReason}); continue; }
    // Titolo della nota = intestazione tappabile per la teoria (OPZIONALE, non un livello): il primo livello e' subito il gioco
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
@@ -1851,13 +1869,13 @@ function renderPath(){
    const tg=panel.querySelector('.thgame'); if(tg) tg.addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
    // Training (solo note): primo livello, 2 note, mostrato e in dissolvenza come Facile ma piu' facile
-   if(!ch){ const tsn=starsOf(c,w,'t'); node({color:colOf(k), ic:C[k].ic, ex:'school', ring:tsn/3, locked:!(unlockAll()||worldUnlocked(c,w)), next:isNext({c:c,w:w,training:true}), onClick:()=>startLevel(c,w,'t')}); }
+   if(!ch){ const tsn=starsOf(c,w,'t'); node({color:colOf(k), ic:C[k].ic, ex:'school', ring:tsn/3, locked:!(unlockAll()||worldUnlocked(c,w)), lockMsg:lvReason, next:isNext({c:c,w:w,training:true}), onClick:()=>startLevel(c,w,'t')}); }
    // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Esercizio = icona univoca, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, lockMsg:(m===0?S9.ulTraining:S9.ulPrevMode(m)), next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
    // Boss: bloccato finche' i 3 modi non sono fatti (niente skip). Fatto = anello giallo + stella
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bLock=!bossUnlocked(c,w);
-   node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, locked:bLock, next:!bLock&&isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
+   node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, locked:bLock, lockMsg:S9.ulBoss, next:!bLock&&isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
   }
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
@@ -2944,7 +2962,7 @@ applyFont();
 applyStatic();
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.73'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.74'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
