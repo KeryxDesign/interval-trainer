@@ -313,6 +313,11 @@ button.levelcard:active{transform:scale(0.99);}
 .boardhdr.locked{color:var(--muted); font-size:18px;}
 .boardgap{height:30px;}
 .boardsub{font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--gold); margin:42px 0 6px; text-align:center; position:relative; z-index:1;}
+.notehdr{display:inline-flex; align-items:center; gap:8px; background:none; border:none; color:var(--text); font-size:15px; font-weight:800; margin:30px auto 2px; padding:6px 10px; cursor:pointer; position:relative; z-index:1;}
+.notehdr i:first-child{font-size:18px;}
+.notehdr .nh-ch{font-size:15px; color:var(--muted);}
+.notehdr.open .nh-ch{color:var(--gold);}
+.notehdr.done .nh-ch{color:var(--gold);}
 .throw{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
 .thgame{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
 .thgot{width:100%; background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:12px; padding:11px; font-size:14px; font-weight:700; cursor:pointer;}
@@ -1793,13 +1798,15 @@ function renderPath(){
    const lvOpen=unlockAll()||worldUnlocked(c,w);
    if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; board.appendChild(nl);
     node({locked:true, ic:'lock', label:S9.lockReq(w)}); continue; }
-   // Titolo/Teoria = nodo col simbolo (nota o radice accordo); tap apre la teoria, "Ho capito" -> anello giallo
+   // Titolo della nota = intestazione tappabile per la teoria (OPZIONALE, non un livello): il primo livello e' subito il gioco
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
-   const tbtn=node({color:colOf(k), ic:C[k].ic, label:nm, ring:thDone?1:null});
+   const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
+   hdr.innerHTML='<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i><span>'+nm+'</span><i class="ti ti-book-2 nh-ch"></i>';
+   board.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
    const playLbl=ch?S9.thPlayChord:S9.thPlay;
    panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+playLbl+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; board.appendChild(panel);
-   tbtn.addEventListener('click',()=>{ panel.hidden=!panel.hidden; drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
+   hdr.addEventListener('click',()=>{ panel.hidden=!panel.hidden; hdr.classList.toggle('open',!panel.hidden); drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
    panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
    // Modi: stessa dimensione e simbolo; difficolta' = numero di ottavi; anello = stelle
@@ -2874,7 +2881,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.63'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.64'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
