@@ -1072,7 +1072,6 @@ function applyStatic(){
  $('fs-reopentxt').textContent=S9.fsChange;
  $('celtitle').textContent=S9.unlockTitle;
  $('celtap').textContent=S9.unlockTap;
- $('legsum').textContent=S9.legsum;
  $('methodsum').textContent=S9.methodTitle; $('methodbody').innerHTML=S9.methodBody;
  $('thintro').innerHTML=paraBr(S9.thintro);
  const sc=$('scsel'); sc.innerHTML='';
@@ -2892,7 +2891,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.66'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.67'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
