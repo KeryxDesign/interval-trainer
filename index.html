@@ -990,7 +990,7 @@ const CHORDS={ maj:[
 ]};
 const COURSE_IDS=['pent','maj','pmin'];
 let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
-const STAR1=5, STAR2=7;
+const STAR1=6, STAR2=8; // melodia piena = 8 note (la 1a e' sempre la tonica, fissa)
 const WARMUP=3; // Facile: le prime note (finche' la melodia ha <WARMUP note) usano solo tonica + nota nuova
 
 let scale='maj', root=0, seq=[], dur=[], step=0, state='idle', timers=[];
@@ -1029,6 +1029,7 @@ function chordNotes(c,w){return [...new Set(chordAt(c,w).notes)].sort((a,b)=>a-b
 function levelPool(c,w){return isChord(c,w)?chordNotes(c,w):cumSet(c,w);} // note giocabili del livello (accordo = note dell'accordo)
 function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+chordAt(c,w).n):plainNames(c,w);}
 function startNote(pool){return pool.includes(0)?0:pool[0];} // melodia parte dalla casa se c'e', altrimenti dalla prima nota dell'accordo
+function studyNote(c,w){ return isChord(c,w)?null:CWADD[c][w][CWADD[c][w].length-1]; } // la nota nuova del livello (da proporre come 2a, subito dopo la tonica)
 function pieBg(cols){const n=cols.length; let s='conic-gradient('; for(let i=0;i<n;i++){const a=Math.round(i*360/n), b=Math.round((i+1)*360/n); s+=cols[i]+' '+a+'deg '+b+'deg'+(i<n-1?', ':'');} return s+')';} // torta a fette uguali coi colori delle note dell'accordo
 function courseUnlocked(c){
  if(unlockAll()) return true;
@@ -2220,19 +2221,23 @@ function bossIntro(){
  S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(''); centerMsg(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
  timers.push(setTimeout(()=>bossPlay(),t));
 }
-function randMelody(pool,len){const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.push(pool.includes(0)?0:pool[0]); continue;} let k,g=0; do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && i>=2 && k===sq[i-1] && k===sq[i-2]); sq.push(k);} return sq;} // parte sempre dalla tonica
+function randMelody(pool,len,study){const sq=[startNote(pool)]; // parte dalla tonica
+ for(let i=1;i<len;i++){
+  if(i===1 && study!=null && pool.includes(study)){ sq.push(study); continue; } // 2a nota = la nota nuova del livello
+  let k,g=0; do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && i>=2 && k===sq[i-1] && k===sq[i-2]); sq.push(k);
+ } return sq;}
 // BOSS finale: costruisci nota dopo nota fino a 7, SOLO a orecchio (cerchi neutri),
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
 function beginDifficile(c,w){ // DIFFICILE: costruisci la melodia una nota alla volta, SOLO a orecchio, tonica random
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
  const pool=levelPool(c,w);
- game={kind:'bossgrow', c:c, w:w, m:2, name:levelName(c,w), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
+ game={kind:'bossgrow', c:c, w:w, m:2, name:levelName(c,w), notes:pool, study:studyNote(c,w), target:8, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+levelName(c,w);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
- $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
+ $('round').textContent='–'; $('best').textContent=String(8); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
  $('bossbar').hidden=false; renderBossBar(); // 3 vite
  render(); setupFreeTry(); bumpPlays(c); bumpStreak();
@@ -2253,10 +2258,11 @@ function bossGrowIntro(){
  ensureCtx(); state='wait'; clearTimers(); setStatus(S9.bossScale);
  let t=bossScaleSeq(350)+250;
  S9.bossCount.forEach((w,i)=>{ const via=i===S9.bossCount.length-1; timers.push(setTimeout(()=>{setStatus(''); centerMsg(w); tone(via?84:72,via?0.22:0.12);},t)); t+=620; });
- timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowPlay(); },t));
+ timers.push(setTimeout(()=>{ bossGrowAdd(); bossGrowAdd(); bossGrowPlay(); },t)); // ogni sequenza parte gia' con due suoni (tonica + nota nuova)
 }
 function bossGrowAdd(){
  if(!seq.length){ seq.push(startNote(game.notes)); dur.push(1); return; } // parte dalla casa se c'e', altrimenti dalla prima nota della pool (accordi)
+ if(seq.length===1 && game.study!=null && game.notes.includes(game.study)){ seq.push(game.study); dur.push(1); return; } // 2a nota = la nota nuova del livello
  const pool=game.notes; let k,g=0;
  do{k=pool[Math.floor(Math.random()*pool.length)];}while(g++<8 && seq.length>=2 && k===seq[seq.length-1] && k===seq[seq.length-2]);
  seq.push(k); dur.push(1);
@@ -2296,13 +2302,13 @@ function beginWarmup(c,w){
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
  const pool=isChord(c,w)?chordNotes(c,w):[...new Set([0,...CWADD[c][w]])].sort((a,b)=>a-b); // accordo: le sue note; nota: casa + la nota nuova
  const lbl=(isChord(c,w)?S9.thPlayChord:S9.thPlay)+' · '+levelName(c,w);
- game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:lbl, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
+ game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:lbl, notes:pool, study:studyNote(c,w), target:8, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=lbl;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
- $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
+ $('round').textContent='–'; $('best').textContent=String(8); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays();
  $('bossbar').hidden=false; renderBossBar();
  render(); setupFreeTry(); bumpPlays(c); bumpStreak();
@@ -2319,12 +2325,12 @@ function warmupWin(){
 function beginElite(c,w){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio, tonica random; batterlo sblocca nota + livello
  clearTimers(); stopAllHeld(); stopMic();
  const pool=levelPool(c,w);
- startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
+ startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
 }
 function beginNormale(c,w){ // NORMALE: ricostruzione da 7 che VEDI (flash), tonica random
  clearTimers(); stopAllHeld(); stopMic();
  const pool=levelPool(c,w);
- startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+levelName(c,w));
+ startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+levelName(c,w));
 }
 function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,bestRound:7}); if(m==='boss'){set(0);set(1);set(2);} else if(m===1||m===2){set(0);} } // generoso: chi puo' il piu' regala ★★★ ai modi dominati
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
@@ -2340,7 +2346,7 @@ function seededMelody(pool,len,rnd){ const sq=[]; for(let i=0;i<len;i++){ if(i==
 function beginDaily(){
  clearTimers(); stopAllHeld(); stopMic();
  const pool=allUnlockedNotes(); const rnd=seededRand(dayHash());
- const r0=Math.floor(rnd()*12); const sq=seededMelody(pool,7,rnd);
+ const r0=Math.floor(rnd()*12); const sq=seededMelody(pool,8,rnd);
  startBossLike({kind:'boss', daily:true, earOnly:true, c:null, w:null, name:S9.dailyTitle, seq:sq, notes:pool, lives:3, replays:3, root:r0}, S9.dailyTitle);
 }
 function dailyStreak(){ const last=localStorage.getItem('hm_daily'); const s=parseInt(localStorage.getItem('hm_dstreak')||'0',10)||0; if(!last||!s)return 0; const y=new Date(); y.setDate(y.getDate()-1); return (last===dayStr(new Date())||last===dayStr(y))?s:0; }
@@ -2897,7 +2903,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.68'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.69'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
