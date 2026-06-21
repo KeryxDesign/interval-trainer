@@ -352,6 +352,8 @@ button.levelcard:active{transform:scale(0.99);}
 .pnode i.pic{font-size:30px;}
 .pnode:active{transform:scale(0.95);}
 .pnode.locked{background:var(--surface2)!important; color:var(--muted); cursor:default;}
+.pnode.testout{background:var(--surface2)!important; color:var(--muted); cursor:pointer;} /* Boss skip: grigio ma giocabile */
+.pnode.testout i.pic{color:#e2362f;} /* lucchetto rosso */
 .pnring{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .pnode.next, .pnring.next{box-shadow:0 0 0 3px var(--gold), 0 0 16px 2px rgba(234,179,8,.5);}
 .pnlbl{font-size:13px; font-weight:700; color:var(--muted); margin-top:6px;}
@@ -1189,7 +1191,7 @@ function setView(name){
  const tabFor={levels:'corso', leveldetail:'corso', free:'free', guide:'guide', home:'home', settings:'settings'};
  const ta=tabFor[name]||name;
  ['corso','free','home','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
- const fab=$('dailyfab'); if(fab){ const show=['levels','home','guide','settings'].includes(name); fab.hidden=!show; if(!show)closeDailySheet(); else updateDailyFab(); } // tondo daily: schermate principali, non in gioco
+ const fab=$('dailyfab'); if(fab){ const show=(name==='levels'); fab.hidden=!show; if(!show)closeDailySheet(); else updateDailyFab(); } // tondo daily: SOLO nel Corso
  scrollTop();
 }
 // ogni cambio pagina riparte dall'alto
@@ -1817,11 +1819,12 @@ function renderPath(){
   const side=(zz++%2===0)?' left':' right';
   const wrap=document.createElement('div'); wrap.className='pnwrap'+(first?' first':'')+side; first=false;
   const inner=document.createElement('div'); inner.className='pninner';
-  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'')+(o.pie&&!o.locked?' pie':'');
+  const grey=o.locked||o.testout; // testout = giocabile (Boss skip) ma grigio col lucchetto rosso
+  const btn=document.createElement('button'); btn.className='pnode'+(o.locked?' locked':'')+(o.testout?' testout':'')+(o.pie&&!grey?' pie':'');
   const sz=o.size||88; // tutti i nodi alla stessa dimensione (ex-boss)
-  const bg = o.locked ? '' : (o.pie ? 'background:'+pieBg(o.pie)+';color:#fff;' : 'background:'+o.color+';');
+  const bg = grey ? '' : (o.pie ? 'background:'+pieBg(o.pie)+';color:#fff;' : 'background:'+o.color+';');
   btn.style.cssText=bg+'width:'+sz+'px;height:'+sz+'px';
-  let ih=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*(o.ex?0.36:0.42))+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
+  let ih=(grey||o.ic)?'<i class="ti ti-'+(grey?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*(o.ex?0.36:0.42))+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
   if(o.ex) ih+='<i class="ti ti-'+o.ex+' pndiff-in"></i>'; // simbolo univoco dell'esercizio DENTRO al cerchio
   btn.innerHTML=ih;
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
@@ -1876,9 +1879,9 @@ function renderPath(){
    // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Esercizio = icona univoca, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
     node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, lockMsg:(m===0?S9.ulTraining:S9.ulPrevMode(m)), next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
-   // Boss: bloccato finche' i 3 modi non sono fatti (niente skip). Fatto = anello giallo + stella
-   const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bLock=!bossUnlocked(c,w);
-   node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, locked:bLock, lockMsg:S9.ulBoss, next:!bLock&&isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
+   // Boss: SEMPRE giocabile (skip). Se i modi non sono fatti = grigio col lucchetto rosso, ma battendolo sblocca tutto cio' che c'e' prima. Fatto = anello giallo + stella
+   const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bUnl=unlockAll()||bossUnlocked(c,w);
+   node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, testout:(!eDone&&!bUnl), next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
   }
  });
  box.querySelectorAll('.theorypanel .pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); playInterval(+b.dataset.iv);}));
@@ -2387,7 +2390,7 @@ function beginNormale(c,w){ // NORMALE: ricostruzione da 7 che VEDI (flash), ton
  const pool=levelPool(c,w);
  startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+levelName(c,w));
 }
-function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,bestRound:7}); if(m==='boss'){set(0);set(1);set(2);} else if(m===1||m===2){set(0);} } // generoso: chi puo' il piu' regala ★★★ ai modi dominati
+function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,bestRound:7}); if(m==='boss'){set(0);set(1);set(2); if(!isChord(c,w))set('t');} else if(m===1||m===2){set(0); if(!isChord(c,w))set('t');} } // generoso: battere il Boss (skip) regala ★★★ ai modi e al Training sotto
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="display:flex;justify-content:center"><span style="color:var(--gold);letter-spacing:3px;font-size:34px">'+starsStr(st)+'</span></div>';
  $('celtitle').textContent=S9.modes[m]+' ✓'; $('celname').innerHTML='<b>'+game.name+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2965,7 +2968,7 @@ applyFont();
 applyStatic();
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.75'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.76'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
