@@ -307,6 +307,7 @@ button.levelcard:active{transform:scale(0.99);}
 /* tabellone gioco-dell-oca: nodi cerchio collegati da linee tratteggiate */
 .board{display:flex; flex-direction:column; align-items:center; position:relative; padding-top:20px;}
 .boardsec{display:flex; flex-direction:column; align-items:center; width:100%; border-radius:22px; padding:8px 0 28px; margin:0 0 2px;} /* sfondo leggermente diverso per sezione */
+.corsoquests{margin:0 0 10px;}
 #boardlines{position:absolute; left:0; top:0; pointer-events:none; z-index:0;}
 #boardlines line{stroke:var(--line); stroke-width:3; stroke-dasharray:4 8; stroke-linecap:round;}
 .boardhdr{font-size:24px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--text); margin:56px 0 8px; text-align:center; position:relative; z-index:1; line-height:1.15;}
@@ -397,7 +398,6 @@ button.levelcard:active{transform:scale(0.99);}
     </div>
     <div id="dash-studied" hidden></div>
     <div id="tipbox" style="margin:26px 0 26px;"></div>
-    <div id="allenabox" style="margin:0 0 8px;"></div>
     <div id="medalsbox" style="margin:0 0 24px;"></div>
   </div>
 
@@ -1248,7 +1248,7 @@ function renderDashboard(){
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
- renderTip(); renderAllena(); renderMedals(); // "Prossimo esercizio" rimosso dal Profilo
+ renderTip(); renderMedals(); // "Prossimo esercizio" rimosso; daily quest spostate nel Corso
 }
 function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
@@ -1271,8 +1271,8 @@ function renderNext(boxId){
  box.querySelector('.nextcard').addEventListener('click',fn);
 }
 function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<p class="dashsec" style="margin-top:0">'+S9.tipTitle+'</p><div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
-function renderAllena(){
- const box=$('allenabox'); if(!box) return;
+function renderAllena(boxEl){
+ const box=boxEl||$('allenabox'); if(!box) return;
  const dd=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord(), rv=reviewDoneToday(), en=endlessDoneToday();
  const badge=d=>'<span style="color:'+(d?'var(--gold)':'var(--muted)')+';font-weight:800;font-size:14px">'+(d?'1/1':'0/1')+'</span>'; // task giornaliero
  const card=(id,ic,title,sub,d)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span>'+badge(d)+'</div><div class="mdesc">'+sub+'</div></button>';
@@ -1760,6 +1760,7 @@ let giocaPage=parseInt(localStorage.getItem('hm_giocapage')||'0',10)||0;
 function renderPath(){
  parkPanel();
  const box=$('path'); box.innerHTML='';
+ const qbox=document.createElement('div'); qbox.className='corsoquests'; box.appendChild(qbox); renderAllena(qbox); // quest del giorno in cima al Corso
  const nx=nextExercise();
  const isNext=o=>nx&&((nx.casa&&o.casa)||(!nx.casa&&!o.casa&&nx.c===o.c&&nx.w===o.w&&((nx.boss&&o.boss)||(!nx.boss&&!o.boss&&nx.m===o.m))));
  let nextEl=null, first=true, zz=0;
@@ -2269,6 +2270,7 @@ function bossGrowAdd(){
 }
 function bossGrowPlay(){
  ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
+ speed=Math.min(3, 1+Math.floor(seq.length/5)*0.5); // la velocita' sale progressivamente ogni 5 suoni
  const base=Math.max(300,520-seq.length*16)/speed; let t=300;
  seq.forEach((k)=>{ timers.push(setTimeout(()=>{ game.shown?flash(k,base-90,true):pulse(base-90); tone(60+root+k,Math.max(0.2,base*0.82/1000)); },t)); t+=base; });
  timers.push(setTimeout(()=>{ state='input'; step=0; $('round').textContent=seq.length; setStatus(S9.yourTurn(0,seq.length)); },t));
@@ -2473,11 +2475,14 @@ function flash(k,ms,skipCenter){
  if(ct){delete ct.dataset.mode; ct.style.background=C[k].h; ct.style.color=ink(k);
   let inner;
   if(game.kind==='level'&&(game.m===0||game.m===1)){
-   // rivelazione progressiva anche al centro: simbolo+nome -> nome -> solo colore
+   // rivelazione progressiva al centro: prima sparisce il colore, poi il simbolo, resta la dicitura
    const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
-   if(lv>=2) inner='';
-   else if(lv===1) inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><span style="font-size:17px;font-weight:700">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+INM[k]+'</span></div>';
-   else inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.12)+'px"></i><span style="font-size:15px;font-weight:700">'+IV[k]+'</span><span style="font-size:11px;opacity:.85">'+INM[k]+'</span></div>';
+   if(lv>=1){ ct.style.background='var(--surface2)'; ct.style.color='var(--text)'; } // colore via per primo
+   let parts='';
+   if(lv<2) parts+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.12)+'px"></i>'; // poi il simbolo
+   parts+='<span style="font-size:17px;font-weight:700">'+IV[k]+'</span>'; // resta la dicitura
+   if(lv<1) parts+='<span style="font-size:11px;opacity:.85">'+INM[k]+'</span>';
+   inner='<div style="display:flex;flex-direction:column;align-items:center;gap:1px">'+parts+'</div>';
   } else {
    inner='<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><i class="ti ti-'+C[k].ic+'" style="font-size:'+Math.round(S*0.13)+'px"></i><span style="font-size:13px;font-weight:600">'+IV[k]+' · '+NOTE[(root+k)%12]+'</span><span style="font-size:11px;opacity:.85">'+DEG[k]+'</span></div>';
   }
@@ -2514,9 +2519,10 @@ function updateReveal(){
  const isz=Math.round(KEY*0.32), ntsz=Math.round(KEY*0.2);
  for(let k=0;k<12;k++){
   const b=$('b'+k); if(!b) continue;
+  if(lv<1){ b.style.background=C[k].h; b.style.color=ink(k); } else { b.style.background='#3b424f'; b.style.color='#dfe3ea'; } // il COLORE sparisce per primo
   let inner='';
-  if(lv<1) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>';
-  if(lv<2) inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span>'; // solo la sigla sui cerchietti (il nome esteso va al centro)
+  if(lv<2) inner+='<i class="ti ti-'+C[k].ic+'" style="font-size:'+isz+'px"></i>'; // poi il SIMBOLO
+  inner+='<span style="font-size:'+ntsz+'px;line-height:1.05;font-weight:600">'+IV[k]+'</span>'; // resta sempre la dicitura (T, 5G...)
   inner+='<span class="kb">'+KB[k]+'</span>';
   b.innerHTML=inner;
  }
@@ -2524,7 +2530,7 @@ function updateReveal(){
 function playSeq(){
  state='play'; clearTimers(); setStatus(S9.listen); $('reveal').innerHTML=''; updateGoal();
  if(game.kind==='level'&&game.m===1){root=Math.floor(Math.random()*12); updateNotes(); updateReveal(); startDrone();}
- if(game.kind==='free'){ speed=Math.min(3, 1+Math.floor(seq.length/5)*0.5); const sp=$('spdsel'); if(sp)sp.value=String(speed); } // libero: la velocita sale ogni 5 sequenze
+ if(game.kind==='free'||game.kind==='level'){ speed=Math.min(3, 1+Math.floor(seq.length/5)*0.5); const sp=$('spdsel'); if(sp)sp.value=String(speed); } // la velocita' sale progressivamente ogni 5 suoni
  const base=Math.max(420,660-seq.length*18)/speed;
  let t=250;
  seq.forEach((k,i)=>{
@@ -2903,7 +2909,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.69'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.70'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
