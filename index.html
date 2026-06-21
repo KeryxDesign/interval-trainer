@@ -31,9 +31,9 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .tab i{font-size:23px; line-height:1;}
 .tab.on{color:var(--text);}
 /* tab Home centrale: rialzato e oro, sovrapposto alla barra */
-#tab-home{justify-content:flex-end;}
-#tab-home i{background:var(--gold); color:#14151a; width:60px; height:60px; border-radius:50%; font-size:28px; display:flex; align-items:center; justify-content:center; margin-top:-30px; box-shadow:0 6px 18px rgba(0,0,0,.45); border:5px solid var(--bg);}
-#tab-home .tablbl{color:var(--gold); font-weight:800;}
+#tab-corso{justify-content:flex-end;}
+#tab-corso i{background:var(--gold); color:#14151a; width:60px; height:60px; border-radius:50%; font-size:28px; display:flex; align-items:center; justify-content:center; margin-top:-30px; box-shadow:0 6px 18px rgba(0,0,0,.45); border:5px solid var(--bg);}
+#tab-corso .tablbl{color:var(--gold); font-weight:800;}
 /* card prossimo esercizio: nota a destra */
 .nextcard{display:flex; align-items:center; gap:14px;}
 .nextcard .ntxt{flex:1; min-width:0;}
@@ -313,12 +313,14 @@ button.levelcard:active{transform:scale(0.99);}
 .boardhdr.locked{color:var(--muted); font-size:18px;}
 .boardgap{height:30px;}
 .boardsub{font-size:16px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--gold); margin:42px 0 6px; text-align:center; position:relative; z-index:1;}
-.notehdr{display:inline-flex; align-items:center; gap:8px; background:none; border:none; color:var(--text); font-size:15px; font-weight:800; margin:30px auto 2px; padding:6px 10px; cursor:pointer; position:relative; z-index:1;}
-.notehdr i:first-child{font-size:18px;}
-.notehdr .nh-ch{font-size:15px; color:var(--muted);}
-.notehdr.open .nh-ch{color:var(--gold);}
-.notehdr.done .nh-ch{color:var(--gold);}
-.nh-pie{width:18px; height:18px; border-radius:50%; display:inline-block; flex-shrink:0;}
+.notehdr{display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; color:var(--text); margin:32px auto 4px; padding:6px 10px; cursor:pointer; position:relative; z-index:1;}
+.notehdr .nh-top{display:inline-flex; align-items:center; gap:9px;}
+.notehdr .nh-name{font-size:28px; font-weight:800;} /* nome nota 2x piu' grande */
+.notehdr .nh-top i:first-child{font-size:24px;}
+.notehdr .nh-ch{font-size:16px; color:var(--muted);}
+.notehdr.open .nh-ch, .notehdr.done .nh-ch{color:var(--gold);}
+.notehdr .nh-iv{font-size:14px; color:var(--muted); font-weight:600;}
+.nh-pie{width:24px; height:24px; border-radius:50%; display:inline-block; flex-shrink:0;}
 .pnode.pie i.pic{color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.6);}
 .throw{display:flex; flex-direction:column; gap:9px; margin-top:14px;}
 .thgame{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--gold); color:#1b1206; border:none; border-radius:12px; padding:13px; font-size:15px; font-weight:800; cursor:pointer;}
@@ -337,11 +339,11 @@ button.levelcard:active{transform:scale(0.99);}
 .pnring{width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .pnode.next, .pnring.next{box-shadow:0 0 0 3px var(--gold), 0 0 16px 2px rgba(234,179,8,.5);}
 .pnlbl{font-size:13px; font-weight:700; color:var(--muted); margin-top:6px;}
-.pndiff{display:flex; align-items:center; justify-content:center; color:var(--gold); margin-top:6px; font-size:22px; line-height:1; letter-spacing:1px;}
-.pndiff.lock{color:var(--muted); opacity:.5;}
+.pndiff-in{font-size:15px; line-height:1; letter-spacing:1px; margin-top:2px; color:inherit;} /* difficolta' dentro al cerchio */
+.pnsub{font-size:11px; color:var(--muted); margin-top:1px;}
 .pnstars{font-size:12px; color:var(--gold); letter-spacing:1px; min-height:14px;}
 .pnstars .e{color:var(--line);}
-.theorypanel{width:100%; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin:8px 0 0;}
+.theorypanel{width:100%; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px; margin:8px 0 0; position:relative; z-index:3;}
 .mrow{display:block; background:var(--surface2); border:none; border-left:4px solid var(--lc,var(--gold)); border-radius:12px; padding:15px 16px; margin-bottom:11px; width:100%; color:var(--text); cursor:pointer; text-align:left;}
 .mrow:disabled{cursor:default; border-left-color:var(--line); opacity:.55;}
 .mrow .mtop{display:flex; align-items:center; justify-content:space-between; gap:8px;}
@@ -417,9 +419,9 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <nav class="tabs" id="tabs" hidden>
-    <button class="tab" id="tab-corso"><i class="ti ti-stairs-up"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-home"><i class="ti ti-user"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-free"><i class="ti ti-music"></i><span class="tablbl"></span></button>
-    <button class="tab" id="tab-home"><i class="ti ti-home"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-corso"><i class="ti ti-stairs-up"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-guide"><i class="ti ti-book"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-settings"><i class="ti ti-settings"></i><span class="tablbl"></span></button>
   </nav>
@@ -709,7 +711,7 @@ it:{
  IV:['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'],
  INM:['tonica','seconda minore','seconda maggiore','terza minore','terza maggiore','quarta giusta','tritono','quinta giusta','sesta minore','sesta maggiore','settima minore','settima maggiore'],
  DEG:['tonica','sopratonica minore','sopratonica maggiore','mediante minore','mediante maggiore','sottodominante','tritono','dominante','sopradominante minore','sopradominante maggiore','sottotonica','sensibile'],
- NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','cielo','onda','fulmine'],
+ NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','nuvola','onda','fulmine'],
  courses:{
   pent:{title:"Pentatonica maggiore", desc:"Cinque note che insieme <b>suonano sempre bene</b>. Niente gradini piccoli, niente tensione. Tutto <b>galleggia</b>. È la scala <b>più usata al mondo</b>, dal blues alle canzoni popolari. Qui costruisci le <b>basi del tuo orecchio</b>: casa, apertura, movimento.",
    levels:[
@@ -742,7 +744,7 @@ it:{
   "Il <b>fulmine</b>: a un gradino da casa, <b>spinge fortissimo in su</b>. È la nota che rende quasi obbligato il ritorno a casa."],
  GUIDE:[
   {h:"Cosa impari qui", p:"Huermony allena l'orecchio a riconoscere le note <b>dalla distanza che hanno da casa</b> (la nota di partenza). I colori aiutano: ogni suono ha sempre lo <b>stesso colore</b>, lo stesso disegno e lo stesso posto sulla ruota. Se cambi la nota di partenza, i colori restano uguali. <b>Non impari le note a memoria: impari le distanze.</b>"},
-  {h:"Il percorso", p:"Nella <b>Home</b> i corsi sono uno sotto l'altro, come un sentiero. Si parte dalla <b>pentatonica</b>: 5 note, nessuna tensione, facili da cantare. La costruisci un suono alla volta (Casa e Pilastro, poi Sole, Passo, Cielo). Quando la finisci, si apre la <b>scala maggiore</b>: prendi la pentatonica e aggiungi le 2 note che fanno la tensione. Sotto a ogni scala c'è una riga di cerchi colorati: toccali per sentire le note, tocca l'altoparlante per sentire tutta la scala."},
+  {h:"Il percorso", p:"Nella <b>Home</b> i corsi sono uno sotto l'altro, come un sentiero. Si parte dalla <b>pentatonica</b>: 5 note, nessuna tensione, facili da cantare. La costruisci un suono alla volta (Casa e Pilastro, poi Sole, Passo, Nuvola). Quando la finisci, si apre la <b>scala maggiore</b>: prendi la pentatonica e aggiungi le 2 note che fanno la tensione. Sotto a ogni scala c'è una riga di cerchi colorati: toccali per sentire le note, tocca l'altoparlante per sentire tutta la scala."},
   {h:"Come si gioca", t:"do", p:"È come il gioco Simon: ascolta e ripeti.<br>1. Premi <b>Gioca</b> (o il grande tasto al centro della ruota): parte una piccola melodia.<br>2. Ripetila toccando i cerchi nello stesso ordine.<br>3. Giusta? Riparte con una nota in più.<br><br>Si sale fino al <b>round 7</b>. Se sbagli vedi la fila giusta, ed è lì che si impara. A te basta ricordare l'ordine. La <b>velocità</b> la regoli come in un video: da lenta a veloce."},
   {h:"Difficoltà e stelle", p:"Apri un livello e in cima trovi <b>Inizia a giocare</b> con tre modi. Puoi farli in ordine, ma sono <b>tutti aperti</b>: se sei bravo salti avanti.<br><br><b>Facile</b> · costruisci la melodia un pezzo alla volta. Vedi colori e disegni, che spariscono piano piano.<br><b>Normale</b> · ti dà una melodia da 7 e la rifai tu. La <b>vedi</b> mentre suona.<br><b>Difficile</b> · costruisci una nota alla volta, ma <b>solo a orecchio</b>: la senti e basta.<br><br>Ogni modo dà fino a <span style='color:var(--gold)'>★★★</span> (★ round 5 · ★★ round 7 · ★★★ round 7 senza Riascolta). Fino a <b>9 stelle</b> per livello. E sei generoso con te stesso: se vinci un modo più duro, quelli più facili prendono le 3 stelle da soli."},
   {h:"Boss: come si va avanti", p:"Ogni livello finisce con il <b>Boss</b>: rifai una melodia di 7 note <b>solo a orecchio</b>, senza vederla, con 3 vite e 3 riascolti.<br><br>Vincere il Boss è ciò che ti fa <b>andare avanti</b>: sblocca la <b>nota nuova</b> (poi la usi nel Libero) e apre il <b>livello dopo</b>. Lo puoi provare quando vuoi: se lo batti a freddo, il livello è tutto fatto (9 stelle).<br><br>Sotto, in <b>Cosa imparerai</b>, trovi sempre cosa fa ogni suono."},
@@ -884,7 +886,7 @@ en:{
  IV:['T','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
  INM:['unison','minor 2nd','major 2nd','minor 3rd','major 3rd','perfect 4th','tritone','perfect 5th','minor 6th','major 6th','minor 7th','major 7th'],
  DEG:['tonic','minor supertonic','major supertonic','minor mediant','major mediant','subdominant','tritone','dominant','minor submediant','major submediant','subtonic','leading tone'],
- NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','sky','wave','bolt'],
+ NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','cloud','wave','bolt'],
  courses:{
   pent:{title:"Major pentatonic", desc:"Five notes that <b>always sound good</b> together. No small steps, no tension. Everything <b>floats</b>. It's the <b>most used scale in the world</b>, from blues to folk songs. Here you build the <b>base of your ear</b>: home, openness, movement.",
    levels:[
@@ -917,7 +919,7 @@ en:{
   "The <b>bolt</b>: one step from home, it <b>pushes hard upward</b>. It's the note that makes the return home feel needed."],
  GUIDE:[
   {h:"What you learn here", p:"Huermony trains your ear to know notes <b>by how far they are from home</b> (the starting note). Colors help: every sound always has the <b>same color</b>, the same shape and the same spot on the wheel. If you change the starting note, the colors stay the same. <b>You don't memorize notes: you learn distances.</b>"},
-  {h:"The path", p:"On the <b>Home</b> screen the courses sit one below the other, like a trail. You start with the <b>pentatonic</b>: 5 notes, no tension, easy to sing. You build it one sound at a time (Home and Pillar, then Sun, Step, Sky). Finish it and the <b>major scale</b> opens: you take the pentatonic and add the 2 notes that make the tension. Under each scale there's a row of colored circles: tap them to hear the notes, tap the speaker to hear the whole scale."},
+  {h:"The path", p:"On the <b>Home</b> screen the courses sit one below the other, like a trail. You start with the <b>pentatonic</b>: 5 notes, no tension, easy to sing. You build it one sound at a time (Home and Pillar, then Sun, Step, Cloud). Finish it and the <b>major scale</b> opens: you take the pentatonic and add the 2 notes that make the tension. Under each scale there's a row of colored circles: tap them to hear the notes, tap the speaker to hear the whole scale."},
   {h:"How to play", t:"do", p:"It's like the game Simon: listen and repeat.<br>1. Press <b>Play</b> (or the big button in the center of the wheel): a little melody starts.<br>2. Repeat it by tapping the circles in the same order.<br>3. Right? It restarts with one more note.<br><br>You climb up to <b>round 7</b>. If you make a mistake you see the right line, and that's where you learn. You just need to remember the order. <b>Speed</b> works like a video: from slow to fast."},
   {h:"Difficulty and stars", p:"Open a level and at the top you'll find <b>Start playing</b> with three modes. You can do them in order, but they're <b>all open</b>: if you're good, you skip ahead.<br><br><b>Easy</b> · build the melody one piece at a time. You see colors and shapes, which fade away little by little.<br><b>Normal</b> · it gives you a 7-note melody and you make it again. You <b>see</b> it while it plays.<br><b>Hard</b> · build it one note at a time, but <b>by ear only</b>: you just hear it.<br><br>Each mode gives up to <span style='color:var(--gold)'>★★★</span> (★ round 5 · ★★ round 7 · ★★★ round 7 without Replay). Up to <b>9 stars</b> per level. And you're generous with yourself: if you win a harder mode, the easier ones get their 3 stars by themselves."},
   {h:"Boss: how you move on", p:"Every level ends with the <b>Boss</b>: redo a 7-note melody <b>by ear only</b>, without seeing it, with 3 lives and 3 replays.<br><br>Winning the Boss is what moves you <b>forward</b>: it unlocks the <b>new note</b> (you then use it in Free play) and opens the <b>next level</b>. You can try it whenever you want: if you beat it cold, the whole level is done (9 stars).<br><br>Below, in <b>What you'll learn</b>, you'll always find what each sound does."},
@@ -1055,7 +1057,7 @@ function totalBoss(){let n=0; COURSE_IDS.forEach(c=>{if(bossDone(c))n++;}); retu
 function applyStatic(){
  $('tab-corso').querySelector('.tablbl').textContent=S9.tabCorso;
  $('tab-free').querySelector('.tablbl').textContent=S9.tabs[1];
- $('tab-home').querySelector('.tablbl').textContent=S9.tabHome;
+ $('tab-home').querySelector('.tablbl').textContent=S9.tabProfile;
  $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
  $('tab-settings').querySelector('.tablbl').textContent=S9.tabSettings;
  updateUnlockLabel();
@@ -1512,7 +1514,7 @@ function startLevel(c,w,m,skipLoading){
  clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=Math.floor(Math.random()*12); // Facile: tonica random a ogni partita
  const lv=S9.courses[c].levels[w];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false;
  $('gametitle').textContent=(isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+MODES[m];
  $('rowsetup').hidden=true;
@@ -1580,7 +1582,7 @@ let casaS=0;
 function startCasa(){
  clearTimers(); stopMic(); stopAllHeld(); game={kind:'casa'}; root=0; state='idle'; seq=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=S9.casaTitle; $('goalbar').hidden=true;
  $('rowsetup').hidden=true; $('bossbar').hidden=true; $('freetry').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
@@ -1772,7 +1774,9 @@ function renderPath(){
   const sz=o.size||88; // tutti i nodi alla stessa dimensione (ex-boss)
   const bg = o.locked ? '' : (o.pie ? 'background:'+pieBg(o.pie)+';color:#fff;' : 'background:'+o.color+';');
   btn.style.cssText=bg+'width:'+sz+'px;height:'+sz+'px';
-  btn.innerHTML=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*0.42)+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
+  let ih=(o.locked||o.ic)?'<i class="ti ti-'+(o.locked?'lock':o.ic)+' pic" style="font-size:'+Math.round(sz*(o.diff?0.36:0.42))+'px"></i>':''; // torta accordo = nessun simbolo, i colori SONO il simbolo
+  if(o.diff) ih+='<span class="pndiff-in">'+'♪'.repeat(o.diff)+'</span>'; // difficolta' DENTRO al cerchio (1=liv.1, 2=liv.2, ...)
+  btn.innerHTML=ih;
   if(!o.locked&&o.onClick) btn.addEventListener('click',o.onClick);
   let outer=btn;
   if(o.ring!=null && !o.locked){ // anello giallo = completato (boss/teoria pieno; modi = frazione stelle)
@@ -1782,8 +1786,8 @@ function renderPath(){
   }
   if(o.next){ outer.classList.add('next'); nextEl=btn; }
   inner.appendChild(outer);
-  if(o.diff){ const l=document.createElement('div'); l.className='pndiff'+(o.locked?' lock':''); l.textContent='♪'.repeat(o.diff); inner.appendChild(l); } // difficolta' = numero di ottavi (1=liv.1, 2=liv.2, ...)
-  else if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
+  if(o.label){ const l=document.createElement('div'); l.className='pnlbl'; l.textContent=o.label; inner.appendChild(l); }
+  if(o.sub){ const s=document.createElement('div'); s.className='pnsub'; s.textContent=o.sub; inner.appendChild(s); } // seconda riga (es. intervallo "tonica")
   if(o.stars!=null){ const s=document.createElement('div'); s.className='pnstars'; s.innerHTML=o.stars; inner.appendChild(s); }
   wrap.appendChild(inner); board.appendChild(wrap); return btn;
  }
@@ -1791,7 +1795,7 @@ function renderPath(){
   const cOpen=unlockAll()||courseUnlocked(c);
   const hd=document.createElement('div'); hd.className='boardhdr'+(cOpen?'':' locked'); hd.innerHTML=S9.courses[c].title+(cOpen?'':' <i class="ti ti-lock" style="font-size:14px"></i>'); board.appendChild(hd);
   if(c===COURSE_IDS[0]){ const cdone=!!localStorage.getItem('hm_casa_done');
-   node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
+   node({color:colOf(0), ic:'home', label:'0. '+S9.casaCardTitle, sub:S9.INM[0], ring:cdone?1:null, next:isNext({casa:true}), onClick:()=>showLoading(startCasa,{casa:true,c:COURSE_IDS[0]})});
    const sp=document.createElement('div'); sp.className='boardgap'; board.appendChild(sp); } // casa staccata
   if(!cOpen){ node({locked:true, ic:'lock', label:S9.lockCourse(S9.courses[COURSE_IDS[COURSE_IDS.indexOf(c)-1]].title)}); return; }
   for(let w=0; w<totLevels(c); w++){
@@ -1807,7 +1811,8 @@ function renderPath(){
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
    const hicon=ch?'<span class="nh-pie" style="background:'+pieBg(pie)+'"></span>':'<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i>';
-   hdr.innerHTML=hicon+'<span>'+nm+'</span><i class="ti ti-book-2 nh-ch"></i>';
+   const ivname=ch?ch.sub:S9.INM[k]; // sotto al nome: nome dell'intervallo (o le note dell'accordo)
+   hdr.innerHTML='<span class="nh-top">'+hicon+'<span class="nh-name">'+nm+'</span><i class="ti ti-book-2 nh-ch"></i></span><span class="nh-iv">'+ivname+'</span>';
    board.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
    const playLbl=ch?S9.thPlayChord:S9.thPlay;
@@ -2188,7 +2193,7 @@ function ftHit(k){ if(!game||!game.trying) return; ensureCtx(); tone(60+(root||0
 function startBossLike(g, title){
  resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-'+((g.daily||g.review)?'home':'corso')).classList.add('on'); // sfide/ripasso = Profilo, boss corso = Corso
  $('gametop').hidden=false; $('gametitle').textContent=(g.elite?'💀 ':'')+title;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
@@ -2219,7 +2224,7 @@ function beginDifficile(c,w){ // DIFFICILE: costruisci la melodia una nota alla 
  game={kind:'bossgrow', c:c, w:w, m:2, name:levelName(c,w), notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+levelName(c,w);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
@@ -2289,7 +2294,7 @@ function beginWarmup(c,w){
  game={kind:'bossgrow', warmup:true, shown:true, c:c, w:w, name:lbl, notes:pool, target:7, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=lbl;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(7); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
@@ -2353,7 +2358,7 @@ function beginEndless(){
  game={kind:'bossgrow', endless:true, c:null, w:null, name:S9.endlessTitle, notes:pool, target:9999, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on'); $('tab-home').classList.add('on'); // Infinito = dal Profilo
  $('gametop').hidden=false; $('gametitle').textContent=S9.endlessTitle;
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(endlessRecord()); $('bestlbl').textContent=S9.record; $('reveal').innerHTML='';
@@ -2887,7 +2892,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.65'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.66'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
