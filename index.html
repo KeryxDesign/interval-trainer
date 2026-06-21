@@ -2174,7 +2174,7 @@ function layoutAids(){
 }
 function updateEliteReplay(){ if(game.kind!=='boss') return; $('rehtxt').textContent=S9.rehear+' '+game.replays; $('rehear').style.opacity=game.replays>0?'1':'.4'; } // conteggio sul bottone (elite/hard)
 // PROVA LIBERA: in Elite e Boss una riga di note suonabili per ricostruire la melodia per tentativi. 3 sessioni per partita.
-function freeTryEligible(){ return !!game && !game.elite && (game.daily || game.review || game.kind==='bossgrow'); } // niente "Prova le note" come aiuto nel Boss/Elite
+function freeTryEligible(){ return !!game && (game.elite || game.daily || game.review || game.kind==='bossgrow'); } // nel Boss/Elite l'aiuto torna ma COSTA UNA VITA
 function setupFreeTry(){
  const boss=(game.kind==='boss'||game.kind==='bossgrow'); // zona aiuti in basso per tutte le modalità boss-like
  if(!boss){ $('freetry').hidden=true; return; }
@@ -2188,14 +2188,21 @@ function renderFtRow(){
  $('ftrow').innerHTML=ks.map(k=>'<button class="ftnote" data-k="'+k+'" style="width:42px;height:42px;border-radius:50%;border:none;background:'+C[k].h+';color:'+ink(k)+ring(k)+';display:inline-flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:transform .12s,opacity .12s"><i class="ti ti-'+C[k].ic+'"></i></button>').join('');
 }
 function updateFreeTry(){
- const left=game.tryLeft||0, on=game.trying;
- $('fttxt').textContent = on?S9.ftStop : (left>0?S9.ftTry+' · '+left : S9.ftDone);
- $('ftbtn').style.opacity = (on||left>0)?'1':'.45';
+ const on=game.trying;
+ if(game.elite){ // costa una vita per attivazione
+  $('fttxt').textContent = on?S9.ftStop : S9.ftTry+' (-1 ♥)';
+  $('ftbtn').style.opacity = (on||(game.lives||0)>0)?'1':'.45';
+ } else {
+  const left=game.tryLeft||0;
+  $('fttxt').textContent = on?S9.ftStop : (left>0?S9.ftTry+' · '+left : S9.ftDone);
+  $('ftbtn').style.opacity = (on||left>0)?'1':'.45';
+ }
  $('ftrow').style.opacity = on?'1':'.4'; $('ftrow').style.pointerEvents = on?'auto':'none';
 }
 function toggleFreeTry(){
  if(!freeTryEligible()) return;
- if(game.trying){ game.trying=false; }
+ if(game.trying){ game.trying=false; updateFreeTry(); return; }
+ if(game.elite){ if((game.lives||0)<=0) return; game.lives--; renderBossBar(); game.trying=true; } // Boss/Elite: aprire l'aiuto costa una vita (le mancanti = niente margine sugli errori)
  else { if((game.tryLeft||0)<=0) return; game.tryLeft--; game.trying=true; }
  updateFreeTry();
 }
@@ -2916,7 +2923,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.71'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.72'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
