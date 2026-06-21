@@ -596,7 +596,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ modes:["Facile","Normale","Difficile"], trainTitle:"Training", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
@@ -771,7 +771,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ modes:["Easy","Normal","Hard"], trainTitle:"Training", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
@@ -1016,7 +1016,7 @@ function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAl
 // livello successivo: si sblocca battendo l'Elite del livello precedente (che introduce la nota)
 function worldUnlocked(c,i){ if(unlockAll()) return true; if(i===0) return c!==COURSE_IDS[0] || !!localStorage.getItem('hm_casa_done'); return !!localStorage.getItem('hm_elite_'+c+'_'+(i-1)); } // il primo livello si sblocca solo dopo la casa (Livello 0)
 // modi in ordine (Facile->Normale->Difficile); il Boss invece e' sempre tentabile (test-out) -> gestito a parte
-function modeUnlocked(c,w,m){ if(!(unlockAll()||worldUnlocked(c,w))) return false; if(m===0) return true; return starsOf(c,w,m-1)>=1; }
+function modeUnlocked(c,w,m){ if(unlockAll()) return true; if(!worldUnlocked(c,w)) return false; if(m===0) return isChord(c,w)||starsOf(c,w,'t')>=1; return starsOf(c,w,m-1)>=1; } // Facile (m0) si sblocca finendo il Training (note); accordi senza Training
 function bossUnlocked(c,w){ return unlockAll() || starsOf(c,w,2)>=1; } // niente skip: il Boss si sblocca solo dopo aver fatto i 3 modi
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
 // livelli = note (CWADD) + accordi (CHORDS) in coda. w continuo: i primi sono note, poi accordi
@@ -1040,7 +1040,8 @@ function courseUnlocked(c){
  return !!localStorage.getItem('hm_elite_'+prev+'_'+last); // scala successiva: solo finendo la precedente (battuto il Boss dell'ultimo livello)
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; return game.kind==='free'?(game.notes||SCALES[scale]):levelPool(game.c,game.w);}
+function trainPool(c,w){return [...new Set([0,...CWADD[c][w]])].sort((a,b)=>a-b);} // Training: solo tonica + nota nuova
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow')return game.notes; if(game.kind==='free')return game.notes||SCALES[scale]; return game.training?trainPool(game.c,game.w):levelPool(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
@@ -1254,7 +1255,7 @@ function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo mod
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
  for(const c of COURSE_IDS){ if(!(unlockAll()||courseUnlocked(c))) break;
   for(let w=0; w<totLevels(c); w++){ if(!(unlockAll()||worldUnlocked(c,w))) break;
-   if(!localStorage.getItem('hm_elite_'+c+'_'+w)){ for(let m=0;m<3;m++){ if(starsOf(c,w,m)===0) return {c:c,w:w,m:m}; } return {c:c,w:w,boss:true}; }
+   if(!localStorage.getItem('hm_elite_'+c+'_'+w)){ if(!isChord(c,w)&&starsOf(c,w,'t')===0) return {c:c,w:w,training:true}; for(let m=0;m<3;m++){ if(starsOf(c,w,m)===0) return {c:c,w:w,m:m}; } return {c:c,w:w,boss:true}; }
   } }
  return null;
 }
@@ -1511,12 +1512,13 @@ function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq
 function startLevel(c,w,m,skipLoading){
  if(m===1){ if(skipLoading) beginNormale(c,w); else showLoading(()=>beginNormale(c,w),{c:c,w:w}); return; } // Normale = ricostruzione vista
  if(m===2){ if(skipLoading) beginDifficile(c,w); else showLoading(()=>beginDifficile(c,w),{c:c,w:w}); return; } // Difficile = nota per nota a orecchio
- clearTimers(); game={kind:'level',c:c,w:w,m:m}; root=Math.floor(Math.random()*12); // Facile: tonica random a ogni partita
+ clearTimers(); game={kind:'level',c:c,w:w,m:m,training:(m==='t')}; root=Math.floor(Math.random()*12); // Facile/Training: tonica random a ogni partita
  const lv=S9.courses[c].levels[w];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false;
- $('gametitle').textContent=(isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+MODES[m];
+ const mlabel=(m==='t')?S9.trainTitle:MODES[m];
+ $('gametitle').textContent=(isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+mlabel;
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
@@ -1524,7 +1526,7 @@ function startLevel(c,w,m,skipLoading){
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; chordSeq=[];
  render(); loadBest();
  const go=()=>{ if(skipLoading) beginGame(); else showLoading(beginGame); };
- if(needTaste(c,w)) showTaste(c,w,go); else go();
+ if(m!=='t' && needTaste(c,w)) showTaste(c,w,go); else go();
 }
 function setStatus(txt,cls){
  const st=$('status');
@@ -1762,7 +1764,7 @@ function renderPath(){
  const box=$('path'); box.innerHTML='';
  const qbox=document.createElement('div'); qbox.className='corsoquests'; box.appendChild(qbox); renderAllena(qbox); // quest del giorno in cima al Corso
  const nx=nextExercise();
- const isNext=o=>nx&&((nx.casa&&o.casa)||(!nx.casa&&!o.casa&&nx.c===o.c&&nx.w===o.w&&((nx.boss&&o.boss)||(!nx.boss&&!o.boss&&nx.m===o.m))));
+ const isNext=o=>{ if(!nx) return false; if(nx.casa) return !!o.casa; if(o.casa) return false; if(nx.c!==o.c||nx.w!==o.w) return false; if(nx.training) return !!o.training; if(o.training) return false; if(nx.boss) return !!o.boss; if(o.boss) return false; return nx.m===o.m; };
  let nextEl=null, first=true, zz=0;
  const board=document.createElement('div'); board.className='board'; box.appendChild(board);
  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg'); svg.id='boardlines'; board.appendChild(svg);
@@ -1822,11 +1824,13 @@ function renderPath(){
    hdr.innerHTML='<span class="nh-top">'+hicon+'<span class="nh-name">'+nm+'</span><i class="ti ti-book-2 nh-ch"></i></span><span class="nh-iv">'+ivname+'</span>';
    curSec.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
-   const playLbl=ch?S9.thPlayChord:S9.thPlay;
-   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw"><button class="thgame" type="button"><i class="ti ti-player-play"></i> '+playLbl+'</button><button class="thgot" type="button">'+S9.thGot+'</button></div>'; curSec.appendChild(panel);
+   const proBtn=ch?'<button class="thgame" type="button"><i class="ti ti-player-play"></i> '+S9.thPlayChord+'</button>':''; // accordi: "Prova"; note: il Training e' un livello a se'
+   panel.innerHTML=buildTheoryBody(c,w)+'<div class="throw">'+proBtn+'<button class="thgot" type="button">'+S9.thGot+'</button></div>'; curSec.appendChild(panel);
    hdr.addEventListener('click',()=>{ panel.hidden=!panel.hidden; hdr.classList.toggle('open',!panel.hidden); drawBoardLines(board); if(!panel.hidden) panel.scrollIntoView({block:'nearest'}); });
-   panel.querySelector('.thgame').addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
+   const tg=panel.querySelector('.thgame'); if(tg) tg.addEventListener('click',()=>showLoading(()=>beginWarmup(c,w),{c:c,w:w}));
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
+   // Training (solo note): primo livello, 2 note, mostrato e in dissolvenza come Facile ma piu' facile
+   if(!ch){ const tsn=starsOf(c,w,'t'); node({color:colOf(k), ic:C[k].ic, ex:'school', ring:tsn/3, locked:!(unlockAll()||worldUnlocked(c,w)), next:isNext({c:c,w:w,training:true}), onClick:()=>startLevel(c,w,'t')}); }
    // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Esercizio = icona univoca, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
     node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
@@ -2474,7 +2478,7 @@ function flash(k,ms,skipCenter){
  const ct=$('ctr');
  if(ct){delete ct.dataset.mode; ct.style.background=C[k].h; ct.style.color=ink(k);
   let inner;
-  if(game.kind==='level'&&(game.m===0||game.m===1)){
+  if(game.kind==='level'&&(game.m===0||game.m===1||game.m==='t')){
    // rivelazione progressiva al centro: prima sparisce il colore, poi il simbolo, resta la dicitura
    const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
    if(lv>=1){ ct.style.background='var(--surface2)'; ct.style.color='var(--text)'; } // colore via per primo
@@ -2514,7 +2518,7 @@ function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
 // rivelazione progressiva (Facile/Normale): meno aiuti a ogni stella superata.
 // round <STAR1: colore+simbolo+nome · STAR1..STAR2-1: colore+nome · >=STAR2: solo colore
 function updateReveal(){
- if(!(game.kind==='level'&&(game.m===0||game.m===1))) return;
+ if(!(game.kind==='level'&&(game.m===0||game.m===1||game.m==='t'))) return;
  const lv=seq.length>=STAR2?2:(seq.length>=STAR1?1:0);
  const isz=Math.round(KEY*0.32), ntsz=Math.round(KEY*0.2);
  for(let k=0;k<12;k++){
@@ -2548,7 +2552,10 @@ const DURS=[0.5,1,1,1,1.5,2];
 function addNote(forceNew){
  const sc=activeSet();
  let pool=sc;
- if(game.kind==='level' && isChord(game.c,game.w)){ pool=sc; } // accordo: melodie con le sole note dell'accordo
+ if(game.kind==='level' && game.training){ // Training: solo tonica + nota nuova; la 1a giocata e' la nota nuova
+  if(forceNew){ const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k)); pool=nn.length?nn:sc; } else pool=sc;
+ }
+ else if(game.kind==='level' && isChord(game.c,game.w)){ pool=sc; } // accordo: melodie con le sole note dell'accordo
  else if(game.kind==='level'){
   // Facile: riscaldamento integrato e CONTEGGIATO -> le prime note usano solo tonica + nota nuova, poi si apre a tutte
   const warmPool=[...new Set([0,...CWADD[game.c][game.w]])].filter(k=>sc.includes(k));
@@ -2909,7 +2916,7 @@ applyFont();
 applyStatic();
 showHome();
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.70'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.71'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
