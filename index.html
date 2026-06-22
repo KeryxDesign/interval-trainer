@@ -46,13 +46,20 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #locktip::after{content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); border:7px solid transparent; border-top-color:#f4f6fb; border-bottom:0;}
 .frz{margin-left:10px; color:#7cc7ff; font-weight:800;}
 #topbar{position:fixed; left:0; right:0; top:0; margin:0 auto; max-width:480px; display:flex; align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--line); padding:calc(8px + env(safe-area-inset-top)) 14px 8px; z-index:30;}
-#topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text); cursor:pointer;}
+#topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text);}
 .tb-frz{color:#7cc7ff; display:inline-flex; align-items:center; gap:3px; margin-left:6px;}
-#topbar .tb-xp{flex-direction:column; align-items:flex-start; gap:3px; cursor:pointer;}
-.tb-lvl{font-size:12px; font-weight:800; color:var(--gold);}
-.tb-xptrack{width:96px; height:8px; background:var(--surface2); border-radius:6px; overflow:hidden;}
-.tb-xpfill{height:100%; background:var(--gold); border-radius:6px; transition:width .4s;}
-.tb-shop{margin-left:auto; background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
+.tb-prof{display:flex; align-items:center; gap:8px; flex:1; min-width:0; background:none; border:none; padding:0; cursor:pointer;}
+.tb-av{width:28px; height:28px; flex:0 0 auto; position:relative; display:inline-block;}
+.tb-name{font-size:15px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.tb-coins{display:inline-flex; align-items:center; gap:4px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto;}
+.tb-shop{background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
+.shopcoins{display:flex; align-items:center; justify-content:center; gap:6px; font-size:20px; font-weight:800; color:var(--gold); margin:2px 0 4px;}
+.scprice{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--gold); font-weight:800;}
+.sceq{font-size:11px; color:var(--muted); font-weight:700;}
+.scok{font-size:11px; color:var(--gold); font-weight:800;}
+.scprev{position:absolute; top:6px; right:6px; font-size:14px; color:var(--muted);}
+.shopcard{position:relative;}
+.shopcard.buy{opacity:.92;}
 body.hastop .wrap{padding-top:64px;}
 #shopsheet{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:72; display:flex; align-items:flex-end; justify-content:center;}
 #shopbox{width:100%; max-width:520px; background:var(--bg); border-radius:20px 20px 0 0; padding:16px 16px 30px; max-height:84vh; overflow:auto; box-shadow:0 -8px 30px rgba(0,0,0,.5); animation:welIn .26s ease both;}
@@ -428,8 +435,9 @@ button.levelcard:active{transform:scale(0.99);}
 <body>
 <div id="ver" aria-hidden="true"></div>
 <div id="topbar" hidden>
-  <div class="tb-item"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></div>
-  <div class="tb-item tb-xp"><span class="tb-lvl" id="tb-lvl"></span><div class="tb-xptrack"><div class="tb-xpfill" id="tb-xpfill"></div></div></div>
+  <button class="tb-prof" id="tb-prof"><span class="tb-av" id="tb-av"></span><span class="tb-name" id="tb-name"></span></button>
+  <span class="tb-coins" id="tb-coinsbox"><i class="ti ti-coin"></i><span id="tb-coins">0</span></span>
+  <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></span>
   <button class="tb-shop" id="tb-shop" aria-label="Shop"><i class="ti ti-shopping-bag"></i></button>
 </div>
 <div id="shopsheet" hidden><div id="shopbox"><div id="shophead"><span id="shoptitle"></span><button id="shopclose" aria-label="Chiudi"><i class="ti ti-x"></i></button></div><div id="shopbody"></div></div></div>
@@ -654,7 +662,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", shopEquip:"Usa", shopEquipped:"In uso", shopNoCoins:"Monete insufficienti", shopGetIt:"Compralo nello Shop", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
@@ -830,7 +838,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", shopEquip:"Use", shopEquipped:"In use", shopNoCoins:"Not enough coins", shopGetIt:"Get it in the Shop", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
@@ -1060,10 +1068,8 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2,2.5,3].includes(speed))speed=1;
 function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
-const TIMBRES=['pure','corda','pad','voce','carillon','organo'];
-const TIMBRE_LV={pure:1,corda:2,pad:3,voce:4,carillon:6,organo:8}; // timbri come premio: si sbloccano salendo di livello
-function timbreUnlocked(t){ return unlockAll()||xpInfo().lvl>=(TIMBRE_LV[t]||1); }
-let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure'; if(!timbreUnlocked(timbre))timbre='pure';
+const TIMBRES=['pure','corda','pad','voce','carillon','organo']; // si comprano nello Shop con le monete (pure gratis)
+let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure'; if(!timbreOwned(timbre))timbre='pure';
 const $=id=>document.getElementById(id);
 
 function prog(c){try{return JSON.parse(localStorage.getItem('it_prog_'+c)||'{}')}catch(e){return{}}}
@@ -1121,8 +1127,19 @@ function getXP(){ return parseInt(localStorage.getItem('hm_xp')||'0',10)||0; }
 function xpInfo(){ const xp=getXP(); let lvl=1, need=100, acc=0; while(xp>=acc+need){ acc+=need; lvl++; need=lvl*100; } return {xp:xp, lvl:lvl, into:xp-acc, need:need, pct:Math.round((xp-acc)/need*100)}; }
 function getFreezes(){ return parseInt(localStorage.getItem('hm_freezes')||'0',10)||0; }
 function setFreezes(n){ localStorage.setItem('hm_freezes', String(Math.max(0,Math.min(3,n)))); }
+// MONETA DI GIOCO: si accumula completando esercizi, si spende nello Shop
+function getCoins(){ return parseInt(localStorage.getItem('hm_coins')||'0',10)||0; }
+function setCoins(n){ localStorage.setItem('hm_coins', String(Math.max(0,n))); }
+function ownedSet(){ try{ return new Set((localStorage.getItem('hm_owned')||'').split(',').filter(Boolean)); }catch(e){ return new Set(); } }
+function isOwned(id){ return ownedSet().has(id); }
+function buyItem(id,price){ if(getCoins()<price||isOwned(id)) return false; setCoins(getCoins()-price); const s=ownedSet(); s.add(id); localStorage.setItem('hm_owned',[...s].join(',')); return true; }
+function timbreOwned(t){ return t==='pure'||isOwned('t:'+t); }
+function avatarOwned(i){ return i===0||isOwned('a:'+i); }
+const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700};
+function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
  if(after>before){ let fr=getFreezes(); for(let L=before+1;L<=after;L++){ if(L%2===0) fr++; } setFreezes(fr); } // +1 salva-streak ogni 2 livelli (max 3)
+ setCoins(getCoins()+n); // stessa azione frutta anche monete
  xpToast(n, after>before); }
 function xpToast(n, levelUp){ let t=document.getElementById('xptoast'); if(!t){ t=document.createElement('div'); t.id='xptoast'; document.body.appendChild(t); } t.innerHTML='+'+n+' XP'+(levelUp?' &middot; <b>'+S9.xpLevel+' '+xpInfo().lvl+'!</b>':''); t.style.display='block'; t.style.animation='none'; void t.offsetWidth; t.style.animation='xppop 1.9s ease forwards'; clearTimeout(t._t); t._t=setTimeout(()=>{t.style.display='none';},1950); }
 
@@ -1279,9 +1296,7 @@ function applyStreakFreeze(){
 }
 function getStreakRaw(){ return parseInt(localStorage.getItem('hm_streak')||'0',10)||0; }
 const AVATARS=[null,{ic:'home',k:0},{ic:'sun',k:2},{ic:'leaf',k:4},{ic:'cloud',k:7},{ic:'moon',k:9},{ic:'flower',k:10},{ic:'bolt',k:11},{ic:'music',h:'#64748b'},{ic:'microphone-2',h:'#0ea5e9'}];
-function avatarReq(i){ return i<=0?1:i+1; } // avatar come premio: i-esimo si sblocca al livello i+1
-function avatarUnlocked(i){ return unlockAll()||xpInfo().lvl>=avatarReq(i); }
-function getAvatar(){let n=parseInt(localStorage.getItem('hm_avatar')||'0',10); if(!(n>=0&&n<AVATARS.length))n=0; if(!avatarUnlocked(n))n=0; return n;}
+function getAvatar(){let n=parseInt(localStorage.getItem('hm_avatar')||'0',10); if(!(n>=0&&n<AVATARS.length))n=0; if(!avatarOwned(n))n=0; return n;}
 function getName(){return localStorage.getItem('hm_name')||'';}
 function paintAvatar(el,idx,size){
  const a=AVATARS[idx];
@@ -1308,10 +1323,10 @@ function openProfile(){
 function renderPeAvatars(){
  const box=$('pe-avatars'); box.innerHTML='';
  AVATARS.forEach((_,i)=>{
-  const unl=avatarUnlocked(i);
+  const unl=avatarOwned(i);
   const b=document.createElement('button'); b.className=(i===peSel?'sel':'')+(unl?'':' avlock');
   if(unl){ const c=document.createElement('div'); paintAvatar(c,i,46); b.appendChild(c); b.addEventListener('click',()=>{peSel=i; renderPeAvatars();}); }
-  else { b.innerHTML='<div class="avlk"><i class="ti ti-lock"></i><span>'+S9.xpLevel.slice(0,3)+' '+avatarReq(i)+'</span></div>'; }
+  else { b.innerHTML='<div class="avlk"><i class="ti ti-lock"></i><span>Shop</span></div>'; }
   box.appendChild(b);
  });
 }
@@ -1384,21 +1399,29 @@ function updateDailyFab(){ const b=$('dailyfabbadge'); if(!b)return; const u=dai
 function openDailySheet(){ $('dailysheettitle').textContent=S9.allenaTitle; renderAllena($('dailysheetbody')); $('dailysheetbody').querySelectorAll('.allena').forEach(x=>x.addEventListener('click',closeDailySheet)); $('dailysheet').hidden=false; }
 function closeDailySheet(){ const s=$('dailysheet'); if(s) s.hidden=true; }
 // Barra superiore: streak/salva-streak + livello/XP + shop
-function updateTopbar(){ const x=xpInfo(); $('tb-lvl').textContent=S9.xpLevel.slice(0,3)+' '+x.lvl; $('tb-xpfill').style.width=x.pct+'%'; $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
+function updateTopbar(){ paintAvatar($('tb-av'),getAvatar(),28); $('tb-name').textContent=getName()||S9.defaultName; $('tb-coins').textContent=getCoins(); $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
 function closeShop(){ const s=$('shopsheet'); if(s) s.hidden=true; }
 function openShop(){ $('shoptitle').textContent=S9.shopTitle; renderShop(); $('shopsheet').hidden=false; }
+function previewTimbre(t){ const old=timbre; timbre=t; ensureCtx(); tone(64,0.4); setTimeout(()=>tone(67,0.4),170); setTimeout(()=>{tone(72,0.5); timbre=old;},340); } // anteprima del suono
+function equipTimbre(t){ timbre=t; localStorage.setItem('hm_timbre',t); }
+function equipAvatar(i){ localStorage.setItem('hm_avatar',String(i)); }
+function priceTag(p){ return '<span class="scprice"><i class="ti ti-coin"></i>'+p+'</span>'; }
+function ownTag(eq){ return '<span class="'+(eq?'scok':'sceq')+'">'+(eq?S9.shopEquipped:S9.shopEquip)+'</span>'; }
 function renderShop(){
  const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
- box.innerHTML='<div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
+ box.innerHTML='<div class="shopcoins"><i class="ti ti-coin"></i> '+getCoins()+'</div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
  const tg=$('shop-timbres');
- TIMBRES.forEach(t=>{ const unl=timbreUnlocked(t); const b=document.createElement('button'); b.className='shopcard'+(t===timbre?' on':'')+(unl?'':' lock');
-  b.innerHTML='<i class="ti ti-'+(unl?(TIC[t]||'circle'):'lock')+'" style="font-size:24px"></i>'+(unl?S9.timbreNames[t]:'<span class="sclk">'+S9.xpLevel.slice(0,3)+' '+TIMBRE_LV[t]+'</span>');
-  if(unl) b.addEventListener('click',()=>{ timbre=t; localStorage.setItem('hm_timbre',t); ensureCtx(); tone(67,0.5); renderShop(); });
+ TIMBRES.forEach(t=>{ const own=timbreOwned(t), eq=(t===timbre), price=TIMBRE_PRICE[t]||0;
+  const b=document.createElement('button'); b.className='shopcard'+(eq?' on':'')+(own?'':' buy');
+  b.innerHTML='<i class="ti ti-'+(TIC[t]||'circle')+'" style="font-size:24px"></i><span>'+S9.timbreNames[t]+'</span>'+(own?ownTag(eq):priceTag(price))+'<span class="scprev"><i class="ti ti-volume"></i></span>';
+  b.addEventListener('click',e=>{ if(e.target.closest('.scprev')){ previewTimbre(t); return; } if(own){ equipTimbre(t); previewTimbre(t); renderShop(); } else if(buyItem('t:'+t,price)){ equipTimbre(t); previewTimbre(t); renderShop(); updateTopbar(); } else showLockTip(b,S9.shopNoCoins); });
   tg.appendChild(b); });
  const ag=$('shop-avatars');
- AVATARS.forEach((_,i)=>{ const unl=avatarUnlocked(i); const cur=getAvatar()===i; const b=document.createElement('button'); b.className='shopcard'+(cur?' on':'')+(unl?'':' lock');
-  if(unl){ const c=document.createElement('div'); paintAvatar(c,i,40); b.appendChild(c); b.addEventListener('click',()=>{ localStorage.setItem('hm_avatar',String(i)); renderShop(); updateTopbar(); }); }
-  else { b.innerHTML='<i class="ti ti-lock" style="font-size:24px"></i><span class="sclk">'+S9.xpLevel.slice(0,3)+' '+avatarReq(i)+'</span>'; }
+ AVATARS.forEach((_,i)=>{ const own=avatarOwned(i), eq=(getAvatar()===i), price=avatarPrice(i);
+  const b=document.createElement('button'); b.className='shopcard'+(eq?' on':'')+(own?'':' buy');
+  const c=document.createElement('div'); paintAvatar(c,i,40); if(!own)c.style.opacity='.8'; b.appendChild(c); // anteprima avatar sempre visibile
+  const lab=document.createElement('span'); lab.innerHTML=own?ownTag(eq):priceTag(price); b.appendChild(lab);
+  b.addEventListener('click',()=>{ if(own){ equipAvatar(i); renderShop(); updateTopbar(); } else if(buyItem('a:'+i,price)){ equipAvatar(i); renderShop(); updateTopbar(); } else showLockTip(b,S9.shopNoCoins); });
   ag.appendChild(b); });
 }
 const MEDALS=[
@@ -1423,11 +1446,11 @@ function renderTimbres(){
  $('timbrelbl').textContent=S9.timbreLbl; box.innerHTML='';
  const IC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
  TIMBRES.forEach(t=>{
-  const unl=timbreUnlocked(t);
-  const b=document.createElement('button'); b.className='tmb'+(t===timbre?' on':'')+(unl?'':' tmblock');
-  b.innerHTML='<i class="ti ti-'+(unl?(IC[t]||'circle'):'lock')+'"></i>'+(unl?S9.timbreNames[t]:S9.xpLevel+' '+TIMBRE_LV[t]);
-  if(unl) b.addEventListener('click',()=>{timbre=t; localStorage.setItem('hm_timbre',t); renderTimbres(); ensureCtx(); tone(67,0.5);});
-  else b.addEventListener('click',()=>showLockTip(b, S9.xpLevel+' '+TIMBRE_LV[t]));
+  const own=timbreOwned(t);
+  const b=document.createElement('button'); b.className='tmb'+(t===timbre?' on':'')+(own?'':' tmblock');
+  b.innerHTML='<i class="ti ti-'+(own?(IC[t]||'circle'):'lock')+'"></i>'+(own?S9.timbreNames[t]:S9.shopTitle);
+  if(own) b.addEventListener('click',()=>{timbre=t; localStorage.setItem('hm_timbre',t); renderTimbres(); ensureCtx(); tone(67,0.5);});
+  else b.addEventListener('click',()=>showLockTip(b, S9.shopGetIt));
   box.appendChild(b);
  });
 }
@@ -1661,7 +1684,7 @@ $('dailysheet').addEventListener('click',e=>{ if(e.target===$('dailysheet')) clo
 $('tb-shop').addEventListener('click',openShop);
 $('shopclose').addEventListener('click',closeShop);
 $('shopsheet').addEventListener('click',e=>{ if(e.target===$('shopsheet')) closeShop(); });
-document.querySelectorAll('#topbar .tb-item').forEach(el=>el.addEventListener('click',showHome)); // tocca i dati -> Profilo
+$('tb-prof').addEventListener('click',showHome); // nome/avatar -> Profilo
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
@@ -3083,7 +3106,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.81'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.82'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
