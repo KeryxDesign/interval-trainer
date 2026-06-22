@@ -1206,7 +1206,7 @@ function applyStatic(){
  $('fs-reopentxt').textContent=S9.fsChange;
  $('celtitle').textContent=S9.unlockTitle;
  $('celtap').textContent=S9.unlockTap;
- $('methodsum').textContent=S9.methodTitle; $('methodbody').innerHTML=S9.methodBody;
+ $('methodsum').textContent=S9.methodTitle; $('methodbody').innerHTML=paraBr(S9.methodBody);
  $('thintro').innerHTML=paraBr(S9.thintro);
  const sc=$('scsel'); sc.innerHTML='';
  const g1=document.createElement('optgroup'); g1.label=S9.grpModes;
@@ -1294,7 +1294,7 @@ function renderGuide(){
  S9.GUIDE.forEach((s,i)=>{ if((GSEC[i]!=null?GSEC[i]:0)!==guideSec) return;
   const d=document.createElement('div'); d.className='gcard acc'+(s.t?' '+s.t:'');
   const open=firstOfSec; firstOfSec=false; if(open) d.classList.add('open');
-  d.innerHTML='<button type="button" class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span><i class="ti ti-chevron-down gchev"></i></button><div class="gbody"'+(open?'':' hidden')+'>'+s.p+'</div>';
+  d.innerHTML='<button type="button" class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span><i class="ti ti-chevron-down gchev"></i></button><div class="gbody"'+(open?'':' hidden')+'>'+paraBr(s.p)+'</div>';
   const head=d.querySelector('.ghead'), body=d.querySelector('.gbody');
   head.onclick=()=>{ const willOpen=body.hidden; gd.querySelectorAll('.gbody').forEach(b=>b.hidden=true); gd.querySelectorAll('.gcard.acc').forEach(c=>c.classList.remove('open')); if(willOpen){ body.hidden=false; d.classList.add('open'); } };
   gd.appendChild(d); });
@@ -1654,7 +1654,7 @@ function setupCardFree(c, page){
 }
 function openFreeIntro(){
  $('fi-title').textContent=S9.fiTitle;
- $('fi-body').innerHTML=S9.fiBody;
+ $('fi-body').innerHTML=paraBr(S9.fiBody);
  $('fi-close').textContent=S9.fiClose;
  $('freeintro').hidden=false;
 }
@@ -1698,7 +1698,7 @@ function renderWelStep(){
   // gerarchia: prima frase = titolo, resto = corpo
   const parts=(list[welStep]||'').split('\n\n');
   const title=parts[0]||''; const body=parts.slice(1).join('<br><br>').replace(/\n/g,'<br>');
-  $('wel-step').innerHTML='<span class="wel-title">'+title+'</span>'+(body?'<span class="wel-body">'+body+'</span>':'');
+  $('wel-step').innerHTML='<span class="wel-title">'+title+'</span>'+(body?'<span class="wel-body">'+paraBr(body)+'</span>':'');
  }
  let dots=''; list.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
  $('wel-dots').innerHTML=dots;
@@ -2098,14 +2098,22 @@ function attachPathSwipe(el){
  el.addEventListener('touchend',e=>{ if(x0==null)return; const t=e.changedTouches[0]; const dx=t.clientX-x0, dy=t.clientY-y0; x0=null; if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.3) setPathPage(pathPage+(dx<0?1:-1)); },{passive:true});
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
-// spezza i paragrafi lunghi (~max 4 righe) ai confini di frase, in tutta l'app
-function paras(t,mx){mx=mx||130; const out=[]; let cur=''; t.split(/(?<=[.!?])\s+/).forEach(s=>{ if(cur&&(cur+' '+s).length>mx){out.push(cur); cur=s;} else cur=cur?cur+' '+s:s; }); if(cur)out.push(cur); return out;}
-function paraBr(t,mx){return paras(t,mx).join('<br><br>');}
+// spezza una frase-prosa (senza HTML strutturale) in blocchi da max ~3 righe ai confini di frase
+function paras(t,mx){mx=mx||120; const out=[]; let cur=''; t.split(/(?<=[.!?…])\s+/).forEach(s=>{ if(cur&&(cur+' '+s).replace(/<[^>]+>/g,'').length>mx){out.push(cur); cur=s;} else cur=cur?cur+' '+s:s; }); if(cur)out.push(cur); return out;}
+// REGOLA APP: ogni paragrafo oltre ~3 righe va diviso da una riga vuota. paraBr lavora a blocchi e
+// in modo sicuro: rispetta i paragrafi gia' separati (<br><br>), NON tocca i blocchi gia' spezzati
+// o con elenchi (contengono gia' <br>) e lascia intatto il testo corto. Si puo' applicare ovunque.
+function paraBr(t,mx){ if(t==null) return t; mx=mx||120;
+ return String(t).split(/<br\s*\/?>\s*<br\s*\/?>/i).map(block=>{
+  const plain=block.replace(/<[^>]+>/g,'');
+  if(plain.length<=mx || /<br/i.test(block)) return block; // corto, o gia' strutturato: lascia
+  return paras(block,mx).join('<br><br>');
+ }).join('<br><br>'); }
 function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.length===1?ns[0]:ns.join(S9.and);}
 function buildTheoryBody(c,w){
  const ch=isChord(c,w)?chordAt(c,w):null;
  const notes=ch?chordNotes(c,w):CWADD[c][w];
- const intro=ch?(S9.chordWord+' <b>'+ch.n+'</b> ('+ch.sub+') · '+S9.qual[ch.q]+'.<br><br>'+S9.chordIntro):paraBr(S9.courses[c].levels[w].th);
+ const intro=ch?(S9.chordWord+' <b>'+ch.n+'</b> ('+ch.sub+') · '+S9.qual[ch.q]+'.<br><br>'+paraBr(S9.chordIntro)):paraBr(S9.courses[c].levels[w].th);
  // Teoria IN CHIARO sempre aperta: intro + ruolo di ogni suono (con ascolto) + dettaglio semitoni
  let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+intro+'</p>';
  let blocks='';
@@ -2154,7 +2162,7 @@ function showLevelDetail(c,w){
  // BOSS di fine livello (ex Elite): ricostruisci la melodia SOLO a orecchio. Batterlo sblocca la nota nuova + il livello successivo. Sempre tentabile (test-out).
  const eDone=localStorage.getItem('hm_elite_'+c+'_'+w);
  const eb=document.createElement('button'); eb.className='world levelcard elitecard'+(eDone?' done':'');
- eb.innerHTML='<i class="ti ti-skull eskull"></i><span class="etitle">'+S9.boss+(eDone?' <span class="estar">🏆</span>':'')+'</span><p class="esub">'+S9.eliteCard+'</p>';
+ eb.innerHTML='<i class="ti ti-skull eskull"></i><span class="etitle">'+S9.boss+(eDone?' <span class="estar">🏆</span>':'')+'</span><p class="esub">'+paraBr(S9.eliteCard)+'</p>';
  eb.addEventListener('click',()=>showLoading(()=>beginElite(c,w),{c:c,w:w}));
  md.appendChild(eb);
 }
@@ -3211,7 +3219,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.01'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.02'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
