@@ -2583,7 +2583,7 @@ function endlessOver(){
 function bossPlay(keepStep){
  ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
  if(!keepStep) step=0;
- const base=Math.max(170,320/speed); let t=Math.max(220,350/speed);
+ const base=game.earOnly?Math.max(440,560/speed):Math.max(260,400/speed); let t=Math.max(300,420/speed); // Boss/a orecchio piu' lento, cosi' si seguono le note
  game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{ game.earOnly?pulse(base-70):flash(k,base-70); tone(60+root+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
  timers.push(setTimeout(()=>{state='input'; setStatus(S9.yourTurn(step,game.seq.length));},t));
 }
@@ -3106,7 +3106,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.84'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.85'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
