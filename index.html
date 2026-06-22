@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#14151a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -52,6 +52,7 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .tb-av{width:28px; height:28px; flex:0 0 auto; position:relative; display:inline-block;}
 .tb-name{font-size:15px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .tb-coins{display:inline-flex; align-items:center; gap:4px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto;}
+.cur{font-weight:900; font-size:1.1em; line-height:1;}
 .tb-shop{background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
 .shopcoins{display:flex; align-items:center; justify-content:center; gap:6px; font-size:20px; font-weight:800; color:var(--gold); margin:2px 0 4px;}
 .scprice{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--gold); font-weight:800;}
@@ -436,7 +437,7 @@ button.levelcard:active{transform:scale(0.99);}
 <div id="ver" aria-hidden="true"></div>
 <div id="topbar" hidden>
   <button class="tb-prof" id="tb-prof"><span class="tb-av" id="tb-av"></span><span class="tb-name" id="tb-name"></span></button>
-  <span class="tb-coins" id="tb-coinsbox"><i class="ti ti-coin"></i><span id="tb-coins">0</span></span>
+  <span class="tb-coins" id="tb-coinsbox"><span class="cur">♪</span><span id="tb-coins">0</span></span>
   <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></span>
   <button class="tb-shop" id="tb-shop" aria-label="Shop"><i class="ti ti-shopping-bag"></i></button>
 </div>
@@ -1381,14 +1382,14 @@ function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Ma
 function renderAllena(boxEl){
  const box=boxEl||$('allenabox'); if(!box) return;
  const dd=dailyDoneToday(), dstk=dailyStreak(), rec=endlessRecord(), rv=reviewDoneToday(), en=endlessDoneToday();
- const badge=d=>'<span style="color:'+(d?'var(--gold)':'var(--muted)')+';font-weight:800;font-size:14px">'+(d?'1/1':'0/1')+'</span>'; // task giornaliero
- const card=(id,ic,title,sub,d)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span>'+badge(d)+'</div><div class="mdesc">'+sub+'</div></button>';
+ const badge=(d,rew)=>'<span class="crew" style="color:'+(d?'var(--muted)':'var(--gold)')+';font-weight:800;font-size:14px;white-space:nowrap">'+(d?'1/1 ✓':'+'+rew+' <span class="cur">♪</span>')+'</span>'; // mostra quanto si guadagna (o fatto)
+ const card=(id,ic,title,sub,d,rew)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span>'+badge(d,rew)+'</div><div class="mdesc">'+sub+'</div></button>';
  const wk=weakIntervals(); const rdesc=S9.reviewDesc+(wk.length?' ('+cap(S9.NM[wk[0]])+')':'');
  const ddesc=(dd?S9.dailyDoneTxt:S9.dailyDesc)+(dstk?' · 🔥 '+dstk:'');
  const edesc=S9.endlessDesc+(rec?' · '+S9.record+' '+rec:'');
- box.innerHTML=card('al-daily','calendar-star',S9.dailyTitle, ddesc, dd)
-  +card('al-review','target-arrow',S9.reviewTitle, rdesc, rv)
-  +card('al-endless','infinity',S9.endlessTitle, edesc, en);
+ box.innerHTML=card('al-daily','calendar-star',S9.dailyTitle, ddesc, dd, 25)
+  +card('al-review','target-arrow',S9.reviewTitle, rdesc, rv, 20)
+  +card('al-endless','infinity',S9.endlessTitle, edesc, en, 25);
  $('al-daily').addEventListener('click',()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}));
  $('al-review').addEventListener('click',()=>showLoading(beginReview,{c:'pent',title:S9.reviewTitle}));
  $('al-endless').addEventListener('click',()=>showLoading(beginEndless,{c:'pent',title:S9.endlessTitle}));
@@ -1405,11 +1406,11 @@ function openShop(){ $('shoptitle').textContent=S9.shopTitle; renderShop(); $('s
 function previewTimbre(t){ const old=timbre; timbre=t; ensureCtx(); tone(64,0.4); setTimeout(()=>tone(67,0.4),170); setTimeout(()=>{tone(72,0.5); timbre=old;},340); } // anteprima del suono
 function equipTimbre(t){ timbre=t; localStorage.setItem('hm_timbre',t); }
 function equipAvatar(i){ localStorage.setItem('hm_avatar',String(i)); }
-function priceTag(p){ return '<span class="scprice"><i class="ti ti-coin"></i>'+p+'</span>'; }
+function priceTag(p){ return '<span class="scprice"><span class="cur">♪</span>'+p+'</span>'; }
 function ownTag(eq){ return '<span class="'+(eq?'scok':'sceq')+'">'+(eq?S9.shopEquipped:S9.shopEquip)+'</span>'; }
 function renderShop(){
  const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
- box.innerHTML='<div class="shopcoins"><i class="ti ti-coin"></i> '+getCoins()+'</div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
+ box.innerHTML='<div class="shopcoins"><span class="cur">♪</span> '+getCoins()+'</div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
  const tg=$('shop-timbres');
  TIMBRES.forEach(t=>{ const own=timbreOwned(t), eq=(t===timbre), price=TIMBRE_PRICE[t]||0;
   const b=document.createElement('button'); b.className='shopcard'+(eq?' on':'')+(own?'':' buy');
@@ -3108,7 +3109,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.86'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.87'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
