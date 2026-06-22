@@ -1069,7 +1069,7 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2,2.5,3].includes(speed))speed=1;
 function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
-const TIMBRES=['pure','corda','pad','voce','carillon','organo','scoreggia','gatto']; // si comprano nello Shop con le monete (pure gratis)
+const TIMBRES=['pure','corda','pad','voce','carillon','organo','scoreggia']; // Gatto rimosso: la sintesi non suona da gatto (serve un campione registrato)
 let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure'; if(!timbreOwned(timbre))timbre='pure';
 const $=id=>document.getElementById(id);
 
@@ -1136,7 +1136,7 @@ function isOwned(id){ return ownedSet().has(id); }
 function buyItem(id,price){ if(getCoins()<price||isOwned(id)) return false; setCoins(getCoins()-price); const s=ownedSet(); s.add(id); localStorage.setItem('hm_owned',[...s].join(',')); return true; }
 function timbreOwned(t){ return unlockAll()||t==='pure'||t==='scoreggia'||isOwned('t:'+t); } // pure e Tromba posteriore gratis dall'inizio; "sblocca tutto" il resto
 function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
-const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400,gatto:400};
+const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400};
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
  if(after>before){ let fr=getFreezes(); for(let L=before+1;L<=after;L++){ if(L%2===0) fr++; } setFreezes(fr); } // +1 salva-streak ogni 2 livelli (max 3)
@@ -3131,7 +3131,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.92'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.93'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
