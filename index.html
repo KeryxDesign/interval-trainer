@@ -396,6 +396,7 @@ button.levelcard:active{transform:scale(0.99);}
 .tmb i{font-size:20px; color:var(--muted);}
 .tmb.on{border-color:var(--gold); color:var(--gold);}
 .tmb.on i{color:var(--gold);}
+.tmb.tmblock{opacity:.5;}
 #setbox{margin-top:26px;}
 #setlbl{font-size:13px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:0 0 12px;}
 .setrowlbl{font-size:14px; font-weight:600; color:var(--text); margin:0 0 10px;}
@@ -683,7 +684,7 @@ it:{
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Boss", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
- timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce"},
+ timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo"},
  setLbl:"Impostazioni", fontLbl:"Dimensione testo", fontNames:{n:"Normale",g:"Grande",x:"Molto grande"}, droneSetting:"Drone della tonica (nota di casa sotto al gioco)",
  courseLocked:"Completa prima il corso precedente", lockCourse:t=>"Completa «"+t+"» per sbloccarla", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
@@ -859,7 +860,7 @@ en:{
  dashTag:"Your progress", mStars:"Stars", mElite:"Boss", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
- timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice"},
+ timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ"},
  setLbl:"Settings", fontLbl:"Text size", fontNames:{n:"Normal",g:"Large",x:"Extra large"}, droneSetting:"Tonic drone (home note under the game)",
  courseLocked:"Finish the previous course first", lockCourse:t=>"Finish «"+t+"» to unlock it", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
@@ -1031,8 +1032,10 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2,2.5,3].includes(speed))speed=1;
 function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
-const TIMBRES=['pure','corda','pad','voce'];
-let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure';
+const TIMBRES=['pure','corda','pad','voce','carillon','organo'];
+const TIMBRE_LV={pure:1,corda:2,pad:3,voce:4,carillon:6,organo:8}; // timbri come premio: si sbloccano salendo di livello
+function timbreUnlocked(t){ return unlockAll()||xpInfo().lvl>=(TIMBRE_LV[t]||1); }
+let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure'; if(!timbreUnlocked(timbre))timbre='pure';
 const $=id=>document.getElementById(id);
 
 function prog(c){try{return JSON.parse(localStorage.getItem('it_prog_'+c)||'{}')}catch(e){return{}}}
@@ -1368,11 +1371,13 @@ function renderMedals(){
 function renderTimbres(){
  const box=$('timbres'); if(!box) return;
  $('timbrelbl').textContent=S9.timbreLbl; box.innerHTML='';
- const IC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2'};
+ const IC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
  TIMBRES.forEach(t=>{
-  const b=document.createElement('button'); b.className='tmb'+(t===timbre?' on':'');
-  b.innerHTML='<i class="ti ti-'+(IC[t]||'circle')+'"></i>'+S9.timbreNames[t];
-  b.addEventListener('click',()=>{timbre=t; localStorage.setItem('hm_timbre',t); renderTimbres(); ensureCtx(); tone(67,0.5);});
+  const unl=timbreUnlocked(t);
+  const b=document.createElement('button'); b.className='tmb'+(t===timbre?' on':'')+(unl?'':' tmblock');
+  b.innerHTML='<i class="ti ti-'+(unl?(IC[t]||'circle'):'lock')+'"></i>'+(unl?S9.timbreNames[t]:S9.xpLevel+' '+TIMBRE_LV[t]);
+  if(unl) b.addEventListener('click',()=>{timbre=t; localStorage.setItem('hm_timbre',t); renderTimbres(); ensureCtx(); tone(67,0.5);});
+  else b.addEventListener('click',()=>showLockTip(b, S9.xpLevel+' '+TIMBRE_LV[t]));
   box.appendChild(b);
  });
 }
@@ -2147,6 +2152,16 @@ function tone(midi,durS){
   g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.26,t0+a);
   g.gain.setValueAtTime(0.26,t0+Math.max(a,durS-0.1)); g.gain.linearRampToValueAtTime(0,t0+durS);
   o.connect(g); o.start(t0); o.stop(t0+durS+0.02);
+ } else if(timbre==='carillon'){ // campanella/carillon: brillante e percussivo, decadimento rapido
+  const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f;
+  const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=f*4; const g2=ctx.createGain(); g2.gain.value=0.16; o2.connect(g2); g2.connect(g); o2.start(t0); o2.stop(t0+durS+0.05);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.42,t0+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t0+Math.min(durS,0.95));
+  o.connect(g); o.start(t0); o.stop(t0+durS+0.05);
+ } else if(timbre==='organo'){ // organo: armoniche impilate, sostenuto
+  [[1,0.5],[2,0.25],[3,0.16],[4,0.1]].forEach(([h,v])=>{const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f*h; const og=ctx.createGain(); og.gain.value=v; o.connect(og); og.connect(g); o.start(t0); o.stop(t0+durS+0.04);});
+  const a=Math.min(0.04,durS*0.3);
+  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.5,t0+a);
+  g.gain.setValueAtTime(0.5,t0+Math.max(a,durS-0.06)); g.gain.linearRampToValueAtTime(0,t0+durS);
  } else {
   const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f;
   g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.25,t0+0.02);
@@ -2171,6 +2186,11 @@ function startHold(k){
   const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; o.connect(g); oscs.push(o);
   lfo=ctx.createOscillator(); lfo.frequency.value=5.5; const lg=ctx.createGain(); lg.gain.value=f*0.012; lfo.connect(lg); lg.connect(o.frequency);
   const o2=ctx.createOscillator(); o2.type='triangle'; o2.frequency.value=f; const g2=ctx.createGain(); g2.gain.value=0.12; o2.connect(g2); g2.connect(g); oscs.push(o2); peak=0.26;
+ } else if(timbre==='carillon'){
+  const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f; o.connect(g);
+  const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=f*4; const g2=ctx.createGain(); g2.gain.value=0.14; o2.connect(g2); g2.connect(g); oscs=[o,o2]; peak=0.3;
+ } else if(timbre==='organo'){
+  [1,2,3].forEach(h=>{const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f*h; o.connect(g); oscs.push(o);}); peak=0.2;
  } else {
   const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f; o.connect(g); oscs=[o]; peak=0.25;
  }
@@ -3009,7 +3029,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.79'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.80'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
