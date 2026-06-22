@@ -2459,12 +2459,21 @@ function updateFreeTry(){
 function toggleFreeTry(){
  if(!freeTryEligible()) return;
  if(game.trying){ game.trying=false; updateFreeTry(); return; }
- if(game.elite){ if((game.lives||0)<=0) return; game.lives--; renderBossBar(); game.trying=true; } // Boss/Elite: aprire l'aiuto costa una vita (le mancanti = niente margine sugli errori)
- else { if((game.tryLeft||0)<=0) return; game.tryLeft--; game.trying=true; }
+ // l'aiuto si APRE gratis: il costo (vita in Elite, sessione in Difficile) scatta solo alla prima nota premuta
+ if(game.elite){ if((game.lives||0)<=0) return; }
+ else { if((game.tryLeft||0)<=0) return; }
+ game.trying=true; game.tryCharged=false;
  updateFreeTry();
 }
 function closeFreeTry(){ if(game&&game.trying){ game.trying=false; updateFreeTry(); } }
-function ftHit(k){ if(!game||!game.trying) return; ensureCtx(); tone(60+(root||0)+k,0.4); const b=$('ftrow').querySelector('.ftnote[data-k="'+k+'"]'); if(b){ b.style.transform='scale(1.18)'; setTimeout(()=>{b.style.transform='';},130);} }
+function ftHit(k){ if(!game||!game.trying) return;
+ if(!game.tryCharged){ // si paga alla prima nota: se apri e chiudi senza suonare, non perdi nulla
+  game.tryCharged=true;
+  if(game.elite){ if((game.lives||0)>0){ game.lives--; renderBossBar(); } }
+  else { if((game.tryLeft||0)>0) game.tryLeft--; }
+  updateFreeTry();
+ }
+ ensureCtx(); tone(60+(root||0)+k,0.4); const b=$('ftrow').querySelector('.ftnote[data-k="'+k+'"]'); if(b){ b.style.transform='scale(1.18)'; setTimeout(()=>{b.style.transform='';},130);} }
 function randRhythm(len){ const opts=[0.6,1,1,1,1.4]; const r=[]; for(let i=0;i<len;i++){ r.push(i===len-1?1.7:opts[Math.floor(Math.random()*opts.length)]); } return r; } // ritmica varia, ultima nota piu' lunga
 function startBossLike(g, title){
  resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
@@ -2499,11 +2508,11 @@ function randMelody(pool,len,study){const sq=[startNote(pool)]; // parte dalla t
  } return sq;}
 // BOSS finale: costruisci nota dopo nota fino a 7, SOLO a orecchio (cerchi neutri),
 // riascolto della scala illimitato, niente vite (sbagli -> risuona la giusta -> riparti dal round).
-function beginDifficile(c,w){ // DIFFICILE: costruisci la melodia una nota alla volta, SOLO a orecchio, tonica random
+function beginDifficile(c,w,keep){ // DIFFICILE: costruisci la melodia una nota alla volta, SOLO a orecchio; tonica fissata all'apertura (keep=restart)
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
  const pool=levelPool(c,w);
  game={kind:'bossgrow', c:c, w:w, m:2, name:levelName(c,w), notes:pool, study:studyNote(c,w), target:8, lives:3, melReplays:3, scaleReplays:3};
- root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
+ if(!keep) root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+levelName(c,w);
@@ -2594,15 +2603,17 @@ function warmupWin(){
  $('celtitle').textContent=S9.thWinT; $('celname').innerHTML='<b>'+game.name+'</b>'; $('celtap').textContent=S9.unlockTap;
  celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
-function beginElite(c,w){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio, tonica random; batterlo sblocca nota + livello
+function beginElite(c,w,keep){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio; la tonica si fissa all'apertura (keep=restart, stessa tonalita')
  clearTimers(); stopAllHeld(); stopMic();
  const pool=levelPool(c,w);
- startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
+ const rt=keep?root:Math.floor(Math.random()*12);
+ startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7,studyNote(c,w)), notes:pool, lives:3, replays:3, root:rt}, S9.boss+' · '+levelName(c,w));
 }
-function beginNormale(c,w){ // NORMALE: ricostruzione da 7 che VEDI (flash), tonica random
+function beginNormale(c,w,keep){ // NORMALE: ricostruzione da 7 che VEDI (flash); tonica fissata all'apertura (keep=restart)
  clearTimers(); stopAllHeld(); stopMic();
  const pool=levelPool(c,w);
- startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.modes[1]+' · '+levelName(c,w));
+ const rt=keep?root:Math.floor(Math.random()*12);
+ startBossLike({kind:'boss', m:1, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:rt}, S9.modes[1]+' · '+levelName(c,w));
 }
 function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,bestRound:7}); if(m==='boss'){set(0);set(1);set(2); if(!isChord(c,w))set('t');} else if(m===1||m===2){set(0); if(!isChord(c,w))set('t');} } // generoso: battere il Boss (skip) regala ★★★ ai modi e al Training sotto
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
@@ -2783,7 +2794,7 @@ function centerPlay(){
  const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
  ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w):beginElite(game.c,game.w); } else beginGame(); } };
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w,true); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w,true):beginElite(game.c,game.w,true); } else beginGame(); } }; // restart boss: keep=true -> stessa tonalita'
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
@@ -3191,7 +3202,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.99'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.00'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
