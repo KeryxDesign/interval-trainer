@@ -21,6 +21,12 @@
 input,textarea,select,[contenteditable]{-webkit-user-select:text; user-select:text;}
 html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation; overscroll-behavior:none;}
 .wrap{max-width:480px; margin:0 auto; padding:16px 16px 96px;}
+/* Schermata di gioco: il contenuto ha altezza fissa e su iPhone alti lasciava un vuoto scuro in
+   basso (ancorato in alto). Riempiamo l'altezza disponibile e centriamo il pannello con margin:auto:
+   a differenza del flex-grow NON fa collassare la ruota (figli assoluti) ne' overflow/clipping; se il
+   contenuto e' piu' alto dello spazio, i margini vanno a 0 e si scrolla. 168px = padding wrap (72+96). */
+#view-game{min-height:calc(100svh - 168px); display:flex; flex-direction:column;}
+#view-game #gamepanel{margin:auto 0;}
 header{display:flex; align-items:center; justify-content:center; margin:4px 0 18px; background:var(--surface2); border-radius:14px; padding:12px 16px;}
 h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:pointer;}
 .lang{display:flex; gap:2px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px; font-size:13px; font-weight:600;}
@@ -3150,7 +3156,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.95'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.96'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
