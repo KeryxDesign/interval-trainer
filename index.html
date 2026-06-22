@@ -45,6 +45,28 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #locktip{position:fixed; z-index:80; display:none; transform:translate(-50%,-100%); background:#f4f6fb; color:#14151a; font-size:13px; font-weight:700; padding:8px 12px; border-radius:12px; max-width:220px; text-align:center; line-height:1.3; box-shadow:0 6px 20px rgba(0,0,0,.45); pointer-events:none;}
 #locktip::after{content:""; position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); border:7px solid transparent; border-top-color:#f4f6fb; border-bottom:0;}
 .frz{margin-left:10px; color:#7cc7ff; font-weight:800;}
+#topbar{position:fixed; left:0; right:0; top:0; margin:0 auto; max-width:480px; display:flex; align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--line); padding:calc(8px + env(safe-area-inset-top)) 14px 8px; z-index:30;}
+#topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text); cursor:pointer;}
+.tb-frz{color:#7cc7ff; display:inline-flex; align-items:center; gap:3px; margin-left:6px;}
+#topbar .tb-xp{flex-direction:column; align-items:flex-start; gap:3px; cursor:pointer;}
+.tb-lvl{font-size:12px; font-weight:800; color:var(--gold);}
+.tb-xptrack{width:96px; height:8px; background:var(--surface2); border-radius:6px; overflow:hidden;}
+.tb-xpfill{height:100%; background:var(--gold); border-radius:6px; transition:width .4s;}
+.tb-shop{margin-left:auto; background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
+body.hastop .wrap{padding-top:64px;}
+#shopsheet{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:72; display:flex; align-items:flex-end; justify-content:center;}
+#shopbox{width:100%; max-width:520px; background:var(--bg); border-radius:20px 20px 0 0; padding:16px 16px 30px; max-height:84vh; overflow:auto; box-shadow:0 -8px 30px rgba(0,0,0,.5); animation:welIn .26s ease both;}
+#shophead{display:flex; align-items:center; justify-content:space-between; margin:0 0 6px;}
+#shoptitle{font-size:18px; font-weight:800;}
+#shopclose{background:var(--surface2); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+.shopsec{font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin:16px 0 10px;}
+.shopgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.shopcard{background:var(--surface2); border:2px solid transparent; border-radius:14px; padding:12px 6px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; color:var(--text); font-size:13px; font-weight:700; min-height:78px; justify-content:center;}
+.shopcard.on{border-color:var(--gold); color:var(--gold);}
+.shopcard.lock{opacity:.55; cursor:default;}
+.shopcard .sclk{font-size:11px; color:var(--muted);}
+.avlock .avlk{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; color:var(--muted); font-size:10px; width:46px; height:46px;}
+.avlock .avlk i{font-size:18px;}
 #xpbar{margin:18px 0 4px;}
 .xprow{display:flex; justify-content:space-between; align-items:baseline; margin:0 0 6px;}
 .xplvl{font-size:15px; font-weight:800; color:var(--gold);}
@@ -405,6 +427,12 @@ button.levelcard:active{transform:scale(0.99);}
 </head>
 <body>
 <div id="ver" aria-hidden="true"></div>
+<div id="topbar" hidden>
+  <div class="tb-item"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></div>
+  <div class="tb-item tb-xp"><span class="tb-lvl" id="tb-lvl"></span><div class="tb-xptrack"><div class="tb-xpfill" id="tb-xpfill"></div></div></div>
+  <button class="tb-shop" id="tb-shop" aria-label="Shop"><i class="ti ti-shopping-bag"></i></button>
+</div>
+<div id="shopsheet" hidden><div id="shopbox"><div id="shophead"><span id="shoptitle"></span><button id="shopclose" aria-label="Chiudi"><i class="ti ti-x"></i></button></div><div id="shopbody"></div></div></div>
 <div class="wrap">
   <header id="hdr" hidden>
     <h1 id="brand">Modalità Corso</h1>
@@ -626,7 +654,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 7 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
@@ -802,7 +830,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 7-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
@@ -1214,6 +1242,7 @@ function setView(name){
  const ta=tabFor[name]||name;
  ['corso','free','home','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
  const fab=$('dailyfab'); if(fab){ const show=(name==='levels'); fab.hidden=!show; if(!show)closeDailySheet(); else updateDailyFab(); } // tondo daily: SOLO nel Corso
+ const tb=$('topbar'); if(tb){ const showTb=['levels','home','guide','settings'].includes(name); tb.hidden=!showTb; document.body.classList.toggle('hastop',showTb); if(showTb) updateTopbar(); else closeShop(); } // barra superiore sulle schermate principali
  scrollTop();
 }
 // ogni cambio pagina riparte dall'alto
@@ -1250,7 +1279,9 @@ function applyStreakFreeze(){
 }
 function getStreakRaw(){ return parseInt(localStorage.getItem('hm_streak')||'0',10)||0; }
 const AVATARS=[null,{ic:'home',k:0},{ic:'sun',k:2},{ic:'leaf',k:4},{ic:'cloud',k:7},{ic:'moon',k:9},{ic:'flower',k:10},{ic:'bolt',k:11},{ic:'music',h:'#64748b'},{ic:'microphone-2',h:'#0ea5e9'}];
-function getAvatar(){const n=parseInt(localStorage.getItem('hm_avatar')||'0',10); return (n>=0&&n<AVATARS.length)?n:0;}
+function avatarReq(i){ return i<=0?1:i+1; } // avatar come premio: i-esimo si sblocca al livello i+1
+function avatarUnlocked(i){ return unlockAll()||xpInfo().lvl>=avatarReq(i); }
+function getAvatar(){let n=parseInt(localStorage.getItem('hm_avatar')||'0',10); if(!(n>=0&&n<AVATARS.length))n=0; if(!avatarUnlocked(n))n=0; return n;}
 function getName(){return localStorage.getItem('hm_name')||'';}
 function paintAvatar(el,idx,size){
  const a=AVATARS[idx];
@@ -1277,9 +1308,10 @@ function openProfile(){
 function renderPeAvatars(){
  const box=$('pe-avatars'); box.innerHTML='';
  AVATARS.forEach((_,i)=>{
-  const b=document.createElement('button'); if(i===peSel)b.className='sel';
-  const c=document.createElement('div'); paintAvatar(c,i,46); b.appendChild(c);
-  b.addEventListener('click',()=>{peSel=i; renderPeAvatars();});
+  const unl=avatarUnlocked(i);
+  const b=document.createElement('button'); b.className=(i===peSel?'sel':'')+(unl?'':' avlock');
+  if(unl){ const c=document.createElement('div'); paintAvatar(c,i,46); b.appendChild(c); b.addEventListener('click',()=>{peSel=i; renderPeAvatars();}); }
+  else { b.innerHTML='<div class="avlk"><i class="ti ti-lock"></i><span>'+S9.xpLevel.slice(0,3)+' '+avatarReq(i)+'</span></div>'; }
   box.appendChild(b);
  });
 }
@@ -1351,6 +1383,24 @@ function dailyUndone(){ let n=0; if(!dailyDoneToday())n++; if(!reviewDoneToday()
 function updateDailyFab(){ const b=$('dailyfabbadge'); if(!b)return; const u=dailyUndone(); b.textContent=u>0?String(u):''; }
 function openDailySheet(){ $('dailysheettitle').textContent=S9.allenaTitle; renderAllena($('dailysheetbody')); $('dailysheetbody').querySelectorAll('.allena').forEach(x=>x.addEventListener('click',closeDailySheet)); $('dailysheet').hidden=false; }
 function closeDailySheet(){ const s=$('dailysheet'); if(s) s.hidden=true; }
+// Barra superiore: streak/salva-streak + livello/XP + shop
+function updateTopbar(){ const x=xpInfo(); $('tb-lvl').textContent=S9.xpLevel.slice(0,3)+' '+x.lvl; $('tb-xpfill').style.width=x.pct+'%'; $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
+function closeShop(){ const s=$('shopsheet'); if(s) s.hidden=true; }
+function openShop(){ $('shoptitle').textContent=S9.shopTitle; renderShop(); $('shopsheet').hidden=false; }
+function renderShop(){
+ const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
+ box.innerHTML='<div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
+ const tg=$('shop-timbres');
+ TIMBRES.forEach(t=>{ const unl=timbreUnlocked(t); const b=document.createElement('button'); b.className='shopcard'+(t===timbre?' on':'')+(unl?'':' lock');
+  b.innerHTML='<i class="ti ti-'+(unl?(TIC[t]||'circle'):'lock')+'" style="font-size:24px"></i>'+(unl?S9.timbreNames[t]:'<span class="sclk">'+S9.xpLevel.slice(0,3)+' '+TIMBRE_LV[t]+'</span>');
+  if(unl) b.addEventListener('click',()=>{ timbre=t; localStorage.setItem('hm_timbre',t); ensureCtx(); tone(67,0.5); renderShop(); });
+  tg.appendChild(b); });
+ const ag=$('shop-avatars');
+ AVATARS.forEach((_,i)=>{ const unl=avatarUnlocked(i); const cur=getAvatar()===i; const b=document.createElement('button'); b.className='shopcard'+(cur?' on':'')+(unl?'':' lock');
+  if(unl){ const c=document.createElement('div'); paintAvatar(c,i,40); b.appendChild(c); b.addEventListener('click',()=>{ localStorage.setItem('hm_avatar',String(i)); renderShop(); updateTopbar(); }); }
+  else { b.innerHTML='<i class="ti ti-lock" style="font-size:24px"></i><span class="sclk">'+S9.xpLevel.slice(0,3)+' '+avatarReq(i)+'</span>'; }
+  ag.appendChild(b); });
+}
 const MEDALS=[
  {id:'casa',ic:'home',ck:()=>!!localStorage.getItem('hm_casa_done')},
  {id:'firstboss',ic:'skull',ck:()=>totalElite()>=1},
@@ -1608,6 +1658,10 @@ window.addEventListener('scroll',hideLockTip,true); // la nuvoletta sparisce all
 $('dailyfab').addEventListener('click',openDailySheet);
 $('dailysheetclose').addEventListener('click',closeDailySheet);
 $('dailysheet').addEventListener('click',e=>{ if(e.target===$('dailysheet')) closeDailySheet(); });
+$('tb-shop').addEventListener('click',openShop);
+$('shopclose').addEventListener('click',closeShop);
+$('shopsheet').addEventListener('click',e=>{ if(e.target===$('shopsheet')) closeShop(); });
+document.querySelectorAll('#topbar .tb-item').forEach(el=>el.addEventListener('click',showHome)); // tocca i dati -> Profilo
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
@@ -3029,7 +3083,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.80'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.81'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
