@@ -61,6 +61,11 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .tb-coins{display:inline-flex; align-items:center; gap:4px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto;}
 .cur{font-weight:900; font-size:1.1em; line-height:1;}
 .tb-shop{background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
+/* Barra superiore in modalita' gioco: tasto indietro + titolo livello, niente cluster monete (al posto del vecchio riquadro #gametop) */
+.tb-back{flex:0 0 auto; background:var(--surface2); border:none; color:var(--text); width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;}
+.tb-gtitle{flex:1 1 auto; min-width:0; font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+#topbar:not(.gamemode) .tb-back, #topbar:not(.gamemode) .tb-gtitle{display:none;}
+#topbar.gamemode .tb-prof, #topbar.gamemode #tb-coinsbox, #topbar.gamemode .tb-streak, #topbar.gamemode .tb-shop{display:none;}
 .shopcoins{display:flex; align-items:center; justify-content:center; gap:6px; font-size:20px; font-weight:800; color:var(--gold); margin:2px 0 4px;}
 .scprice{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--gold); font-weight:800;}
 .sceq{font-size:11px; color:var(--muted); font-weight:700;}
@@ -452,6 +457,8 @@ button.levelcard:active{transform:scale(0.99);}
 <body>
 <div id="ver" aria-hidden="true"></div>
 <div id="topbar" hidden>
+  <button class="tb-back" id="tb-back" hidden aria-label="Indietro"><i class="ti ti-arrow-left"></i></button>
+  <span class="tb-gtitle" id="tb-gtitle"></span>
   <button class="tb-prof" id="tb-prof"><span class="tb-av" id="tb-av"></span><span class="tb-name" id="tb-name"></span></button>
   <span class="tb-coins" id="tb-coinsbox"><span class="cur">♪</span><span id="tb-coins">0</span></span>
   <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></span>
@@ -1318,7 +1325,7 @@ function setView(name){
  const ta=tabFor[name]||name;
  ['corso','free','home','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
  const fab=$('dailyfab'); if(fab){ const show=(name==='levels'); fab.hidden=!show; if(!show)closeDailySheet(); else updateDailyFab(); } // tondo daily: SOLO nel Corso
- const tb=$('topbar'); if(tb){ const showTb=['levels','home','guide','settings','free'].includes(name); tb.hidden=!showTb; document.body.classList.toggle('hastop',showTb); if(showTb) updateTopbar(); else closeShop(); } // barra superiore su tutte le schermate dei 5 tab (incluso Gioca/free), nascosta solo durante una partita del corso
+ const tb=$('topbar'); if(tb){ const showTb=['levels','home','guide','settings','free'].includes(name); tb.hidden=!showTb; document.body.classList.toggle('hastop',showTb); if(showTb){ tb.classList.remove('gamemode'); const bk=$('tb-back'); if(bk) bk.hidden=true; updateTopbar(); } else closeShop(); } // barra superiore su tutte le schermate dei 5 tab; in gioco showGameTop() la rimette in modalita' indietro+titolo
  scrollTop();
 }
 // ogni cambio pagina riparte dall'alto
@@ -1713,9 +1720,8 @@ function startLevel(c,w,m,skipLoading){
  const lv=S9.courses[c].levels[w];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
- $('gametop').hidden=false;
  const mlabel=(m==='t')?S9.trainTitle:MODES[m];
- $('gametitle').textContent=(isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+mlabel;
+ showGameTop((isChord(c,w)?levelName(c,w):(S9.level+' '+(w+1)+' · '+plainNames(c,w)))+' · '+mlabel);
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
@@ -1751,6 +1757,9 @@ $('backbtn').addEventListener('click',function(){
  else if((game.kind==='level'||game.kind==='boss'||game.kind==='bossgrow')&&game.w!=null) showLevels(); // ogni modo/Boss di livello -> torna al percorso
  else showLevels();                                                            // Libero -> lista livelli
 });
+// Mostra la barra superiore in modalita' gioco: tasto indietro + titolo, niente monete/shop (sostituisce il riquadro #gametop)
+function showGameTop(title){ const tb=$('topbar'); if(!tb) return; tb.hidden=false; tb.classList.add('gamemode'); document.body.classList.add('hastop'); const bk=$('tb-back'); if(bk) bk.hidden=false; const t=$('tb-gtitle'); if(t) t.textContent=title||''; const gt=$('gametop'); if(gt) gt.hidden=true; }
+$('tb-back').addEventListener('click',()=>$('backbtn').click()); // stesso comportamento del vecchio tasto indietro
 $('ld-back').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showLevels);
 $('emblem').addEventListener('click',openProfile);
@@ -1790,7 +1799,7 @@ function startCasa(){
  clearTimers(); stopMic(); stopAllHeld(); game={kind:'casa'}; root=0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.casaTitle; $('goalbar').hidden=true;
+ showGameTop(S9.casaTitle); $('goalbar').hidden=true;
  $('rowsetup').hidden=true; $('bossbar').hidden=true; $('freetry').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
  $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
@@ -1844,7 +1853,7 @@ function startTutorial(){
  clearTimers(); stopMic(); game={kind:'tut'}; root=0; state='idle'; seq=[];
  setView('free');
  $('tab-free').classList.remove('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.tutLabel; $('goalbar').hidden=true;
+ showGameTop(S9.tutLabel); $('goalbar').hidden=true;
  $('rowsetup').hidden=true;
  $('scsel').hidden=true; $('rootsel').hidden=true;
  $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
@@ -2480,7 +2489,7 @@ function startBossLike(g, title){
  if(g.seq) g.dur=randRhythm(g.seq.length); // ritmica random sulla melodia da ricostruire
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-'+((g.daily||g.review)?'home':'corso')).classList.add('on'); // sfide/ripasso = Profilo, boss corso = Corso
- $('gametop').hidden=false; $('gametitle').textContent=(g.elite?'💀 ':'')+title;
+ showGameTop((g.elite?'💀 ':'')+title);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
  $('bossbar').hidden=false;
  $('round').textContent='–'; $('best').textContent='–'; $('bestlbl').textContent=S9.bossBest; $('reveal').innerHTML='';
@@ -2515,7 +2524,7 @@ function beginDifficile(c,w,keep){ // DIFFICILE: costruisci la melodia una nota 
  if(!keep) root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent=S9.modes[2]+' · '+levelName(c,w);
+ showGameTop(S9.modes[2]+' · '+levelName(c,w));
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(8); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays(); // 2 riascolti, max 3 ciascuno
@@ -2587,7 +2596,7 @@ function beginWarmup(c,w){
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
- $('gametop').hidden=false; $('gametitle').textContent=lbl;
+ showGameTop(lbl);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(8); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays();
@@ -2655,7 +2664,7 @@ function beginEndless(){
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on'); // Infinito = dal Profilo
- $('gametop').hidden=false; $('gametitle').textContent=S9.endlessTitle;
+ showGameTop(S9.endlessTitle);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(endlessRecord()); $('bestlbl').textContent=S9.record; $('reveal').innerHTML='';
  $('bscale').hidden=false; $('rehear').style.opacity='1'; $('bscale').style.opacity='1'; $('optsrow').classList.add('optswrap'); updateBossReplays();
@@ -3202,7 +3211,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.00'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.01'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
