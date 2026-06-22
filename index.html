@@ -1134,7 +1134,7 @@ function setCoins(n){ localStorage.setItem('hm_coins', String(Math.max(0,n))); }
 function ownedSet(){ try{ return new Set((localStorage.getItem('hm_owned')||'').split(',').filter(Boolean)); }catch(e){ return new Set(); } }
 function isOwned(id){ return ownedSet().has(id); }
 function buyItem(id,price){ if(getCoins()<price||isOwned(id)) return false; setCoins(getCoins()-price); const s=ownedSet(); s.add(id); localStorage.setItem('hm_owned',[...s].join(',')); return true; }
-function timbreOwned(t){ return unlockAll()||t==='pure'||isOwned('t:'+t); } // "sblocca tutto" sblocca anche i suoni dello Shop
+function timbreOwned(t){ return unlockAll()||t==='pure'||t==='scoreggia'||isOwned('t:'+t); } // pure e Tromba posteriore gratis dall'inizio; "sblocca tutto" il resto
 function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
 const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400,gatto:400};
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
@@ -3131,7 +3131,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.91'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.92'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
