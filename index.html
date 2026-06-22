@@ -721,7 +721,7 @@ it:{
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Boss", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
- timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo"},
+ timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo",scoreggia:"Scoreggia",gatto:"Gatto"},
  setLbl:"Impostazioni", fontLbl:"Dimensione testo", fontNames:{n:"Normale",g:"Grande",x:"Molto grande"}, droneSetting:"Drone della tonica (nota di casa sotto al gioco)",
  courseLocked:"Completa prima il corso precedente", lockCourse:t=>"Completa «"+t+"» per sbloccarla", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
@@ -897,7 +897,7 @@ en:{
  dashTag:"Your progress", mStars:"Stars", mElite:"Boss", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
- timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ"},
+ timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ",scoreggia:"Fart",gatto:"Cat"},
  setLbl:"Settings", fontLbl:"Text size", fontNames:{n:"Normal",g:"Large",x:"Extra large"}, droneSetting:"Tonic drone (home note under the game)",
  courseLocked:"Finish the previous course first", lockCourse:t=>"Finish «"+t+"» to unlock it", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
@@ -1069,7 +1069,7 @@ let speed=parseFloat(localStorage.getItem('it_speed')||'1');
 if(![0.5,1,1.5,2,2.5,3].includes(speed))speed=1;
 function resetSpeed(){speed=1; const sp=$('spdsel'); if(sp)sp.value='1';} // ogni gioco parte a x1
 let rhythm=localStorage.getItem('it_rhythm')!=='0';
-const TIMBRES=['pure','corda','pad','voce','carillon','organo']; // si comprano nello Shop con le monete (pure gratis)
+const TIMBRES=['pure','corda','pad','voce','carillon','organo','scoreggia','gatto']; // si comprano nello Shop con le monete (pure gratis)
 let timbre=localStorage.getItem('hm_timbre'); if(!TIMBRES.includes(timbre))timbre='pure'; if(!timbreOwned(timbre))timbre='pure';
 const $=id=>document.getElementById(id);
 
@@ -1136,7 +1136,7 @@ function isOwned(id){ return ownedSet().has(id); }
 function buyItem(id,price){ if(getCoins()<price||isOwned(id)) return false; setCoins(getCoins()-price); const s=ownedSet(); s.add(id); localStorage.setItem('hm_owned',[...s].join(',')); return true; }
 function timbreOwned(t){ return t==='pure'||isOwned('t:'+t); }
 function avatarOwned(i){ return i===0||isOwned('a:'+i); }
-const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700};
+const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400,gatto:400};
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
  if(after>before){ let fr=getFreezes(); for(let L=before+1;L<=after;L++){ if(L%2===0) fr++; } setFreezes(fr); } // +1 salva-streak ogni 2 livelli (max 3)
@@ -1409,7 +1409,7 @@ function equipAvatar(i){ localStorage.setItem('hm_avatar',String(i)); }
 function priceTag(p){ return '<span class="scprice"><span class="cur">♪</span>'+p+'</span>'; }
 function ownTag(eq){ return '<span class="'+(eq?'scok':'sceq')+'">'+(eq?S9.shopEquipped:S9.shopEquip)+'</span>'; }
 function renderShop(){
- const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
+ const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard',scoreggia:'wind',gatto:'cat'};
  box.innerHTML='<div class="shopcoins"><span class="cur">♪</span> '+getCoins()+'</div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
  const tg=$('shop-timbres');
  TIMBRES.forEach(t=>{ const own=timbreOwned(t), eq=(t===timbre), price=TIMBRE_PRICE[t]||0;
@@ -1445,7 +1445,7 @@ function renderMedals(){
 function renderTimbres(){
  const box=$('timbres'); if(!box) return;
  $('timbrelbl').textContent=S9.timbreLbl; box.innerHTML='';
- const IC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard'};
+ const IC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard',scoreggia:'wind',gatto:'cat'};
  TIMBRES.forEach(t=>{
   const own=timbreOwned(t);
   const b=document.createElement('button'); b.className='tmb'+(t===timbre?' on':'')+(own?'':' tmblock');
@@ -2240,6 +2240,19 @@ function tone(midi,durS){
   const a=Math.min(0.04,durS*0.3);
   g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.5,t0+a);
   g.gain.setValueAtTime(0.5,t0+Math.max(a,durS-0.06)); g.gain.linearRampToValueAtTime(0,t0+durS);
+ } else if(timbre==='scoreggia'){ // pernacchia: saw basso + flutter d'ampiezza, leggero calo
+  const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.setValueAtTime(f*0.6,t0); o.frequency.exponentialRampToValueAtTime(f*0.46,t0+durS);
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=Math.min(850,f*2.2);
+  const lfo=ctx.createOscillator(); lfo.type='square'; lfo.frequency.value=23; const lg=ctx.createGain(); lg.gain.value=0.34; lfo.connect(lg); lg.connect(g.gain); lfo.start(t0); lfo.stop(t0+durS+0.03);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.linearRampToValueAtTime(0.5,t0+0.02); g.gain.setValueAtTime(0.5,t0+Math.max(0.04,durS-0.08)); g.gain.linearRampToValueAtTime(0.0001,t0+durS);
+  o.connect(lp); lp.connect(g); o.start(t0); o.stop(t0+durS+0.03);
+ } else if(timbre==='gatto'){ // miao: glide su-giu' + formante + vibrato
+  const o=ctx.createOscillator(); o.type='sawtooth'; const mid=t0+durS*0.35;
+  o.frequency.setValueAtTime(f*0.8,t0); o.frequency.linearRampToValueAtTime(f*1.15,mid); o.frequency.linearRampToValueAtTime(f*0.9,t0+durS);
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f*2.4; bp.Q.value=4;
+  const vib=ctx.createOscillator(); vib.frequency.value=14; const vg=ctx.createGain(); vg.gain.value=f*0.03; vib.connect(vg); vg.connect(o.frequency); vib.start(t0); vib.stop(t0+durS+0.02);
+  g.gain.setValueAtTime(0.0001,t0); g.gain.linearRampToValueAtTime(0.3,t0+Math.min(0.06,durS*0.2)); g.gain.setValueAtTime(0.3,t0+Math.max(0.07,durS-0.12)); g.gain.linearRampToValueAtTime(0.0001,t0+durS);
+  o.connect(bp); bp.connect(g); o.start(t0); o.stop(t0+durS+0.02);
  } else {
   const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f;
   g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(0.25,t0+0.02);
@@ -2269,6 +2282,14 @@ function startHold(k){
   const o2=ctx.createOscillator(); o2.type='sine'; o2.frequency.value=f*4; const g2=ctx.createGain(); g2.gain.value=0.14; o2.connect(g2); g2.connect(g); oscs=[o,o2]; peak=0.3;
  } else if(timbre==='organo'){
   [1,2,3].forEach(h=>{const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=f*h; o.connect(g); oscs.push(o);}); peak=0.2;
+ } else if(timbre==='scoreggia'){
+  const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f*0.6;
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=Math.min(850,f*2.2); o.connect(lp); lp.connect(g);
+  lfo=ctx.createOscillator(); lfo.type='square'; lfo.frequency.value=23; const lg=ctx.createGain(); lg.gain.value=0.34; lfo.connect(lg); lg.connect(g.gain); oscs=[o]; peak=0.45;
+ } else if(timbre==='gatto'){
+  const o=ctx.createOscillator(); o.type='sawtooth'; o.frequency.value=f;
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f*2.4; bp.Q.value=4; o.connect(bp); bp.connect(g);
+  lfo=ctx.createOscillator(); lfo.frequency.value=14; const lg=ctx.createGain(); lg.gain.value=f*0.03; lfo.connect(lg); lg.connect(o.frequency); oscs=[o]; peak=0.3;
  } else {
   const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=f; o.connect(g); oscs=[o]; peak=0.25;
  }
@@ -3109,7 +3130,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.88'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.89'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
