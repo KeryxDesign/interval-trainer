@@ -2384,8 +2384,10 @@ function toggleFreeTry(){
 }
 function closeFreeTry(){ if(game&&game.trying){ game.trying=false; updateFreeTry(); } }
 function ftHit(k){ if(!game||!game.trying) return; ensureCtx(); tone(60+(root||0)+k,0.4); const b=$('ftrow').querySelector('.ftnote[data-k="'+k+'"]'); if(b){ b.style.transform='scale(1.18)'; setTimeout(()=>{b.style.transform='';},130);} }
+function randRhythm(len){ const opts=[0.6,1,1,1,1.4]; const r=[]; for(let i=0;i<len;i++){ r.push(i===len-1?1.7:opts[Math.floor(Math.random()*opts.length)]); } return r; } // ritmica varia, ultima nota piu' lunga
 function startBossLike(g, title){
  resetSpeed(); game=g; root=g.root||0; state='idle'; seq=[];
+ if(g.seq) g.dur=randRhythm(g.seq.length); // ritmica random sulla melodia da ricostruire
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-'+((g.daily||g.review)?'home':'corso')).classList.add('on'); // sfide/ripasso = Profilo, boss corso = Corso
  $('gametop').hidden=false; $('gametitle').textContent=(g.elite?'💀 ':'')+title;
@@ -2514,7 +2516,7 @@ function warmupWin(){
 function beginElite(c,w){ // BOSS di fine livello: ricostruzione da 7 SOLO a orecchio, tonica random; batterlo sblocca nota + livello
  clearTimers(); stopAllHeld(); stopMic();
  const pool=levelPool(c,w);
- startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,8,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
+ startBossLike({kind:'boss', elite:true, earOnly:true, c:c, w:w, name:levelName(c,w), seq:randMelody(pool,7,studyNote(c,w)), notes:pool, lives:3, replays:3, root:Math.floor(Math.random()*12)}, S9.boss+' · '+levelName(c,w));
 }
 function beginNormale(c,w){ // NORMALE: ricostruzione da 7 che VEDI (flash), tonica random
  clearTimers(); stopAllHeld(); stopMic();
@@ -2584,7 +2586,7 @@ function bossPlay(keepStep){
  ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
  if(!keepStep) step=0;
  const base=game.earOnly?Math.max(440,560/speed):Math.max(260,400/speed); let t=Math.max(300,420/speed); // Boss/a orecchio piu' lento, cosi' si seguono le note
- game.seq.forEach((k)=>{ timers.push(setTimeout(()=>{ game.earOnly?pulse(base-70):flash(k,base-70); tone(60+root+k,Math.max(0.2,base*0.85/1000));},t)); t+=base; });
+ game.seq.forEach((k,i)=>{ const ms=base*((game.dur&&game.dur[i])||1); timers.push(setTimeout(()=>{ game.earOnly?pulse(ms-70):flash(k,ms-70); tone(60+root+k,Math.max(0.2,ms*0.82/1000));},t)); t+=ms; }); // ritmica random
  timers.push(setTimeout(()=>{state='input'; setStatus(S9.yourTurn(step,game.seq.length));},t));
 }
 function bossReplay(){ if(game.kind!=='boss'||game.replays<=0) return; if(state!=='input'&&state!=='play') return; game.replays--; renderBossBar(); updateEliteReplay(); bossPlay(true); }
@@ -3106,7 +3108,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.85'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.86'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
