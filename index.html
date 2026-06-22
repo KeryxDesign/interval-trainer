@@ -293,6 +293,8 @@ button.levelcard:active{transform:scale(0.99);}
 .welplay:active{transform:scale(.92);}
 #tutbox{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:78%; max-width:260px; box-sizing:border-box; background:rgba(8,10,16,.7); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:14px 14px 12px; margin:0; text-align:center; z-index:6;} /* tutorial dentro al cerchio (centro ruota) */
 #tutbox .tut-txt{font-size:14px; line-height:1.4;}
+#tutclose{position:absolute; top:6px; right:6px; width:26px; height:26px; border-radius:50%; border:none; background:rgba(255,255,255,.12); color:var(--text); display:flex; align-items:center; justify-content:center; font-size:15px; cursor:pointer; pointer-events:auto; z-index:7;}
+#startcoursebtn{flex:0 0 auto; margin:14px 0 0; width:100%; min-height:54px; border:none; border-radius:14px; background:var(--gold); color:#14151a; font-size:16px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;}
 #tutbox>div{display:flex; flex-direction:column; gap:8px; align-items:stretch; margin-top:10px;}
 #tutbox button{pointer-events:auto; justify-content:center;}
 .tut-ill{width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
@@ -594,6 +596,7 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="chordbar" hidden style="margin:24px 0 4px;"></div>
     <div id="chordseqrow" hidden style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 6px;"></div>
     </div>
+    <button id="startcoursebtn" hidden><span id="startcoursetxt"></span><i class="ti ti-arrow-right"></i></button>
   </div>
 
 </div>
@@ -778,7 +781,7 @@ it:{
  tut1:"Questo cerchio rosso in alto è \"casa\": il punto di partenza. Toccalo e ascolta.",
  tut2:"Bene! Questo è il suono di casa. Ora tocca il cerchio azzurro e senti com'è diverso.",
  tut3:"Due colori, due suoni. Ora ne suono due di fila: ascoltali e ripetili toccandoli nello stesso ordine.",
- tutGo:"tocca a te: ripeti le due note",
+ tutGo:"tocca a te: ripeti le due note", startCourse:"Inizia il corso", tutFree:"Prova le note liberamente, poi inizia il corso quando vuoi.",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
  tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
  casaTitle:"La casa", casaCardTitle:"La casa", casaCardSub:"La tua prima nota: la casa. 2 minuti.", casaNew:"Parti da qui",
@@ -954,7 +957,7 @@ en:{
  tut1:"This red circle at the top is \"home\": the starting point. Tap it and listen.",
  tut2:"Good! That's the sound of home. Now tap the blue circle and hear how different it is.",
  tut3:"Two colors, two sounds. Now I'll play two in a row: listen and repeat them by tapping in the same order.",
- tutGo:"your turn: repeat the two notes",
+ tutGo:"your turn: repeat the two notes", startCourse:"Start the course", tutFree:"Play the notes freely, then start the course whenever you like.",
  tutRetry:"No, the first one was home (the red one). Try again.",
  tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
  casaTitle:"Home", casaCardTitle:"Home", casaCardSub:"Your first note: home. 2 minutes.", casaNew:"Start here",
@@ -1310,7 +1313,7 @@ function renderGuide(){
 function setView(name){
  if(ctx){ stopAllHeld(); stopDrone(); }
  parkPanel();
- $('bossbar').hidden=true; $('freetry').hidden=true; $('tutbox').hidden=true; $('status').hidden=false; $('giocapath').hidden=true;
+ $('bossbar').hidden=true; $('freetry').hidden=true; $('tutbox').hidden=true; $('status').hidden=false; $('giocapath').hidden=true; { const sc=$('startcoursebtn'); if(sc) sc.hidden=true; }
  $('preroll').hidden=true; $('freeintro').hidden=true; $('freesetup').hidden=true; $('micwarn').hidden=true; $('resetconfirm').hidden=true;
  const wel=$('welcome'); if(wel) wel.hidden=true;
  $('view-home').hidden=name!=='home';
@@ -1739,6 +1742,7 @@ function setStatus(txt,cls){
 }
 $('tab-corso').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
+$('startcoursebtn').addEventListener('click',startCourseNow);
 $('tab-home').addEventListener('click',showHome);
 $('tab-guide').addEventListener('click',showGuide);
 $('tab-settings').addEventListener('click',showSettings);
@@ -1778,9 +1782,21 @@ function tutAllow(arr){
 // presentazione grafica del tutorial: icona-illustrazione + testo + note coi colori
 function tutMsg(ic, bg, fg, text, notes){ // solo testo: le note si vedono sulla ruota sotto (niente doppioni)
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
- b.innerHTML='<p class="tut-txt">'+text+'</p>';
+ b.innerHTML='<button id="tutclose" aria-label="Chiudi"><i class="ti ti-x"></i></button><p class="tut-txt">'+text+'</p>';
+ const x=$('tutclose'); if(x) x.onclick=tutToFree; // chiudere il tutorial NON esce: resta in modalita' libera
  anim(b,'tutInC .4s ease both',0);
 }
+// fine/chiusura del tutorial: NON butta fuori. Resta sulla ruota in modalita' libera e mostra
+// il bottone "Inizia il corso" cosi' l'utente decide quando passare al corso.
+function tutToFree(){
+ clearTimers();
+ localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_taste_pent_0','1');
+ game={kind:'free', c:'pent', notes:SCALES.pmaj.slice(), allNotes:SCALES.pmaj.slice()}; root=0; state='idle'; seq=[];
+ $('tutbox').hidden=true; $('status').hidden=false; showGameTop(S9.fsTitle);
+ render(); clearCenter(); tutAllow([]); setStatus(S9.tutFree);
+ const sc=$('startcoursebtn'); if(sc){ $('startcoursetxt').textContent=S9.startCourse; sc.hidden=false; }
+}
+function startCourseNow(){ const sc=$('startcoursebtn'); if(sc) sc.hidden=true; if(!localStorage.getItem('hm_intro_done')) showWelcomePost(); else startLevel('pent',0,0,true); }
 // ===== Lezione narrata (riusa #tutbox): solo testo + bottoni; le note stanno sulla ruota sotto =====
 function lessonShow(o){
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
@@ -1892,8 +1908,8 @@ function tutPress(k){
     tut.step=4; tutAllow([-1]);
     tutMsg('star-filled', 'var(--gold)', '#14151a', S9.tutDone, [0,7]); chime();
     localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_taste_pent_0','1'); bumpStreak(); // il tutorial ha gia' fatto sentire il pilastro
-    // il tutorial sfocia nel Livello 1 vero: le stelle si guadagnano giocando (niente regalo)
-    timers.push(setTimeout(()=>{ if(!localStorage.getItem('hm_intro_done')) showWelcomePost(); else startLevel('pent',0,0,true); },2200));
+    // dopo il "bravo": resta in modalita' libera col bottone "Inizia il corso" (non forza il livello)
+    timers.push(setTimeout(()=>{ tutToFree(); },2200));
    }
   } else {
    tut.pos=0; tutAllow([-1]);
@@ -3219,7 +3235,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.02'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.03'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
