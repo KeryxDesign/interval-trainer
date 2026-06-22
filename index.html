@@ -306,6 +306,15 @@ button.levelcard:active{transform:scale(0.99);}
 .gcard.key{background:var(--bg);}
 .gcard.key .ghead i{background:rgba(154,160,173,.14); color:var(--muted);}
 .gcard.key .gbody{font-size:15px; color:var(--muted);}
+/* Guida riorganizzata: chip di sezione + schede ad accordion */
+#guidechips{display:flex; gap:8px; margin:0 0 16px;}
+.gchip{flex:1 1 0; padding:10px 8px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--muted); font-weight:700; font-size:13px; cursor:pointer; line-height:1.2;}
+.gchip.on{background:var(--gold); color:#14151a; border-color:var(--gold);}
+.gcard.acc{padding:0; overflow:hidden;}
+.gcard.acc .ghead{width:100%; background:none; border:0; cursor:pointer; padding:16px 18px; margin:0; text-align:left; color:inherit; font:inherit;}
+.gcard.acc .gbody{padding:0 18px 18px;}
+.gcard.acc .gchev{margin-left:auto; flex:0 0 auto; width:auto; height:auto; background:none; color:var(--muted); font-size:18px; transition:transform .18s;}
+.gcard.acc.open .gchev{transform:rotate(180deg);}
 .gcard.tip{background:rgba(234,179,8,.07); border:1px solid rgba(234,179,8,.25);}
 .gcard.tip .ghead i{background:rgba(234,179,8,.18);}
 @media (pointer:coarse){.gcard.key{display:none;}}
@@ -524,6 +533,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <div id="view-guide" hidden>
+    <div id="guidechips"></div>
     <div id="guide-intro"></div>
     <button class="btn" id="tutbtn"><i class="ti ti-school"></i><span id="tutbtntxt"></span></button>
     <div id="guide"></div>
@@ -656,7 +666,7 @@ const STR={
 it:{
  tag:"Allena l'orecchio: ogni intervallo ha sempre lo stesso colore.",
  playCta:"Gioca", guideCta:"Se non hai mai giocato, guarda come si fa",
- tabs:["Livelli","Gioca","Teoria","Guida"], tabHome:"Home", tabProfile:"Profilo", tabCorso:"Corso", tabSettings:"Opzioni", nextLabel:"Prossimo esercizio", nextDone:"Hai finito tutto! Prova una sfida.", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
+ tabs:["Livelli","Gioca","Teoria","Guida"], guideSecs:["Le basi","Come si gioca","Modi e pratica"], tabHome:"Home", tabProfile:"Profilo", tabCorso:"Corso", tabSettings:"Opzioni", nextLabel:"Prossimo esercizio", nextDone:"Hai finito tutto! Prova una sfida.", courseMode:"Modalità Corso", coursesShort:{pent:"Pent. magg.", maj:"Maggiore", pmin:"Pent. min."},
  whatIs:t=>"Che cos'è "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pilastro",c:"Colore",t:"Tensione"},
  famIntro:"I <b>contorni</b> dicono il ruolo del suono, uguale in ogni scala: <b>anello pieno</b> = pilastro (stabile: tonica, 4ª, 5ª) · <b>nessun anello</b> = colore (la coppia chiaro/scuro: 3ª e 6ª) · <b>alone</b> = tensione (le note che spingono: 2ª, tritono, sensibile).",
@@ -832,7 +842,7 @@ it:{
 en:{
  tag:"Train your ear: every interval always has the same color.",
  playCta:"Play", guideCta:"First time? See how it works",
- tabs:["Levels","Play","Theory","Guide"], tabHome:"Home", tabProfile:"Profile", tabCorso:"Course", tabSettings:"Options", nextLabel:"Next exercise", nextDone:"All done! Try a challenge.", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
+ tabs:["Levels","Play","Theory","Guide"], guideSecs:["The basics","How to play","Modes & practice"], tabHome:"Home", tabProfile:"Profile", tabCorso:"Course", tabSettings:"Options", nextLabel:"Next exercise", nextDone:"All done! Try a challenge.", courseMode:"Course Mode", coursesShort:{pent:"Maj. pent.", maj:"Major", pmin:"Min. pent."},
  whatIs:t=>"What is "+t.charAt(0).toLowerCase()+t.slice(1),
  famNames:{p:"Pillar",c:"Color",t:"Tension"},
  famIntro:"The <b>outlines</b> tell each sound's role, the same in every scale: <b>solid ring</b> = pillar (stable: tonic, 4th, 5th) · <b>no ring</b> = color (the bright/dark pair: 3rd and 6th) · <b>halo</b> = tension (notes that push: 2nd, tritone, leading tone).",
@@ -1253,17 +1263,41 @@ function applyStatic(){
    '<p style="margin:0 0 0 44px;font-size:13px;color:var(--muted)"><b style="color:var(--text)">'+S9.compLabel+'</b> '+SCALES[mk].map(k=>IV[k]).join(' · ')+'</p>';
   thBox.appendChild(d);});
  thBox.querySelectorAll('.pbtn').forEach(b=>b.addEventListener('click',e=>{e.preventDefault(); e.stopPropagation(); if(b.dataset.iv!=null) playInterval(+b.dataset.iv); else playScaleAsc(b.dataset.mode);}));
- const gd=$('guide'); gd.innerHTML='';
- const GIC=['eye','route','player-play','star','microphone-2','music','book-2','device-mobile','keyboard','bulb'];
- S9.GUIDE.forEach((s,i)=>{const d=document.createElement('div'); d.className='gcard'+(s.t?' '+s.t:'');
-  d.innerHTML='<div class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span></div><p class="gbody">'+s.p+'</p>';
-  gd.appendChild(d);});
+ renderGuide();
  document.querySelectorAll('.lang button').forEach(b=>{b.classList.toggle('on',b.dataset.l===lang);
   b.onclick=()=>{if(b.dataset.l!==lang){localStorage.setItem('hm_lang',b.dataset.l); location.reload();}};});
  $('htag').textContent=S9.dashTag;
  $('m-stars-l').innerHTML='<i class="ti ti-star-filled" style="color:var(--gold)"></i> '+S9.mStars; $('m-elite-l').innerHTML='<i class="ti ti-skull" style="color:var(--gold)"></i> '+S9.mElite; $('m-levels-l').textContent=S9.mLevels;
  $('guide-intro').innerHTML='<h2>'+S9.welTitle+'</h2><div class="heroq">'+S9.guideQ+'</div><div class="heropts">'+S9.guidePts.map(p=>'<div class="hp"><i class="ti ti-'+p.ic+'"></i><span>'+p.t+'</span></div>').join('')+'</div>';
  renderDashboard();
+}
+
+// Guida riorganizzata in 3 sezioni (chip) con schede ad accordion. GSEC mappa l'indice della scheda
+// alla sezione: 0=Le basi, 1=Come si gioca, 2=Modi e pratica. Il blocco Teoria suonabile compare solo
+// nella sezione 2. Niente piu' muro di testo: si apre una voce per volta.
+let guideSec=0;
+const GSEC=[0,0,1,1,1,1,2,2,2,2,2];
+const GIC=['eye','route','player-play','star','microphone-2','music','book-2','device-mobile','keyboard','bulb'];
+function renderGuide(){
+ const chips=$('guidechips'); if(!chips) return;
+ chips.innerHTML='';
+ (S9.guideSecs||[]).forEach((nm,si)=>{ const b=document.createElement('button'); b.type='button'; b.className='gchip'+(si===guideSec?' on':''); b.textContent=nm; b.onclick=()=>{ guideSec=si; renderGuide(); try{$('view-guide').scrollIntoView({block:'start'});}catch(e){} }; chips.appendChild(b); });
+ const gd=$('guide'); gd.innerHTML='';
+ let firstOfSec=true;
+ S9.GUIDE.forEach((s,i)=>{ if((GSEC[i]!=null?GSEC[i]:0)!==guideSec) return;
+  const d=document.createElement('div'); d.className='gcard acc'+(s.t?' '+s.t:'');
+  const open=firstOfSec; firstOfSec=false; if(open) d.classList.add('open');
+  d.innerHTML='<button type="button" class="ghead"><i class="ti ti-'+(GIC[i]||'point')+'"></i><span>'+s.h+'</span><i class="ti ti-chevron-down gchev"></i></button><div class="gbody"'+(open?'':' hidden')+'>'+s.p+'</div>';
+  const head=d.querySelector('.ghead'), body=d.querySelector('.gbody');
+  head.onclick=()=>{ const willOpen=body.hidden; gd.querySelectorAll('.gbody').forEach(b=>b.hidden=true); gd.querySelectorAll('.gcard.acc').forEach(c=>c.classList.remove('open')); if(willOpen){ body.hidden=false; d.classList.add('open'); } };
+  gd.appendChild(d); });
+ // Hero introduttivo + bottone tutorial solo nella sezione "Le basi" (cosi' le altre partono
+ // subito con chip + schede, navigabili senza scrollare).
+ const isBasics=(guideSec===0);
+ ['guide-intro','tutbtn'].forEach(id=>{ const el=$(id); if(el) el.style.display=isBasics?'':'none'; });
+ // Il blocco Teoria (intro + griglia suonabile + metodo) appartiene a "Modi e pratica"
+ const showTheory=(guideSec===2);
+ ['thintro','theory','methodbox'].forEach(id=>{ const el=$(id); if(el) el.style.display=showTheory?'':'none'; });
 }
 
 function setView(name){
@@ -1671,7 +1705,7 @@ function renderWelStep(){
 // retrigger affidabile di una CSS animation
 function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
 function showSettings(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); $('unlockall').checked=unlockAll(); updateUnlockLabel(); renderTimbres(); renderSettings(); setView('settings');}
-function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); setView('guide');}
+function showGuide(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); guideSec=0; renderGuide(); setView('guide');}
 function startLevel(c,w,m,skipLoading){
  if(m===1){ if(skipLoading) beginNormale(c,w); else showLoading(()=>beginNormale(c,w),{c:c,w:w}); return; } // Normale = ricostruzione vista
  if(m===2){ if(skipLoading) beginDifficile(c,w); else showLoading(()=>beginDifficile(c,w),{c:c,w:w}); return; } // Difficile = nota per nota a orecchio
@@ -3157,7 +3191,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.98'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.99'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
