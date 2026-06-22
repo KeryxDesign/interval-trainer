@@ -1782,7 +1782,7 @@ function tutAllow(arr){
 // presentazione grafica del tutorial: icona-illustrazione + testo + note coi colori
 function tutMsg(ic, bg, fg, text, notes){ // solo testo: le note si vedono sulla ruota sotto (niente doppioni)
  const b=$('tutbox'); if(!b) return; $('status').hidden=true; b.hidden=false;
- b.innerHTML='<button id="tutclose" aria-label="Chiudi"><i class="ti ti-x"></i></button><p class="tut-txt">'+text+'</p>';
+ b.innerHTML='<button id="tutclose" aria-label="Chiudi"><i class="ti ti-x"></i></button><p class="tut-txt">'+paraBr(text,95)+'</p>'; // riquadro stretto: soglia piu' bassa
  const x=$('tutclose'); if(x) x.onclick=tutToFree; // chiudere il tutorial NON esce: resta in modalita' libera
  anim(b,'tutInC .4s ease both',0);
 }
@@ -1804,7 +1804,7 @@ function lessonShow(o){
  if(o.secondary) btns+='<button class="btn" id="lsec"><i class="ti ti-volume"></i><span>'+o.secondary.label+'</span></button>';
  if(o.primary) btns+='<button class="btn primary" id="lpri"><span>'+o.primary.label+'</span></button>';
  btns+='</div>';
- b.innerHTML='<p class="tut-txt">'+o.text+'</p>'+btns;
+ b.innerHTML='<p class="tut-txt">'+paraBr(o.text,95)+'</p>'+btns;
  anim(b,'tutInC .4s ease both',0);
  if(o.primary)$('lpri').addEventListener('click',o.primary.fn);
  if(o.secondary)$('lsec').addEventListener('click',o.secondary.fn);
@@ -3235,7 +3235,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.03'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.04'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
