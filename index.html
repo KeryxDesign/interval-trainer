@@ -656,7 +656,7 @@ it:{
  coursesub:"Un suono alla volta, con calma.", and:" e ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 senza Riascolta',
- unlock:"Sblocca tutti i livelli", unlockOn:"⚠ Sblocco totale ATTIVO (tutto disponibile)",
+ unlock:"Sblocca tutto (livelli + Shop)", unlockOn:"⚠ Sblocco totale ATTIVO (livelli + Shop)",
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca battendo il Boss del livello '+n,
  ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi',
@@ -721,7 +721,7 @@ it:{
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Boss", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
- timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo",scoreggia:"Scoreggia",gatto:"Gatto"},
+ timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo",scoreggia:"Tromba posteriore",gatto:"Gatto"},
  setLbl:"Impostazioni", fontLbl:"Dimensione testo", fontNames:{n:"Normale",g:"Grande",x:"Molto grande"}, droneSetting:"Drone della tonica (nota di casa sotto al gioco)",
  courseLocked:"Completa prima il corso precedente", lockCourse:t=>"Completa «"+t+"» per sbloccarla", winCourse:t=>"Nuovo corso sbloccato: "+t,
  goalNoReh:"senza Riascolta", goalLabel:"Obiettivo:", starGot:"stella presa!",
@@ -832,7 +832,7 @@ en:{
  coursesub:"One sound at a time, take it easy.", and:" and ",
  stars:'<span style="color:var(--gold)">★</span> round 5 &nbsp;·&nbsp; <span style="color:var(--gold)">★★</span> round 7 &nbsp;·&nbsp; <span style="color:var(--gold)">★★★</span> round 7 without Replay',
  starsCtx:'<span style="color:var(--gold)">★</span> round 5 · <span style="color:var(--gold)">★★</span> round 7 · <span style="color:var(--gold)">★★★</span> round 7 without Replay',
- unlock:"Unlock all levels", unlockOn:"⚠ ALL UNLOCKED is ON (everything available)",
+ unlock:"Unlock all (levels + Shop)", unlockOn:"⚠ ALL UNLOCKED is ON (levels + Shop)",
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock by beating the Boss of level '+n,
  ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first',
@@ -897,7 +897,7 @@ en:{
  dashTag:"Your progress", mStars:"Stars", mElite:"Boss", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
- timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ",scoreggia:"Fart",gatto:"Cat"},
+ timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ",scoreggia:"Back trumpet",gatto:"Cat"},
  setLbl:"Settings", fontLbl:"Text size", fontNames:{n:"Normal",g:"Large",x:"Extra large"}, droneSetting:"Tonic drone (home note under the game)",
  courseLocked:"Finish the previous course first", lockCourse:t=>"Finish «"+t+"» to unlock it", winCourse:t=>"New course unlocked: "+t,
  goalNoReh:"without Replay", goalLabel:"Goal:", starGot:"star earned!",
@@ -1134,8 +1134,8 @@ function setCoins(n){ localStorage.setItem('hm_coins', String(Math.max(0,n))); }
 function ownedSet(){ try{ return new Set((localStorage.getItem('hm_owned')||'').split(',').filter(Boolean)); }catch(e){ return new Set(); } }
 function isOwned(id){ return ownedSet().has(id); }
 function buyItem(id,price){ if(getCoins()<price||isOwned(id)) return false; setCoins(getCoins()-price); const s=ownedSet(); s.add(id); localStorage.setItem('hm_owned',[...s].join(',')); return true; }
-function timbreOwned(t){ return t==='pure'||isOwned('t:'+t); }
-function avatarOwned(i){ return i===0||isOwned('a:'+i); }
+function timbreOwned(t){ return unlockAll()||t==='pure'||isOwned('t:'+t); } // "sblocca tutto" sblocca anche i suoni dello Shop
+function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
 const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400,gatto:400};
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
@@ -3130,7 +3130,7 @@ applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.89'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.90'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
