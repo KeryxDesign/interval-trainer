@@ -20,12 +20,13 @@
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;}
 input,textarea,select,[contenteditable]{-webkit-user-select:text; user-select:text;}
 html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; touch-action:manipulation; overscroll-behavior:none;}
-.wrap{max-width:480px; margin:0 auto; padding:16px 16px 96px;}
+.wrap{max-width:480px; margin:0 auto; padding:16px 16px calc(96px + env(safe-area-inset-bottom));}
 /* Schermata di gioco: il contenuto ha altezza fissa e su iPhone alti lasciava un vuoto scuro in
    basso (ancorato in alto). Riempiamo l'altezza disponibile e centriamo il pannello con margin:auto:
    a differenza del flex-grow NON fa collassare la ruota (figli assoluti) ne' overflow/clipping; se il
-   contenuto e' piu' alto dello spazio, i margini vanno a 0 e si scrolla. 168px = padding wrap (72+96). */
-#view-game{min-height:calc(100svh - 168px); display:flex; flex-direction:column;}
+   contenuto e' piu' alto dello spazio, i margini vanno a 0 e si scrolla. 168px = padding wrap (72+96),
+   piu' le safe-area che il .wrap ora riserva (vedi sotto). */
+#view-game{min-height:calc(100svh - 168px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display:flex; flex-direction:column;}
 #view-game #gamepanel{margin:auto 0;}
 header{display:flex; align-items:center; justify-content:center; margin:4px 0 18px; background:var(--surface2); border-radius:14px; padding:12px 16px;}
 h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:pointer;}
@@ -67,7 +68,7 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 .scprev{position:absolute; top:6px; right:6px; font-size:14px; color:var(--muted);}
 .shopcard{position:relative;}
 .shopcard.buy{opacity:.92;}
-body.hastop .wrap{padding-top:72px;}
+body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 #shopsheet{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:72; display:flex; align-items:flex-end; justify-content:center;}
 #shopbox{width:100%; max-width:520px; background:var(--bg); border-radius:20px 20px 0 0; padding:0 16px 30px; max-height:84vh; overflow:auto; box-shadow:0 -8px 30px rgba(0,0,0,.5); animation:welIn .26s ease both;}
 #shophead{display:flex; align-items:center; justify-content:space-between; margin:0; padding:14px 0 10px; position:sticky; top:0; background:var(--bg); z-index:3;}
@@ -3156,7 +3157,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.96'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.97'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
