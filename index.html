@@ -1143,6 +1143,14 @@ function migrateCoins(){
   if(earned>getCoins()) setCoins(earned);
   localStorage.setItem('hm_coingrant','1');
 }
+// Ribilanciamento ricompense (~2,5x): chi ha gia' progressi riceve un bonus pari a 1,5x l'XP
+// a vita, cosi' il totale guadagnato si allinea alle nuove ricompense. Somma (non rimborsa le spese).
+function rebalanceCoins(){
+  if(localStorage.getItem('hm_coinbuff')) return;
+  const bonus=Math.round(getXP()*1.5);
+  if(bonus>0) setCoins(getCoins()+bonus);
+  localStorage.setItem('hm_coinbuff','1');
+}
 function timbreOwned(t){ return unlockAll()||t==='pure'||t==='scoreggia'||isOwned('t:'+t); } // pure e Tromba posteriore gratis dall'inizio; "sblocca tutto" il resto
 function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
 const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400};
@@ -1766,7 +1774,7 @@ function casaStep(n){
 }
 // fine Livello 0: prima stella + casa sbloccata nel Libero, poi torna alla Home (non salta al livello successivo)
 function casaComplete(){
- if(!localStorage.getItem('hm_casa_xp')){ localStorage.setItem('hm_casa_xp','1'); addXP(20); } // XP casa una volta sola
+ if(!localStorage.getItem('hm_casa_xp')){ localStorage.setItem('hm_casa_xp','1'); addXP(50); } // XP casa una volta sola
  localStorage.setItem('hm_casa_done','1');
  clearTimers(); stopAllHeld(); stopDrone(); state='over';
  $('celico').innerHTML='<div style="display:flex;gap:10px;align-items:center;justify-content:center">'
@@ -1887,7 +1895,7 @@ function showLevelWin(c,w,st,unlockMsg){
  celebrateCb=()=>showLevels();
  $('celebrate').hidden=false;
  chime(); setTimeout(chime,260); setTimeout(chime,520);
- addXP(10+5*st); // XP per Training/Facile completati
+ addXP(25+15*st); // XP per Training/Facile completati
 }
 
 function bestKey(){return 'it_best_'+scale;}
@@ -2559,7 +2567,7 @@ function dominateBelow(c,w,m){ const set=i=>saveProg(c,'w'+w+'m'+i,{stars:3,best
 function modeWinCelebrate(m,st){ $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="display:flex;justify-content:center"><span style="color:var(--gold);letter-spacing:3px;font-size:34px">'+starsStr(st)+'</span></div>';
  $('celtitle').textContent=S9.modes[m]+' ✓'; $('celname').innerHTML='<b>'+game.name+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260); addXP(10+5*st); } // XP per Normale/Difficile
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260); addXP(25+15*st); } // XP per Normale/Difficile
 // ===== ALLENAMENTO: note sbloccate su tutti i corsi =====
 function allUnlockedNotes(){ const s=new Set([0]); COURSE_IDS.forEach(c=>{ if(unlockAll()||courseUnlocked(c)){ (CBASE[c]||[]).forEach(k=>s.add(k)); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); } }); return [...s].sort((a,b)=>a-b); }
 function seededRand(seed){ let x=(seed||1)&0x7fffffff; return ()=>{ x=(x*1103515245+12345)&0x7fffffff; return x/0x7fffffff; }; }
@@ -2580,7 +2588,7 @@ function dailyWin(){
  const t=dayStr(new Date());
  const firstToday=localStorage.getItem('hm_daily')!==t;
  if(firstToday){ const y=new Date(); y.setDate(y.getDate()-1); const s=(localStorage.getItem('hm_daily')===dayStr(y))?dailyStreak()+1:1; localStorage.setItem('hm_dstreak',String(s)); localStorage.setItem('hm_daily',t); }
- if(firstToday) addXP(25); // XP sfida del giorno (una volta al giorno)
+ if(firstToday) addXP(60); // XP sfida del giorno (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-calendar-star" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.dailyWin; $('celname').innerHTML='<b>'+S9.dailyStreakLbl+': '+dailyStreak()+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2608,7 +2616,7 @@ function endlessOver(){
  const rec=Math.max(endlessRecord(), (seq.length-1)); const isNew=(seq.length-1)>endlessRecord();
  const firstToday=localStorage.getItem('hm_endless_day')!==dayStr(new Date());
  localStorage.setItem('hm_endless',String(rec)); localStorage.setItem('hm_endless_day',dayStr(new Date())); // task giornaliero
- if(firstToday) addXP(25); // XP Infinito (una volta al giorno)
+ if(firstToday) addXP(60); // XP Infinito (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-infinity" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isNew?S9.endlessNew:S9.endlessOverT; $('celname').innerHTML='<b>'+S9.record+': '+rec+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2650,7 +2658,7 @@ function beginReview(){ // RIPASSO MIRATO: ricostruzione corta fatta soprattutto
 function reviewWin(){
  const firstToday=localStorage.getItem('hm_review')!==dayStr(new Date());
  localStorage.setItem('hm_review',dayStr(new Date())); // task giornaliero
- if(firstToday) addXP(20); // XP ripasso (una volta al giorno)
+ if(firstToday) addXP(50); // XP ripasso (una volta al giorno)
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-target-arrow" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.reviewWin; $('celname').innerHTML='<b>'+S9.reviewWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
@@ -2664,7 +2672,7 @@ function bossWin(){
   modeWinCelebrate(1,st); return;
  }
  // BOSS (ex Elite): sblocca nota + livello, 9/9 generoso
- localStorage.setItem('hm_elite_'+game.c+'_'+game.w,'1'); dominateBelow(game.c,game.w,'boss'); addXP(50); // XP Boss
+ localStorage.setItem('hm_elite_'+game.c+'_'+game.w,'1'); dominateBelow(game.c,game.w,'boss'); addXP(120); // XP Boss
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-trophy" style="font-size:38px"></i></div>';
  $('celtitle').textContent=S9.bossWin;
@@ -3139,9 +3147,10 @@ applyFont();
 applyStatic();
 applyStreakFreeze(); // i salva-streak coprono i giorni saltati
 migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guadagnato
+rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='1.94'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='1.95'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
