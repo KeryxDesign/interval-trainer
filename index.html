@@ -1757,7 +1757,7 @@ $('tb-prof').addEventListener('click',showHome); // nome/avatar -> Profilo
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
- if(game.daily||game.endless||game.review||game.kind==='chord') showHome();      // Allenamento -> Profilo
+ if(game.daily||game.endless||game.review||game.kind==='chord') showLevels();     // sfide del giorno -> tornano al Corso
  else if((game.kind==='level'||game.kind==='boss'||game.kind==='bossgrow')&&game.w!=null) showLevels(); // ogni modo/Boss di livello -> torna al percorso
  else showLevels();                                                            // Libero -> lista livelli
 });
@@ -2678,7 +2678,7 @@ function dailyWin(){
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-calendar-star" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.dailyWin; $('celname').innerHTML='<b>'+S9.dailyStreakLbl+': '+dailyStreak()+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showHome(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 // INFINITO: la melodia cresce senza fine (motore a crescita), solo a orecchio; salvi il record
 function endlessRecord(){ return parseInt(localStorage.getItem('hm_endless')||'0',10)||0; }
@@ -2706,7 +2706,7 @@ function endlessOver(){
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-infinity" style="font-size:38px"></i></div>';
  $('celtitle').textContent=isNew?S9.endlessNew:S9.endlessOverT; $('celname').innerHTML='<b>'+S9.record+': '+rec+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showHome(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 function bossPlay(keepStep){
  ensureCtx(); state='play'; clearTimers(); closeFreeTry(); setStatus(S9.listen);
@@ -2757,7 +2757,7 @@ function reviewWin(){
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-target-arrow" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.reviewWin; $('celname').innerHTML='<b>'+S9.reviewWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showHome(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 // ===== SFIDA 3 - SUONI INSIEME: 3-4 note studiate suonate INSIEME; le riconosci toccandole (insieme, ordine libero) =====
 function chordDoneToday(){ return localStorage.getItem('hm_dchord')===dayStr(new Date()); }
@@ -2812,7 +2812,7 @@ function chordWin(){
  $('bossbar').hidden=true; $('freetry').hidden=true;
  $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-stack-2" style="font-size:36px"></i></div>';
  $('celtitle').textContent=S9.chordWin; $('celname').innerHTML='<b>'+S9.chordWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showHome(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 function bossWin(){
  if(game.daily){ dailyWin(); return; } // Sfida del giorno
@@ -3301,7 +3301,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.07'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.08'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
