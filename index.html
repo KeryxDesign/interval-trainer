@@ -656,6 +656,14 @@ button.levelcard:active{transform:scale(0.99);}
   <p id="celname" style="font-size:16px; color:var(--muted); margin:0 0 28px;"></p>
   <p id="celtap" style="font-size:13px; color:var(--muted); margin:0;"></p>
 </div>
+<div id="streakreward" hidden style="position:fixed; inset:0; background:linear-gradient(180deg,#1d1407,#14151a 62%); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:65; text-align:center; padding:28px; cursor:pointer;">
+  <div style="font-size:60px; line-height:1; margin-bottom:8px;">🔥</div>
+  <p id="sr-streak" style="font-size:48px; font-weight:900; color:var(--gold); margin:0; line-height:1;"></p>
+  <p id="sr-streaklbl" style="font-size:13px; color:var(--muted); margin:4px 0 20px; text-transform:uppercase; letter-spacing:.1em;"></p>
+  <p id="sr-title" style="font-size:24px; font-weight:800; color:var(--text); margin:0 0 16px;"></p>
+  <p id="sr-quote" style="font-size:16px; font-style:italic; color:var(--text); opacity:.85; line-height:1.55; max-width:300px; margin:0 0 28px;"></p>
+  <p id="sr-tap" style="font-size:13px; color:var(--muted); margin:0;"></p>
+</div>
 <div id="profedit" hidden style="position:fixed; inset:0; background:rgba(20,21,26,0.97); display:flex; flex-direction:column; align-items:stretch; justify-content:center; z-index:62; padding:32px 24px; max-width:480px; margin:0 auto;">
   <p id="pe-title" style="font-size:20px; font-weight:700; margin:0 0 18px;"></p>
   <div id="pe-avatars"></div>
@@ -700,6 +708,8 @@ it:{
  boss:"Boss", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 6 note solo con le orecchie. 3 vite. Puoi riascoltare scala e melodia 3 volte ciascuna.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
  tipTitle:"Suggerimento", allenaTitle:"Allenamento", dailyTitle:"Ricostruzione", dailyDesc:"Rifai una melodia da 6: a volte coi colori, a volte solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Ricostruzione fatta!", dailyStreakLbl:"Giorni di fila",
  ripassoTitle:"Ripasso", ripassoDesc:"Melodia da 6 con 3-4 note (le tue piu' deboli): gli indizi spariscono.", ripassoWin:"Ripasso fatto!", ripassoWinSub:"Continua così.",
+ srTitle:"Bravo!", srGreatTitle:"Grande, la serie cresce!", srTapToday:"il tuo allenamento di oggi è fatto",
+ musicQuotes:["L'orecchio si allena come un muscolo: un po' ogni giorno.","La musica non si impara a memoria, si riconosce.","Ogni suono che impari resta con te per sempre.","Chi ascolta meglio, suona meglio.","Le distanze tra le note sono una lingua: la stai imparando.","Cinque minuti al giorno valgono più di un'ora ogni tanto.","Oggi il tuo orecchio sa qualcosa in più di ieri.","La costanza batte il talento, una nota alla volta."],
  chordTitle:"Suoni insieme", chordDesc:"Riconosci 3-4 note suonate insieme.", chordPrompt:"Tocca i suoni che senti insieme", chordWin:"Suoni insieme indovinati!", chordWinSub:"Orecchio armonico!", chordDoneTxt:"Fatti oggi! Torna domani.",
  endlessTitle:"Record", endlessDesc:"Fin dove arrivi nella sequenza, su una scala a caso tra quelle studiate.", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
  reviewTitle:"Passo passo", reviewDesc:"Costruiscila una nota alla volta, solo a orecchio.", reviewWin:"Passo passo fatto!", reviewWinSub:"Continua così.",
@@ -878,6 +888,8 @@ en:{
  boss:"Boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 6-note melody by ear only. 3 lives. You can replay the scale and the melody 3 times each.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
  tipTitle:"Tip", allenaTitle:"Training", dailyTitle:"Rebuild", dailyDesc:"Redo a 6-note melody: sometimes with colors, sometimes by ear.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Rebuild done!", dailyStreakLbl:"Day streak",
  ripassoTitle:"Review", ripassoDesc:"6-note melody with 3-4 notes (your weakest): the hints fade.", ripassoWin:"Review done!", ripassoWinSub:"Keep it up.",
+ srTitle:"Nice!", srGreatTitle:"Great, the streak grows!", srTapToday:"today's practice is done",
+ musicQuotes:["The ear trains like a muscle: a little every day.","You don't memorize music, you recognize it.","Every sound you learn stays with you for good.","Better listeners make better players.","The distances between notes are a language: you're learning it.","Five minutes a day beat an hour once in a while.","Today your ear knows a little more than yesterday.","Consistency beats talent, one note at a time."],
  chordTitle:"Sounds together", chordDesc:"Spot 3-4 notes played together.", chordPrompt:"Tap the sounds you hear together", chordWin:"Sounds together, nailed it!", chordWinSub:"Harmonic ear!", chordDoneTxt:"Done today! Come back tomorrow.",
  endlessTitle:"Record", endlessDesc:"How far you get in the sequence, on a random scale you've studied.", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
  reviewTitle:"Step by step", reviewDesc:"Build it one note at a time, by ear.", reviewWin:"Step by step done!", reviewWinSub:"Keep it up.",
@@ -1337,7 +1349,7 @@ function setView(name){
 }
 // ogni cambio pagina riparte dall'alto
 function scrollTop(){ try{window.scrollTo(0,0);}catch(e){} document.documentElement.scrollTop=0; document.body.scrollTop=0; const w=document.querySelector('.wrap'); if(w)w.scrollTop=0; }
-function showHome(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home');}
+function showHome(){saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic(); renderDashboard(); setView('home'); maybeStreakReward();}
 const SCIDX={maj:0,min:1,pmaj:2,pmin:3,chrom:4,lyd:5,mixo:6,dor:7,phr:8,loc:9,blM:10,blm:11};
 function nameForId(id){return COURSE_IDS.includes(id)?S9.courses[id].title:(S9.scales[SCIDX[id]]||id);}
 function dayStr(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
@@ -1356,6 +1368,22 @@ function bumpStreak(){
  const s=(last===dayStr(y))?getStreak()+1:1;
  localStorage.setItem('hm_streak',String(s));
  localStorage.setItem('hm_lastplay',t);
+}
+// Schermata premiante alla PRIMA giocata del giorno: Bravo + serie di giorni + frase sulla musica
+function maybeStreakReward(){
+ const t=dayStr(new Date());
+ if(localStorage.getItem('hm_lastplay')!==t) return;       // deve aver giocato oggi
+ if(localStorage.getItem('hm_rewardday')===t) return;      // gia' mostrata oggi
+ const cel=$('celebrate'); if(cel && !cel.hidden) return;  // non sovrapporsi alla celebrazione vittoria
+ const stk=getStreak(); if(stk<1) return;
+ localStorage.setItem('hm_rewardday',t);
+ const r=$('streakreward'); if(!r) return;
+ $('sr-streak').textContent=String(stk);
+ $('sr-streaklbl').textContent=S9.dailyStreakLbl;
+ $('sr-title').textContent=(stk>=3)?S9.srGreatTitle:S9.srTitle;
+ const qs=S9.musicQuotes||[]; $('sr-quote').textContent=qs.length?('“'+qs[dayHash()%qs.length]+'”'):'';
+ $('sr-tap').textContent=S9.unlockTap;
+ r.hidden=false; chime();
 }
 function parseDay(s){ const p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
 // all'avvio: se hai saltato dei giorni, i salva-streak coprono i buchi e tengono viva la serie
@@ -1559,6 +1587,7 @@ function showLevels(){
  saveCurrentGameProgress(); clearTimers(); state='idle'; seq=[]; stopMic();
  setView('levels');
  renderPath();
+ maybeStreakReward(); // prima giocata del giorno -> schermata premiante (serie + frase)
 }
 // TAB GIOCA: gioco libero su un pager di scale (scegli scorrendo); note sbloccate dal corso, scale bloccate finche' non avanzi
 function showFree(){
@@ -1776,6 +1805,7 @@ $('pe-save').addEventListener('click',saveProfile);
 $('pe-cancel').addEventListener('click',()=>{$('profedit').hidden=true;});
 $('tutbtn').addEventListener('click',showWelcome);
 $('celebrate').addEventListener('click',()=>{$('celebrate').hidden=true; const cb=celebrateCb; celebrateCb=null; if(cb)cb(); else showLevels();});
+$('streakreward').addEventListener('click',()=>{$('streakreward').hidden=true;});
 
 let tut={step:0,allowed:[],expect:[],pos:0};
 function tutAllow(arr){
@@ -3342,7 +3372,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.10'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.11'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
