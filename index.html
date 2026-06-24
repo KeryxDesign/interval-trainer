@@ -2763,19 +2763,24 @@ function reviewWin(){
 function chordDoneToday(){ return localStorage.getItem('hm_dchord')===dayStr(new Date()); }
 function beginChord(){
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
- const pool=allUnlockedNotes();
- const n=Math.min(pool.length, Math.random()<0.5?3:4); // 3 o 4 note a caso
- const bag=pool.slice(), chord=[];
- while(chord.length<n && bag.length){ chord.push(bag.splice(Math.floor(Math.random()*bag.length),1)[0]); }
- game={kind:'chord', c:null, w:null, name:S9.chordTitle, notes:pool, chord:chord, got:[], lives:3, root:Math.floor(Math.random()*12)};
+ const all=allUnlockedNotes();
+ const n=Math.min(all.length, Math.random()<0.5?3:4); // 3 o 4 note
+ // RIPASSO: prima le note piu' deboli (statistiche errori), poi completa con random
+ const weak=weakIntervals().filter(k=>all.includes(k));
+ const chord=[]; weak.forEach(k=>{ if(chord.length<n && !chord.includes(k)) chord.push(k); });
+ const rest=all.filter(k=>!chord.includes(k));
+ while(chord.length<n && rest.length){ chord.push(rest.splice(Math.floor(Math.random()*rest.length),1)[0]); }
+ chord.sort((a,b)=>a-b);
+ // SOLO queste note sono attive sulla ruota (le altre spente): cosi' si esercitano proprio quelle
+ game={kind:'chord', c:null, w:null, name:S9.chordTitle, notes:chord.slice(), chord:chord.slice(), got:[], lives:3, root:Math.floor(Math.random()*12)};
  root=game.root; state='idle'; seq=[]; dur=[];
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
  showGameTop(S9.chordTitle);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
- $('round').textContent='0/'+n; $('best').textContent=String(n); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
+ $('round').textContent='0/'+chord.length; $('best').textContent=String(chord.length); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
  $('bscale').hidden=true; $('rehtxt').textContent=S9.rehear; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
- $('bossbar').hidden=false; renderBossBar();
+ $('bossbar').hidden=true; // qui non si puo' sbagliare (solo le note del cluster sono attive): niente vite
  render(); $('freetry').hidden=true;
  stopDrone(); showDroneToggle(false); // niente drone: aggiungerebbe una nota tenuta non parte del cluster
  timers.push(setTimeout(()=>chordPlay(), 500));
@@ -3296,7 +3301,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.06'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.07'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
