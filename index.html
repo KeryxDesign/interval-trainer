@@ -28,6 +28,9 @@ html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-fam
    piu' le safe-area che il .wrap ora riserva (vedi sotto). */
 #view-game{min-height:calc(100svh - 168px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); display:flex; flex-direction:column;}
 #view-game #gamepanel{margin:auto 0;}
+/* Durante una partita la barra inferiore sparisce: recupero lo spazio e il gioco riempie lo schermo */
+body.ingame .wrap{padding-bottom:calc(24px + env(safe-area-inset-bottom));}
+body.ingame #view-game{min-height:calc(100svh - 96px - env(safe-area-inset-top) - env(safe-area-inset-bottom));}
 header{display:flex; align-items:center; justify-content:center; margin:4px 0 18px; background:var(--surface2); border-radius:14px; padding:12px 16px;}
 h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:pointer;}
 .lang{display:flex; gap:2px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px; font-size:13px; font-weight:600;}
@@ -159,6 +162,10 @@ body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 .crow.options.optswrap{flex-wrap:wrap;}
 .crow.options .btn{padding:6px 8px; font-size:12px;}
 .crow.options .btn i{font-size:15px;}
+/* Replay melody/scale compatti a icone (frecce circolari + icona + numero) */
+#rehear, #bscale{padding:7px 10px; font-size:13px; gap:5px;}
+#rehear i, #bscale i{font-size:16px;}
+#rehear .rh-melico{font-size:14px; opacity:.85;}
 .crow.options .tgl{padding:6px 7px; font-size:12px; gap:5px;}
 .crow.options .tgl .track{width:28px; height:17px;}
 .crow.options .tgl .knob{width:13px; height:13px;}
@@ -581,8 +588,8 @@ button.levelcard:active{transform:scale(0.99);}
         <button class="btn" id="freeinfo" style="flex:0 0 auto; padding:8px 11px;" aria-label="info"><i class="ti ti-help"></i></button>
       </div>
       <div class="crow options" id="optsrow">
-        <button class="btn" id="rehear" aria-label="replay"><i class="ti ti-refresh"></i><span id="rehtxt"></span></button>
-        <button class="btn" id="bscale" hidden aria-label="scale"><i class="ti ti-stairs-up"></i><span id="bscaletxt"></span></button>
+        <button class="btn" id="rehear" aria-label="replay melody"><i class="ti ti-refresh"></i><i class="ti ti-music rh-melico" hidden></i><span id="rehtxt"></span></button>
+        <button class="btn" id="bscale" hidden aria-label="replay scale"><i class="ti ti-refresh"></i><i class="ti ti-stairs-up"></i><span id="bscaletxt"></span></button>
         <span class="spdbox"><i class="ti ti-gauge"></i><select id="spdsel" aria-label="Speed"></select></span>
         <button class="tgl" id="miccb" aria-pressed="false"><i class="ti ti-microphone"></i><span id="mictxt"></span><span class="track"><span class="knob"></span></span></button>
         <button class="tgl" id="dronecb" hidden aria-pressed="false" aria-label="drone tonica"><i class="ti ti-home"></i><span class="track"><span class="knob"></span></span></button>
@@ -1350,7 +1357,7 @@ function setView(name){
  $('view-settings').hidden=name!=='settings';
  $('hdr').hidden=(name==='home'||name==='free'||name==='leveldetail'||name==='settings'||name==='levels');
  $('brand').textContent = name==='guide'?S9.tabs[3] : S9.courseMode;
- $('tabs').hidden=false;
+ $('tabs').hidden=false; document.body.classList.remove('ingame'); // fuori da una partita: barra inferiore di nuovo visibile
  ['levels','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
  // tab attivo: Corso=livelli, Home(centro)=dashboard, Impostazioni=settings
@@ -1826,7 +1833,7 @@ $('backbtn').addEventListener('click',function(){
  else showLevels();                                                            // Libero -> lista livelli
 });
 // Mostra la barra superiore in modalita' gioco: tasto indietro + titolo, niente monete/shop (sostituisce il riquadro #gametop)
-function showGameTop(title){ const tb=$('topbar'); if(!tb) return; tb.hidden=false; tb.classList.add('gamemode'); document.body.classList.add('hastop'); const bk=$('tb-back'); if(bk) bk.hidden=false; const t=$('tb-gtitle'); if(t) t.textContent=title||''; const gt=$('gametop'); if(gt) gt.hidden=true; }
+function showGameTop(title){ const tb=$('topbar'); if(!tb) return; tb.hidden=false; tb.classList.add('gamemode'); document.body.classList.add('hastop'); const bk=$('tb-back'); if(bk) bk.hidden=false; const t=$('tb-gtitle'); if(t) t.textContent=title||''; const gt=$('gametop'); if(gt) gt.hidden=true; const tabs=$('tabs'); if(tabs) tabs.hidden=true; document.body.classList.add('ingame'); } // durante una partita: via la barra inferiore
 $('tb-back').addEventListener('click',()=>$('backbtn').click()); // stesso comportamento del vecchio tasto indietro
 $('ld-back').addEventListener('click',showLevels);
 $('brand').addEventListener('click',showLevels);
@@ -2525,10 +2532,11 @@ function layoutAids(){
  const boss=(game.kind==='boss'||game.kind==='bossgrow');
  const reh=$('rehear'), bsc=$('bscale'), ftbtns=$('ftbtns'), ftbtn=$('ftbtn'), opt=$('optsrow');
  if(!reh||!ftbtns||!opt) return;
+ const mi=reh.querySelector('.rh-melico'); if(mi) mi.hidden=!boss; // icona nota solo in boss (replay melodia a icone+numero)
  if(boss){ if(reh.parentElement!==ftbtns){ ftbtns.insertBefore(reh, ftbtn); ftbtns.insertBefore(bsc, ftbtn); } }
  else if(reh.parentElement!==opt){ opt.insertBefore(bsc, opt.firstChild); opt.insertBefore(reh, opt.firstChild); }
 }
-function updateEliteReplay(){ if(game.kind!=='boss') return; $('rehtxt').textContent=S9.rehear+' '+game.replays; $('rehear').style.opacity=game.replays>0?'1':'.4'; } // conteggio sul bottone (elite/hard)
+function updateEliteReplay(){ if(game.kind!=='boss') return; $('rehtxt').textContent=String(game.replays); $('rehear').style.opacity=game.replays>0?'1':'.4'; } // solo il numero (icone: frecce + nota)
 // PROVA LIBERA: in Elite e Boss una riga di note suonabili per ricostruire la melodia per tentativi. 3 sessioni per partita.
 function freeTryEligible(){ return !!game && (game.elite || game.daily || game.review || game.kind==='bossgrow'); } // nel Boss/Elite l'aiuto torna ma COSTA UNA VITA
 function setupFreeTry(){
@@ -2630,7 +2638,7 @@ function bossScaleSeq(t0){
  asc.forEach(k=>{ timers.push(setTimeout(()=>{ flash(k%12,sstep-60,true); tone(60+root+k,Math.max(0.2,sstep*0.8/1000));},t)); t+=sstep; }); // i cerchi si allargano: associi nota<->colore<->suono
  return t;
 }
-function updateBossReplays(){ if(game.kind!=='bossgrow') return; const m=game.melReplays, s=game.scaleReplays; $('rehtxt').textContent=S9.bossMelodyBtn+' '+m; $('bscaletxt').textContent=S9.bossScaleBtn+' '+s; $('rehear').style.opacity=m>0?'1':'.4'; $('bscale').style.opacity=s>0?'1':'.4'; }
+function updateBossReplays(){ if(game.kind!=='bossgrow') return; const m=game.melReplays, s=game.scaleReplays; $('rehtxt').textContent=String(m); $('bscaletxt').textContent=String(s); $('rehear').style.opacity=m>0?'1':'.4'; $('bscale').style.opacity=s>0?'1':'.4'; } // solo i numeri (icone: frecce + nota / scala)
 function bossScaleReplay(){ if(game.kind!=='bossgrow'||state==='play'||game.scaleReplays<=0) return; ensureCtx(); game.scaleReplays--; updateBossReplays(); setStatus(S9.bossScale); bossScaleSeq(120); } // max 3, con flash sui cerchi
 function bossMelodyReplay(){ if(game.kind!=='bossgrow'||state!=='input'||game.melReplays<=0) return; ensureCtx(); game.melReplays--; updateBossReplays(); bossGrowPlay(); } // max 3, solo a orecchio (pulse)
 function bossGrowIntro(){
@@ -3405,7 +3413,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.13'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.14'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
