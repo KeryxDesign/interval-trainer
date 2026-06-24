@@ -698,9 +698,10 @@ it:{
  play:"Gioca", rehear:"Riascolta", rhythm:"Ritmo casuale", mic:"Voce/Strumento",
  ftTry:"Prova le note", ftStop:"Fine prova", ftDone:"Prove finite",
  boss:"Boss", bossScaleBtn:"Riascolta scala", bossMelodyBtn:"Riascolta melodia", bossCard:"Costruisci una melodia di 6 note solo con le orecchie. 3 vite. Puoi riascoltare scala e melodia 3 volte ciascuna.", bossLocked:"Completa tutti i livelli del corso per sfidare il boss.", bossWrong:"Nota sbagliata, si riparte da capo.", bossWin:"Boss superato!", bossFail:"Vite finite. Riprova!", bossPerfect:"Perfetto, 3 vite intere!", bossBest:"Vite", bossTarget:"Note",
- tipTitle:"Suggerimento", allenaTitle:"Allenamento", dailyTitle:"Melodia a colori", dailyDesc:"Rifai una melodia da 6 vedendo i colori.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Melodia a colori fatta!", dailyStreakLbl:"Giorni di fila",
+ tipTitle:"Suggerimento", allenaTitle:"Allenamento", dailyTitle:"Ricostruzione", dailyDesc:"Rifai una melodia da 6: a volte coi colori, a volte solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Ricostruzione fatta!", dailyStreakLbl:"Giorni di fila",
+ ripassoTitle:"Ripasso", ripassoDesc:"Melodia da 6 con 3-4 note (le tue piu' deboli): gli indizi spariscono.", ripassoWin:"Ripasso fatto!", ripassoWinSub:"Continua così.",
  chordTitle:"Suoni insieme", chordDesc:"Riconosci 3-4 note suonate insieme.", chordPrompt:"Tocca i suoni che senti insieme", chordWin:"Suoni insieme indovinati!", chordWinSub:"Orecchio armonico!", chordDoneTxt:"Fatti oggi! Torna domani.",
- endlessTitle:"Infinito", endlessDesc:"La melodia cresce senza fine. Fin dove arrivi?", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
+ endlessTitle:"Record", endlessDesc:"Fin dove arrivi nella sequenza, su una scala a caso tra quelle studiate.", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
  reviewTitle:"Passo passo", reviewDesc:"Costruiscila una nota alla volta, solo a orecchio.", reviewWin:"Passo passo fatto!", reviewWinSub:"Continua così.",
  medalsTitle:"Medaglie", medalTapHint:"Tocca una medaglia per sapere cos'è.", medals:{casa:{n:"La casa",d:"Completa il Livello 0"}, firstboss:{n:"Primo Boss",d:"Batti il tuo primo Boss"}, pent:{n:"Pentatonica",d:"Finisci la pentatonica"}, maj:{n:"Maggiore",d:"Finisci la scala maggiore"}, pmin:{n:"Minore",d:"Finisci la pentatonica minore"}, perfect:{n:"Perfetto",d:"Tutte le stelle di un corso"}, endless:{n:"Maratoneta",d:"Record Infinito da 10"}, streak:{n:"Costante",d:"7 Sfide del giorno di fila"}},
  elite:"Elite", eliteCard:"Rifai una melodia di 6 note solo con le orecchie: la senti ma non la vedi. 3 vite e 3 riascolti. Vincila per sbloccare la nota nuova nel gioco libero.", eliteLocked:"Completa la modalità \"A orecchio\" per sbloccarlo.", eliteWin:"Elite superato!",
@@ -875,9 +876,10 @@ en:{
  play:"Play", rehear:"Replay", rhythm:"Random rhythm", mic:"Voice/Instrument",
  ftTry:"Try the notes", ftStop:"End try", ftDone:"No tries left",
  boss:"Boss", bossScaleBtn:"Replay scale", bossMelodyBtn:"Replay melody", bossCard:"Build a 6-note melody by ear only. 3 lives. You can replay the scale and the melody 3 times each.", bossLocked:"Finish every level of the course to face the boss.", bossWrong:"Wrong note, starting over.", bossWin:"Boss cleared!", bossFail:"Out of lives. Try again!", bossPerfect:"Perfect, all 3 lives!", bossBest:"Lives", bossTarget:"Notes",
- tipTitle:"Tip", allenaTitle:"Training", dailyTitle:"Color melody", dailyDesc:"Redo a 6-note melody seeing the colors.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Color melody done!", dailyStreakLbl:"Day streak",
+ tipTitle:"Tip", allenaTitle:"Training", dailyTitle:"Rebuild", dailyDesc:"Redo a 6-note melody: sometimes with colors, sometimes by ear.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Rebuild done!", dailyStreakLbl:"Day streak",
+ ripassoTitle:"Review", ripassoDesc:"6-note melody with 3-4 notes (your weakest): the hints fade.", ripassoWin:"Review done!", ripassoWinSub:"Keep it up.",
  chordTitle:"Sounds together", chordDesc:"Spot 3-4 notes played together.", chordPrompt:"Tap the sounds you hear together", chordWin:"Sounds together, nailed it!", chordWinSub:"Harmonic ear!", chordDoneTxt:"Done today! Come back tomorrow.",
- endlessTitle:"Endless", endlessDesc:"The melody grows forever. How far can you go?", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
+ endlessTitle:"Record", endlessDesc:"How far you get in the sequence, on a random scale you've studied.", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
  reviewTitle:"Step by step", reviewDesc:"Build it one note at a time, by ear.", reviewWin:"Step by step done!", reviewWinSub:"Keep it up.",
  medalsTitle:"Medals", medalTapHint:"Tap a medal to see what it is.", medals:{casa:{n:"Home",d:"Finish Level 0"}, firstboss:{n:"First Boss",d:"Beat your first Boss"}, pent:{n:"Pentatonic",d:"Finish the pentatonic"}, maj:{n:"Major",d:"Finish the major scale"}, pmin:{n:"Minor",d:"Finish the minor pentatonic"}, perfect:{n:"Perfect",d:"All stars in a course"}, endless:{n:"Marathoner",d:"Endless record of 10"}, streak:{n:"Steady",d:"7 daily challenges in a row"}},
  elite:"Elite", eliteCard:"Redo a 6-note melody by ear only: you hear it but you don't see it. 3 lives and 3 replays. Win it to unlock the new note in free play.", eliteLocked:"Clear \"By ear\" mode to unlock it.", eliteWin:"Elite cleared!",
@@ -1138,7 +1140,7 @@ function courseUnlocked(c){
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
 function trainPool(c,w){return [...new Set([0,...CWADD[c][w]])].sort((a,b)=>a-b);} // Training: solo tonica + nota nuova
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.kind==='boss'||game.kind==='bossgrow'||game.kind==='chord')return game.notes; if(game.kind==='free')return game.notes||SCALES[scale]; return game.training?trainPool(game.c,game.w):levelPool(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.pool)return game.pool; if(game.kind==='boss'||game.kind==='bossgrow'||game.kind==='chord')return game.notes; if(game.kind==='free')return game.notes||SCALES[scale]; return game.training?trainPool(game.c,game.w):levelPool(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
@@ -1451,19 +1453,20 @@ function renderNext(boxId){
 function renderTip(){ const box=$('tipbox'); if(!box) return; const t=S9.tips[Math.floor(Math.random()*S9.tips.length)]; box.innerHTML='<p class="dashsec" style="margin-top:0">'+S9.tipTitle+'</p><div class="tipcard"><i class="ti ti-bulb"></i><span>'+t.t+'</span></div>'; }
 function renderAllena(boxEl){
  const box=boxEl||$('allenabox'); if(!box) return;
- const dd=dailyDoneToday(), dstk=dailyStreak(), rv=reviewDoneToday(), cd=chordDoneToday();
+ const rp=ripassoDoneToday(), dd=dailyDoneToday(), dstk=dailyStreak(), en=endlessDoneToday(), rec=endlessRecord();
  const badge=(d,rew)=>'<span class="crew" style="color:'+(d?'var(--muted)':'var(--gold)')+';font-weight:800;font-size:14px;white-space:nowrap">'+(d?'1/1 ✓':'+'+rew+' <span class="cur">♪</span>')+'</span>'; // mostra quanto si guadagna (o fatto)
  const card=(id,ic,title,sub,d,rew)=>'<button class="mrow allena" id="'+id+'" style="width:100%;text-align:left;margin:0 0 8px"><div class="mtop"><span class="mname"><i class="ti ti-'+ic+'"></i>'+title+'</span>'+badge(d,rew)+'</div><div class="mdesc">'+sub+'</div></button>';
  const ddesc=(dd?S9.dailyDoneTxt:S9.dailyDesc)+(dstk?' · 🔥 '+dstk:'');
- box.innerHTML=card('al-daily','palette',S9.dailyTitle, ddesc, dd, 25)
-  +card('al-review','stairs-up',S9.reviewTitle, S9.reviewDesc, rv, 25)
-  +card('al-chord','stack-2',S9.chordTitle, S9.chordDesc, cd, 25);
+ const rdesc=S9.endlessDesc+(rec?' · '+S9.record+' '+rec:'');
+ box.innerHTML=card('al-ripasso','color-swatch',S9.ripassoTitle, S9.ripassoDesc, rp, 25)
+  +card('al-daily','music',S9.dailyTitle, ddesc, dd, 25)
+  +card('al-record','infinity',S9.endlessTitle, rdesc, en, 25);
+ $('al-ripasso').addEventListener('click',()=>showLoading(beginRipasso,{c:'pent',title:S9.ripassoTitle}));
  $('al-daily').addEventListener('click',()=>showLoading(beginDaily,{c:'pent',title:S9.dailyTitle}));
- $('al-review').addEventListener('click',()=>showLoading(beginReview,{c:'pent',title:S9.reviewTitle}));
- $('al-chord').addEventListener('click',()=>showLoading(beginChord,{c:'pent',title:S9.chordTitle}));
+ $('al-record').addEventListener('click',()=>showLoading(beginEndless,{c:'pent',title:S9.endlessTitle}));
 }
 // Tondo daily flottante: apre le sfide del giorno
-function dailyUndone(){ let n=0; if(!dailyDoneToday())n++; if(!reviewDoneToday())n++; if(!chordDoneToday())n++; return n; }
+function dailyUndone(){ let n=0; if(!ripassoDoneToday())n++; if(!dailyDoneToday())n++; if(!endlessDoneToday())n++; return n; }
 function updateDailyFab(){ const b=$('dailyfabbadge'); if(!b)return; const u=dailyUndone(); b.textContent=u>0?String(u):''; }
 function openDailySheet(){ $('dailysheettitle').textContent=S9.allenaTitle; renderAllena($('dailysheetbody')); $('dailysheetbody').querySelectorAll('.allena').forEach(x=>x.addEventListener('click',closeDailySheet)); $('dailysheet').hidden=false; }
 function closeDailySheet(){ const s=$('dailysheet'); if(s) s.hidden=true; }
@@ -1940,6 +1943,7 @@ function showCelebrate(c,i){
 }
 function finishLevel(){
  clearTimers(); state='over';
+ if(game.daily1){ ripassoWin(); return; } // SFIDA Ripasso completata (6 note)
  const completed=seq.length, st=usedRehear?2:3;
  const before=starsOf(game.c,game.w,game.m);
  const wBefore=CWADD[game.c].map((_,i)=>worldUnlocked(game.c,i));
@@ -2659,12 +2663,44 @@ function allUnlockedNotes(){ const s=new Set([0]); COURSE_IDS.forEach(c=>{ if(un
 function seededRand(seed){ let x=(seed||1)&0x7fffffff; return ()=>{ x=(x*1103515245+12345)&0x7fffffff; return x/0x7fffffff; }; }
 function dayHash(){ const t=dayStr(new Date()); let h=5381; for(let i=0;i<t.length;i++)h=((h*33)+t.charCodeAt(i))&0x7fffffff; return h; }
 function seededMelody(pool,len,rnd){ const sq=[]; for(let i=0;i<len;i++){ if(i===0){sq.push(pool.includes(0)?0:pool[0]); continue;} let k,g=0; do{k=pool[Math.floor(rnd()*pool.length)];}while(g++<8&&i>=2&&k===sq[i-1]&&k===sq[i-2]); sq.push(k);} return sq; }
-// SFIDA 1 - MELODIA A COLORI: melodia da 6 che VEDI (flash + colori) e rifai, uguale per tutto il giorno
+// ===== SFIDA 1 - RIPASSO: melodia da 6 con SOLO 3-4 note (le tue piu' deboli), motore Facile con indizi che sfumano =====
+function ripassoDoneToday(){ return localStorage.getItem('hm_ripasso')===dayStr(new Date()); }
+function beginRipasso(){
+ clearTimers(); stopAllHeld(); stopMic();
+ const all=allUnlockedNotes();
+ const n=Math.min(all.length, Math.random()<0.5?3:4); // 3 o 4 note
+ const weak=weakIntervals().filter(k=>all.includes(k));
+ const pool=[]; weak.forEach(k=>{ if(pool.length<n && !pool.includes(k)) pool.push(k); }); // ripasso mirato: prima le deboli
+ const rest=all.filter(k=>!pool.includes(k));
+ while(pool.length<n && rest.length) pool.push(rest.splice(Math.floor(Math.random()*rest.length),1)[0]);
+ pool.sort((a,b)=>a-b);
+ game={kind:'level', daily1:true, m:0, training:false, c:null, w:null, pool:pool, name:S9.ripassoTitle};
+ root=Math.floor(Math.random()*12); usedRehear=false;
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
+ showGameTop(S9.ripassoTitle);
+ $('rowsetup').hidden=true; $('bossbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true; $('freetry').hidden=true;
+ $('scsel').hidden=true; $('rootsel').hidden=true;
+ $('bestlbl').textContent=S9.bestLevel; $('rehtxt').textContent=S9.rehear; $('bscale').hidden=true; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
+ $('round').textContent='–'; $('reveal').innerHTML=''; setStatus('');
+ render(); beginGame();
+}
+function ripassoWin(){
+ const t=dayStr(new Date()); const firstToday=localStorage.getItem('hm_ripasso')!==t;
+ localStorage.setItem('hm_ripasso',t);
+ if(firstToday) addXP(50);
+ $('bossbar').hidden=true; $('freetry').hidden=true;
+ $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-color-swatch" style="font-size:36px"></i></div>';
+ $('celtitle').textContent=S9.ripassoWin; $('celname').innerHTML='<b>'+S9.ripassoWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+}
+// SFIDA 2 - RICOSTRUZIONE: melodia da 6 che rifai, a volte coi colori a volte solo a orecchio (random)
 function beginDaily(){
  clearTimers(); stopAllHeld(); stopMic();
  const pool=allUnlockedNotes(); const rnd=seededRand(dayHash());
  const r0=Math.floor(rnd()*12); const sq=seededMelody(pool,6,rnd);
- startBossLike({kind:'boss', daily:true, c:null, w:null, name:S9.dailyTitle, seq:sq, notes:pool, lives:3, replays:3, root:r0}, S9.dailyTitle);
+ const ear=Math.random()<0.5; // a volte coi colori (vista), a volte solo a orecchio
+ startBossLike({kind:'boss', daily:true, earOnly:ear, c:null, w:null, name:S9.dailyTitle, seq:sq, notes:pool, lives:3, replays:3, root:r0}, S9.dailyTitle);
 }
 function dailyStreak(){ const last=localStorage.getItem('hm_daily'); const s=parseInt(localStorage.getItem('hm_dstreak')||'0',10)||0; if(!last||!s)return 0; const y=new Date(); y.setDate(y.getDate()-1); return (last===dayStr(new Date())||last===dayStr(y))?s:0; }
 function dailyDoneToday(){ return localStorage.getItem('hm_daily')===dayStr(new Date()); }
@@ -2684,11 +2720,14 @@ function dailyWin(){
 function endlessRecord(){ return parseInt(localStorage.getItem('hm_endless')||'0',10)||0; }
 function beginEndless(){
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
- const pool=allUnlockedNotes();
- game={kind:'bossgrow', endless:true, c:null, w:null, name:S9.endlessTitle, notes:pool, target:9999, lives:3, melReplays:3, scaleReplays:3};
+ // RECORD: una scala A CASO tra quelle studiate (un corso sbloccato), con le sue note studiate
+ const courses=COURSE_IDS.filter(c=>unlockAll()||courseUnlocked(c)); const rc=courses[Math.floor(Math.random()*courses.length)]||'pent';
+ let lastW=0; S9.courses[rc].levels.forEach((_,i)=>{ if(unlockAll()||worldUnlocked(rc,i)) lastW=i; });
+ const pool=levelPool(rc,lastW);
+ game={kind:'bossgrow', endless:true, c:null, w:null, name:S9.endlessTitle, scaleName:S9.courses[rc].title, notes:pool, target:9999, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on'); // Infinito = dal Profilo
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on'); // Record = dal Corso
  showGameTop(S9.endlessTitle);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(endlessRecord()); $('bestlbl').textContent=S9.record; $('reveal').innerHTML='';
@@ -2933,7 +2972,8 @@ const DURS=[0.5,1,1,1,1.5,2];
 function addNote(forceNew){
  const sc=activeSet();
  let pool=sc;
- if(game.kind==='level' && game.training){ // Training: solo tonica + nota nuova; la 1a giocata e' la nota nuova
+ if(game.kind==='level' && game.daily1){ pool=sc; } // SFIDA Ripasso: melodia con le 3-4 note del pool (niente logica corso)
+ else if(game.kind==='level' && game.training){ // Training: solo tonica + nota nuova; la 1a giocata e' la nota nuova
   if(forceNew){ const nn=CWADD[game.c][game.w].filter(k=>sc.includes(k)); pool=nn.length?nn:sc; } else pool=sc;
  }
  else if(game.kind==='level' && isChord(game.c,game.w)){ pool=sc; } // accordo: melodie con le sole note dell'accordo
@@ -3219,7 +3259,8 @@ function hit(k,fromMic,held){
   state='over'; buzz();
   const wrong=seq[step];
   let msg=S9.wrong(step+1,IV[wrong],DEG[wrong]);
-  if(game.kind==='level'){
+  if(game.daily1){ setStatus(msg,'err'); } // Ripasso: niente stelle/corso, mostra la fila giusta e si ripete
+  else if(game.kind==='level'){
    const completed=seq.length-1;
    let st=0; if(completed>=STAR1)st=1; if(completed>=STAR2)st=2; if(completed>=STAR2&&!usedRehear)st=3;
    const before=starsOf(game.c,game.w,game.m);
@@ -3301,7 +3342,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.08'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.09'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
