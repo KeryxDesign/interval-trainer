@@ -113,6 +113,17 @@ body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 #hname{font-size:24px; font-weight:800; letter-spacing:-0.02em; margin:0;}
 #htag{font-size:14px; color:var(--muted); margin:0 0 14px;}
 .metrics{display:flex; flex-wrap:wrap; gap:10px; margin:0 0 14px;}
+/* Calendario serie (giorni giocati) nel Profilo */
+#streakcal{margin:16px 0 6px; background:var(--surface); border-radius:14px; padding:14px;}
+#streakcal .calhead{display:flex; justify-content:space-between; align-items:center; margin:0 0 10px;}
+#streakcal .calmonth{font-size:14px; font-weight:700; color:var(--text); text-transform:capitalize;}
+#streakcal .calstreak{font-size:14px; font-weight:800; color:var(--gold);}
+#streakcal .calgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px;}
+#streakcal .caldow{font-size:10px; color:var(--muted); text-align:center; padding:1px 0; font-weight:600;}
+#streakcal .calcell{aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted); border-radius:8px; background:var(--bg);}
+#streakcal .calcell.empty{background:transparent;}
+#streakcal .calcell.on{background:var(--gold); color:#14151a; font-weight:800;}
+#streakcal .calcell.today{outline:2px solid rgba(255,255,255,.5); outline-offset:-2px;}
 .metric{flex:1 1 28%; min-width:90px; background:var(--surface); border-radius:14px; padding:14px 10px; text-align:center;}
 .metric .mv{font-size:26px; font-weight:700; line-height:1;}
 .metric .ml{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:6px;}
@@ -480,6 +491,7 @@ button.levelcard:active{transform:scale(0.99);}
     <div id="xpbar"></div>
     <p id="htag" class="dashsec" style="margin-top:22px;"></p>
     <div style="text-align:center;"><div id="streak" hidden></div></div>
+    <div id="streakcal"></div>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
@@ -709,7 +721,7 @@ it:{
  tipTitle:"Suggerimento", allenaTitle:"Allenamento", dailyTitle:"Ricostruzione", dailyDesc:"Rifai una melodia da 6: a volte coi colori, a volte solo a orecchio.", dailyDoneTxt:"Fatta oggi! Torna domani.", dailyWin:"Ricostruzione fatta!", dailyStreakLbl:"Giorni di fila",
  ripassoTitle:"Ripasso", ripassoDesc:"Melodia da 6 con 3-4 note (le tue piu' deboli): gli indizi spariscono.", ripassoWin:"Ripasso fatto!", ripassoWinSub:"Continua così.",
  srTitle:"Bravo!", srGreatTitle:"Grande, la serie cresce!", srTapToday:"il tuo allenamento di oggi è fatto",
- musicQuotes:["L'orecchio si allena come un muscolo: un po' ogni giorno.","La musica non si impara a memoria, si riconosce.","Ogni suono che impari resta con te per sempre.","Chi ascolta meglio, suona meglio.","Le distanze tra le note sono una lingua: la stai imparando.","Cinque minuti al giorno valgono più di un'ora ogni tanto.","Oggi il tuo orecchio sa qualcosa in più di ieri.","La costanza batte il talento, una nota alla volta."],
+ musicQuotes:[{t:"Senza la musica, la vita sarebbe un errore.",a:"Nietzsche"},{t:"La musica esprime ciò che non può essere detto e su cui è impossibile tacere.",a:"Victor Hugo"},{t:"La cosa bella della musica è che quando ti colpisce non senti dolore.",a:"Bob Marley"},{t:"L'orecchio si allena come un muscolo: un po' ogni giorno."},{t:"La musica non si impara a memoria, si riconosce."},{t:"Chi ascolta meglio, suona meglio."},{t:"Cinque minuti al giorno valgono più di un'ora ogni tanto."},{t:"Oggi il tuo orecchio sa qualcosa in più di ieri."}],
  chordTitle:"Suoni insieme", chordDesc:"Riconosci 3-4 note suonate insieme.", chordPrompt:"Tocca i suoni che senti insieme", chordWin:"Suoni insieme indovinati!", chordWinSub:"Orecchio armonico!", chordDoneTxt:"Fatti oggi! Torna domani.",
  endlessTitle:"Record", endlessDesc:"Fin dove arrivi nella sequenza, su una scala a caso tra quelle studiate.", record:"Record", endlessNew:"Nuovo record!", endlessOverT:"Bella corsa!",
  reviewTitle:"Passo passo", reviewDesc:"Costruiscila una nota alla volta, solo a orecchio.", reviewWin:"Passo passo fatto!", reviewWinSub:"Continua così.",
@@ -758,6 +770,7 @@ it:{
   "Che tu sia un musicista professionista o un suonatore di campanelli, ti auguro di <b>divertirti</b>, e di sbirciare anche solo per un secondo oltre al velo di mistero che a volte nasconde la musica.\n\nIn bocca al lupo!"
  ],
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Boss", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
+ calMonths:["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"], calDows:["L","M","M","G","V","S","D"],
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
  timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo",scoreggia:"Tromba posteriore",gatto:"Gatto"},
@@ -889,7 +902,7 @@ en:{
  tipTitle:"Tip", allenaTitle:"Training", dailyTitle:"Rebuild", dailyDesc:"Redo a 6-note melody: sometimes with colors, sometimes by ear.", dailyDoneTxt:"Done today! Come back tomorrow.", dailyWin:"Rebuild done!", dailyStreakLbl:"Day streak",
  ripassoTitle:"Review", ripassoDesc:"6-note melody with 3-4 notes (your weakest): the hints fade.", ripassoWin:"Review done!", ripassoWinSub:"Keep it up.",
  srTitle:"Nice!", srGreatTitle:"Great, the streak grows!", srTapToday:"today's practice is done",
- musicQuotes:["The ear trains like a muscle: a little every day.","You don't memorize music, you recognize it.","Every sound you learn stays with you for good.","Better listeners make better players.","The distances between notes are a language: you're learning it.","Five minutes a day beat an hour once in a while.","Today your ear knows a little more than yesterday.","Consistency beats talent, one note at a time."],
+ musicQuotes:[{t:"Without music, life would be a mistake.",a:"Nietzsche"},{t:"Music expresses that which cannot be said and on which it is impossible to be silent.",a:"Victor Hugo"},{t:"One good thing about music: when it hits you, you feel no pain.",a:"Bob Marley"},{t:"The ear trains like a muscle: a little every day."},{t:"You don't memorize music, you recognize it."},{t:"Better listeners make better players."},{t:"Five minutes a day beat an hour once in a while."},{t:"Today your ear knows a little more than yesterday."}],
  chordTitle:"Sounds together", chordDesc:"Spot 3-4 notes played together.", chordPrompt:"Tap the sounds you hear together", chordWin:"Sounds together, nailed it!", chordWinSub:"Harmonic ear!", chordDoneTxt:"Done today! Come back tomorrow.",
  endlessTitle:"Record", endlessDesc:"How far you get in the sequence, on a random scale you've studied.", record:"Record", endlessNew:"New record!", endlessOverT:"Nice run!",
  reviewTitle:"Step by step", reviewDesc:"Build it one note at a time, by ear.", reviewWin:"Step by step done!", reviewWinSub:"Keep it up.",
@@ -938,6 +951,7 @@ en:{
   "Whether you're a professional musician or a doorbell player, I wish you <b>fun</b>, and a chance to peek, even just for a second, beyond the veil of mystery that sometimes hides music.\n\nGood luck!"
  ],
  dashTag:"Your progress", mStars:"Stars", mElite:"Boss", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
+ calMonths:["January","February","March","April","May","June","July","August","September","October","November","December"], calDows:["M","T","W","T","F","S","S"],
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
  timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ",scoreggia:"Back trumpet",gatto:"Cat"},
@@ -1368,6 +1382,7 @@ function bumpStreak(){
  const s=(last===dayStr(y))?getStreak()+1:1;
  localStorage.setItem('hm_streak',String(s));
  localStorage.setItem('hm_lastplay',t);
+ try{ const a=JSON.parse(localStorage.getItem('hm_playdays')||'[]'); if(!a.includes(t)){ a.push(t); if(a.length>200)a.shift(); localStorage.setItem('hm_playdays',JSON.stringify(a)); } }catch(e){} // storico per il calendario
 }
 // Schermata premiante alla PRIMA giocata del giorno: Bravo + serie di giorni + frase sulla musica
 function maybeStreakReward(){
@@ -1381,7 +1396,7 @@ function maybeStreakReward(){
  $('sr-streak').textContent=String(stk);
  $('sr-streaklbl').textContent=S9.dailyStreakLbl;
  $('sr-title').textContent=(stk>=3)?S9.srGreatTitle:S9.srTitle;
- const qs=S9.musicQuotes||[]; $('sr-quote').textContent=qs.length?('“'+qs[dayHash()%qs.length]+'”'):'';
+ const qs=S9.musicQuotes||[]; if(qs.length){ const q=qs[dayHash()%qs.length]; $('sr-quote').innerHTML='“'+q.t+'”'+(q.a?'<br><span style="opacity:.6;font-style:normal;font-size:.82em">— '+q.a+'</span>':''); } else { $('sr-quote').textContent=''; }
  $('sr-tap').textContent=S9.unlockTap;
  r.hidden=false; chime();
 }
@@ -1456,7 +1471,24 @@ function renderDashboard(){
  const ds=$('dash-studied');
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
+ renderStreakCalendar();
  renderTip(); renderMedals(); // "Prossimo esercizio" rimosso; daily quest spostate nel Corso
+}
+// Calendario della serie: mese corrente, giorni giocati evidenziati in oro, oggi cerchiato
+function renderStreakCalendar(){
+ const el=$('streakcal'); if(!el) return;
+ let played=[]; try{ played=JSON.parse(localStorage.getItem('hm_playdays')||'[]'); }catch(e){}
+ const pset=new Set(played);
+ const now=new Date(), y=now.getFullYear(), m=now.getMonth();
+ const startDow=(new Date(y,m,1).getDay()+6)%7; // Lun=0
+ const days=new Date(y,m+1,0).getDate();
+ const months=S9.calMonths||[], dows=S9.calDows||[]; const todayStr=dayStr(now);
+ let h='<div class="calhead"><span class="calmonth">'+(months[m]||'')+' '+y+'</span><span class="calstreak"><i class="ti ti-flame"></i> '+getStreak()+'</span></div><div class="calgrid">';
+ dows.forEach(d=>h+='<span class="caldow">'+d+'</span>');
+ for(let i=0;i<startDow;i++) h+='<span class="calcell empty"></span>';
+ for(let d=1;d<=days;d++){ const ds=dayStr(new Date(y,m,d)); h+='<span class="calcell'+(pset.has(ds)?' on':'')+(ds===todayStr?' today':'')+'">'+d+'</span>'; }
+ h+='</div>';
+ el.innerHTML=h;
 }
 function nextExercise(){ // prossimo esercizio da fare: Livello 0, poi primo modo non fatto, poi Boss, livello per livello
  if(!localStorage.getItem('hm_casa_done')) return {casa:true};
@@ -3372,7 +3404,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.11'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.12'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
