@@ -1977,7 +1977,7 @@ function loadBest(){
 function levelStars(c,i){let t=0; for(let m=0;m<3;m++)t+=starsOf(c,i,m); return t;}
 function updateGoal(){
  const g=$('goalbar'); if(!g) return;
- if(game.kind!=='level'){g.hidden=true; return;}
+ if(game.kind!=='level'||game.daily1){g.hidden=true; return;} // Ripasso: niente tiers stelle/"senza Riascolta" (riascolto libero)
  const r=seq.length;
  const on='color:var(--gold);font-weight:700', off='color:var(--muted)';
  const m=(lit,t)=>'<span style="'+(lit?on:off)+'">'+t+'</span>';
@@ -3342,7 +3342,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.09'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.10'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
