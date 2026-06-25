@@ -141,6 +141,7 @@ body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 #lb-nickinput{width:100%; box-sizing:border-box; padding:11px 12px; background:var(--bg); border:1px solid var(--line); border-radius:10px; color:var(--text); font-size:15px; margin:0 0 10px;}
 #lb-enrollbtn{width:100%; min-height:46px; justify-content:center;}
 #lb-enrollmsg{font-size:13px; color:#e24b4a; margin:8px 0 0; min-height:16px;}
+#lb-privacy{font-size:12px; line-height:1.4; color:var(--muted); margin:10px 0 0;}
 #lb-body{display:flex; flex-direction:column; gap:4px;}
 .lb-row{display:flex; align-items:center; gap:12px; padding:11px 14px; background:var(--surface); border-radius:10px;}
 .lb-row.me{background:var(--gold); color:#14151a;}
@@ -716,6 +717,7 @@ button.levelcard:active{transform:scale(0.99);}
       <input id="lb-nickinput" type="text" maxlength="16" autocomplete="off" />
       <button id="lb-enrollbtn" class="btn primary"></button>
       <p id="lb-enrollmsg"></p>
+      <p id="lb-privacy"></p>
     </div>
     <div id="lb-body"></div>
   </div>
@@ -815,7 +817,7 @@ it:{
  ],
  dashTag:"I tuoi progressi", mStars:"Stelle", mElite:"Boss", mBoss:"Boss", mLevels:"Livelli", mGames:"Partite",
  calMonths:["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"], calDows:["L","M","M","G","V","S","D"],
- lbBtn:"Classifica", lbTitle:"Classifica · Settimana", lbYourXp:"Il tuo XP", lbLoading:"Carico…", lbErr:"Errore di rete, riprova.", lbEmpty:"Ancora nessuno in classifica. Inizia tu!", lbEnrollTitle:"Entra in classifica: scegli un nickname", lbNickPh:"nickname (2-16)", lbEnrollBtn:"Entra", lbBadNick:"2-16 caratteri: lettere, numeri, _ e spazio", lbNickTaken:"Nickname già preso, provane un altro.", lbAuthErr:"Non riesco a connettermi, riprova.",
+ lbBtn:"Classifica", lbTitle:"Classifica · Settimana", lbYourXp:"Il tuo XP", lbLoading:"Carico…", lbErr:"Errore di rete, riprova.", lbEmpty:"Ancora nessuno in classifica. Inizia tu!", lbEnrollTitle:"Entra in classifica: scegli un nickname", lbNickPh:"nickname (2-16)", lbEnrollBtn:"Entra", lbBadNick:"2-16 caratteri: lettere, numeri, _ e spazio", lbNickTaken:"Nickname già preso, provane un altro.", lbAuthErr:"Non riesco a connettermi, riprova.", lbPrivacy:"Salviamo solo il nickname che scegli e il tuo punteggio. Niente email, niente nome vero: usa pure un nome di fantasia.",
  streak:n=>n+(n===1?" giorno di fila":" giorni di fila"),
  profTitle:"Il tuo profilo", profName:"Il tuo nome", profSave:"Salva", profCancel:"Annulla", defaultName:"Musicista",
  timbreLbl:"Suono", timbreNames:{pure:"Puro",corda:"Corda",pad:"Pad",voce:"Voce",carillon:"Carillon",organo:"Organo",scoreggia:"Tromba posteriore",gatto:"Gatto"},
@@ -997,7 +999,7 @@ en:{
  ],
  dashTag:"Your progress", mStars:"Stars", mElite:"Boss", mBoss:"Boss", mLevels:"Levels", mGames:"Games",
  calMonths:["January","February","March","April","May","June","July","August","September","October","November","December"], calDows:["M","T","W","T","F","S","S"],
- lbBtn:"Leaderboard", lbTitle:"Leaderboard · Week", lbYourXp:"Your XP", lbLoading:"Loading…", lbErr:"Network error, try again.", lbEmpty:"No one here yet. Be the first!", lbEnrollTitle:"Join the leaderboard: pick a nickname", lbNickPh:"nickname (2-16)", lbEnrollBtn:"Join", lbBadNick:"2-16 chars: letters, numbers, _ and space", lbNickTaken:"Nickname taken, try another.", lbAuthErr:"Can't connect, try again.",
+ lbBtn:"Leaderboard", lbTitle:"Leaderboard · Week", lbYourXp:"Your XP", lbLoading:"Loading…", lbErr:"Network error, try again.", lbEmpty:"No one here yet. Be the first!", lbEnrollTitle:"Join the leaderboard: pick a nickname", lbNickPh:"nickname (2-16)", lbEnrollBtn:"Join", lbBadNick:"2-16 chars: letters, numbers, _ and space", lbNickTaken:"Nickname taken, try another.", lbAuthErr:"Can't connect, try again.", lbPrivacy:"We only save the nickname you pick and your score. No email, no real name: feel free to make one up.",
  streak:n=>n+(n===1?" day streak":" days streak"),
  profTitle:"Your profile", profName:"Your name", profSave:"Save", profCancel:"Cancel", defaultName:"Musician",
  timbreLbl:"Sound", timbreNames:{pure:"Pure",corda:"String",pad:"Pad",voce:"Voice",carillon:"Music box",organo:"Organ",scoreggia:"Back trumpet",gatto:"Cat"},
@@ -1281,7 +1283,7 @@ async function lbAuth(){ const supa=await getSupa(); let {data:{session}}=await 
 async function lbEnroll(nick){ const {supa,user}=await lbAuth(); const {error}=await supa.from('profiles').upsert({id:user.id, nickname:nick}); if(error){ if(error.code==='23505') throw new Error('NICK_TAKEN'); throw error; } localStorage.setItem('hm_lb_nick',nick); }
 async function lbSubmit(){ if(!lbEnrolled())return; try{ const {supa}=await lbAuth(); await supa.rpc('submit_weekly_xp',{p_xp:Math.min(20000,weeklyXP())}); }catch(e){ console.warn('lbSubmit',e); } }
 async function lbFetch(){ const supa=await getSupa(); const wk=isoWeek(new Date()); return await supa.from('weekly_scores').select('xp, profiles(nickname)').eq('week',wk).gt('xp',0).order('xp',{ascending:false}).limit(100); }
-function openLeaderboard(){ const ov=$('leaderboard'); if(!ov) return; ov.hidden=false; $('lb-title').textContent=S9.lbTitle; $('lb-enrolltitle').textContent=S9.lbEnrollTitle; $('lb-nickinput').setAttribute('placeholder',S9.lbNickPh); $('lb-enrollbtn').textContent=S9.lbEnrollBtn; lbRefresh(); }
+function openLeaderboard(){ const ov=$('leaderboard'); if(!ov) return; ov.hidden=false; $('lb-title').textContent=S9.lbTitle; $('lb-enrolltitle').textContent=S9.lbEnrollTitle; $('lb-nickinput').setAttribute('placeholder',S9.lbNickPh); $('lb-enrollbtn').textContent=S9.lbEnrollBtn; $('lb-privacy').textContent=S9.lbPrivacy; lbRefresh(); }
 function closeLeaderboard(){ const ov=$('leaderboard'); if(ov) ov.hidden=true; }
 async function lbRefresh(){ const body=$('lb-body'), enroll=$('lb-enroll');
  if(!lbEnrolled()){ enroll.hidden=false; body.innerHTML=''; $('lb-yourxp').textContent=''; if(!localStorage.getItem('hm_lb_nick'))$('lb-nickinput').value=(getName()||'').replace(/[^A-Za-z0-9_ ]/g,'').slice(0,16); return; }
@@ -3497,7 +3499,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.15'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.16'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
