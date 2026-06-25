@@ -516,7 +516,7 @@ button.levelcard:active{transform:scale(0.99);}
   <button class="tb-back" id="tb-back" hidden aria-label="Indietro"><i class="ti ti-arrow-left"></i></button>
   <span class="tb-gtitle" id="tb-gtitle"></span>
   <button class="tb-coins" id="tb-coinsbox" aria-label="Shop"><span class="cur">♪</span><span id="tb-coins">0</span><i class="ti ti-shopping-bag tb-shopglyph"></i></button>
-  <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></span>
+  <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span></span>
   <button class="tb-prof" id="tb-prof" aria-label="Profilo"><span class="tb-av" id="tb-av"></span></button>
 </div>
 <div id="shopsheet" hidden><div id="shopbox"><div id="shophead"><span id="shoptitle"></span><button id="shopclose" aria-label="Chiudi"><i class="ti ti-x"></i></button></div><div id="shopbody"></div></div></div>
@@ -1271,7 +1271,7 @@ function rebalanceCoins(){
 function timbreOwned(t){ return unlockAll()||t==='pure'||t==='scoreggia'||isOwned('t:'+t); } // pure e Tromba posteriore gratis dall'inizio; "sblocca tutto" il resto
 function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
 const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400};
-const FREEZE_PRICE=200;
+const FREEZE_PRICE=2000;
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
  if(after>before){ let fr=getFreezes(); for(let L=before+1;L<=after;L++){ if(L%2===0) fr++; } setFreezes(fr); } // +1 salva-streak ogni 2 livelli (max 3)
@@ -1566,8 +1566,8 @@ function renderDashboard(){
  $('m-stars').textContent=totalStars();
  $('m-elite').textContent=totalElite()+'/'+totalEliteMax(); // Boss battuti (uno per livello)
  $('m-levels').textContent=completedLevels();
- const stk=getStreak(); const sd=$('streak'); const fz=getFreezes();
- if(stk>0||fz>0){sd.hidden=false; sd.innerHTML=(stk>0?'<i class="ti ti-flame"></i> '+S9.streak(stk):'')+(fz>0?'<span class="frz"><i class="ti ti-snowflake"></i> '+fz+'</span>':'');}
+ const stk=getStreak(); const sd=$('streak');
+ if(stk>0){sd.hidden=false; sd.innerHTML='<i class="ti ti-flame"></i> '+S9.streak(stk);}
  else sd.hidden=true;
  const ms=mostStudied();
  const ds=$('dash-studied');
@@ -1634,7 +1634,7 @@ function updateDailyFab(){ const b=$('dailyfabbadge'); if(!b)return; const u=dai
 function openDailySheet(){ $('dailysheettitle').textContent=S9.allenaTitle; renderAllena($('dailysheetbody')); $('dailysheetbody').querySelectorAll('.allena').forEach(x=>x.addEventListener('click',closeDailySheet)); $('dailysheet').hidden=false; }
 function closeDailySheet(){ const s=$('dailysheet'); if(s) s.hidden=true; }
 // Barra superiore: streak/salva-streak + livello/XP + shop
-function updateTopbar(){ paintAvatar($('tb-av'),getAvatar(),34); $('tb-coins').textContent=getCoins(); $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
+function updateTopbar(){ paintAvatar($('tb-av'),getAvatar(),34); $('tb-coins').textContent=getCoins(); $('tb-streak').textContent=getStreak(); }
 function closeShop(){ const s=$('shopsheet'); if(s) s.hidden=true; }
 function openShop(){ $('shoptitle').textContent=S9.shopTitle; renderShop(); $('shopsheet').hidden=false; }
 function previewTimbre(t){ const old=timbre; timbre=t; ensureCtx(); tone(64,0.4); setTimeout(()=>tone(67,0.4),170); setTimeout(()=>{tone(72,0.5); timbre=old;},340); } // anteprima del suono
@@ -3524,7 +3524,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.18'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.19'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
