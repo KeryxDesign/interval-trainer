@@ -359,7 +359,9 @@ button.levelcard:active{transform:scale(0.99);}
 #fi-h{font-size:25px; font-weight:800; color:var(--text); margin:0 0 14px;}
 #fi-p{font-size:17px; line-height:1.6; color:var(--text); font-weight:400; margin:0; min-height:120px;}
 #fi-p b{color:var(--gold); font-weight:700;}
-#fi-dots{display:flex; gap:8px; justify-content:center; margin:24px 0 20px;}
+#fi-playrow{display:flex; justify-content:center; margin-top:20px;}
+#fi-play{justify-content:center;}
+#fi-dots{display:flex; gap:8px; justify-content:center; margin:20px 0 18px;}
 #fi-dots span{width:8px; height:8px; border-radius:50%; background:var(--line); transition:background .2s;}
 #fi-dots span.on{background:var(--gold);}
 #fi-nav{display:flex; gap:10px;}
@@ -724,6 +726,7 @@ button.levelcard:active{transform:scale(0.99);}
     <p id="fi-kicker"></p>
     <h2 id="fi-h"></h2>
     <p id="fi-p"></p>
+    <div id="fi-playrow"><button class="btn" id="fi-play"><i class="ti ti-volume"></i><span id="fi-playlbl"></span></button></div>
     <div id="fi-dots"></div>
     <div id="fi-nav">
       <button class="btn" id="fi-back"></button>
@@ -790,7 +793,7 @@ it:{
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca battendo il Boss del livello '+n,
  ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi', ulForma:'Prima fai «Forma»',
- formaMode:'Forma', formaCount:'fondamentali', formaRoot:'Fondamentale:', formaTap:'Tocca le note dell’accordo', formaSame:'Stessa forma:', formaWin:'Hai capito la forma!', formaWinSub:'Stesso accordo, fondamentali diverse: è sempre lo stesso.', formaStart:'Iniziamo', fiNext:'Avanti', fiBack:'Indietro', fiExit:'Esci',
+ formaMode:'Forma', formaCount:'fondamentali', formaRoot:'Fondamentale:', formaTap:'Tocca le note dell’accordo', formaSame:'Stessa forma:', formaWin:'Hai capito la forma!', formaWinSub:'Stesso accordo, fondamentali diverse: è sempre lo stesso.', formaStart:'Iniziamo', fiNext:'Avanti', fiBack:'Indietro', fiExit:'Esci', fiListen:'Ascolta l’esempio', fiListenSeq:'Ascolta su ogni fondamentale',
  formaSteps:(q,build,roots)=>[
   {h:'Cos’è un accordo', p:'Più note suonate insieme, che diventano un suono solo.'},
   {h:'Cos’è la forma', p:'La <b>ricetta dei passi</b> tra le note. L’accordo '+q+' è sempre <b>'+build+'</b>.'},
@@ -979,7 +982,7 @@ en:{
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock by beating the Boss of level '+n,
  ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first', ulForma:'Do «Shape» first',
- formaMode:'Shape', formaCount:'roots', formaRoot:'Root:', formaTap:'Tap the notes of the chord', formaSame:'Same shape:', formaWin:'You got the shape!', formaWinSub:'Same chord, different roots: it never changes.', formaStart:'Let’s go', fiNext:'Next', fiBack:'Back', fiExit:'Exit',
+ formaMode:'Shape', formaCount:'roots', formaRoot:'Root:', formaTap:'Tap the notes of the chord', formaSame:'Same shape:', formaWin:'You got the shape!', formaWinSub:'Same chord, different roots: it never changes.', formaStart:'Let’s go', fiNext:'Next', fiBack:'Back', fiExit:'Exit', fiListen:'Hear the example', fiListenSeq:'Hear it on each root',
  formaSteps:(q,build,roots)=>[
   {h:'What a chord is', p:'Several notes played together, becoming one sound.'},
   {h:'What the shape is', p:'The <b>recipe of steps</b> between the notes. A '+q+' chord is always <b>'+build+'</b>.'},
@@ -1966,6 +1969,7 @@ $('tb-prof').addEventListener('click',showHome); // avatar -> Profilo
 $('shop-open').addEventListener('click',openShop); // voce Shop nel Profilo
 $('fi-next').addEventListener('click',fiNext); // tutorial Forma: avanti / inizia
 $('fi-back').addEventListener('click',fiBack); // tutorial Forma: indietro / esci
+$('fi-play').addEventListener('click',fiPlay); // tutorial Forma: ascolta l'esempio
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
@@ -3035,23 +3039,30 @@ function beginShapeEx(c,w,skipIntro){
  stopDrone(); showDroneToggle(false);
  if(skipIntro) shapeExRound(0); else showFormaIntro();
 }
-let fiIdx=0, fiSteps=[];
+let fiIdx=0, fiSteps=[], fiPlays=[];
+function fiArp(d,withChord){ ensureCtx(); clearTimers(); let t=0; const ns=game.shape.map(iv=>d+iv); ns.forEach(n=>{ timers.push(setTimeout(()=>tone(60+(root||0)+n,0.55),t)); t+=330; }); if(withChord) timers.push(setTimeout(()=>ns.forEach(n=>tone(60+(root||0)+n,1.2)), t+160)); }
+function fiSeq(roots){ ensureCtx(); clearTimers(); let t=0; roots.forEach(d=>{ const ns=game.shape.map(iv=>d+iv); ns.forEach((n,i)=>{ timers.push(setTimeout(()=>tone(60+(root||0)+n,0.5),t+i*170)); }); timers.push(setTimeout(()=>ns.forEach(n=>tone(60+(root||0)+n,0.7)), t+ns.length*170+40)); t += ns.length*170+800; }); }
 function showFormaIntro(){
  fiIdx=0;
  const rootsStr=game.roots.map(d=>NOTE[((d%12)+12)%12]).join(', ');
  fiSteps=S9.formaSteps(S9.qual[game.q], S9.qualBuild[game.q], rootsStr);
+ const r0=game.roots[0];
+ fiPlays=[ ()=>fiArp(r0,true), ()=>fiArp(r0,false), ()=>fiSeq(game.roots), ()=>fiArp(r0,true) ];
  $('fi-kicker').textContent=S9.formaMode+' · '+levelName(game.c,game.w);
  $('formaintro').hidden=false; renderFiStep();
 }
 function renderFiStep(){
+ clearTimers();
  const s=fiSteps[fiIdx], last=fiIdx===fiSteps.length-1;
  $('fi-h').textContent=s.h; $('fi-p').innerHTML=s.p;
+ $('fi-playlbl').textContent=(fiIdx===2)?S9.fiListenSeq:S9.fiListen;
  $('fi-dots').innerHTML=fiSteps.map((_,i)=>'<span class="'+(i===fiIdx?'on':'')+'"></span>').join('');
  $('fi-back').textContent=(fiIdx===0)?S9.fiExit:S9.fiBack;
  $('fi-next').innerHTML='<span>'+(last?S9.formaStart:S9.fiNext)+'</span>';
 }
-function fiNext(){ if(fiIdx<fiSteps.length-1){ fiIdx++; renderFiStep(); } else { $('formaintro').hidden=true; shapeExRound(0); } }
-function fiBack(){ if(fiIdx>0){ fiIdx--; renderFiStep(); } else { $('formaintro').hidden=true; clearTimers(); showLevels(); } }
+function fiPlay(){ const fn=fiPlays[fiIdx]; if(fn) fn(); }
+function fiNext(){ clearTimers(); if(fiIdx<fiSteps.length-1){ fiIdx++; renderFiStep(); } else { $('formaintro').hidden=true; shapeExRound(0); } }
+function fiBack(){ clearTimers(); if(fiIdx>0){ fiIdx--; renderFiStep(); } else { $('formaintro').hidden=true; showLevels(); } }
 function shapeExRound(i){
  clearTimers(); game.ri=i; const d=game.roots[i];
  game.planted=game.shape.map(iv=>d+iv);                       // ascendente per il suono
@@ -3640,7 +3651,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.25'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.26'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
