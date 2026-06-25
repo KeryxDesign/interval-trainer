@@ -58,17 +58,18 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #topbar{position:fixed; left:0; right:0; top:0; margin:0 auto; max-width:480px; display:flex; align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--line); padding:calc(8px + env(safe-area-inset-top)) 14px 8px; z-index:50; box-shadow:0 3px 12px rgba(0,0,0,.5);}
 #topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text);}
 .tb-frz{color:#7cc7ff; display:inline-flex; align-items:center; gap:3px; margin-left:6px;}
-.tb-prof{display:flex; align-items:center; gap:8px; flex:1; min-width:0; background:none; border:none; padding:0; cursor:pointer;}
-.tb-av{width:28px; height:28px; flex:0 0 auto; position:relative; display:inline-block;}
-.tb-name{font-size:15px; font-weight:800; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-.tb-coins{display:inline-flex; align-items:center; gap:4px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto;}
+.tb-prof{margin-left:auto; flex:0 0 auto; background:none; border:2px solid var(--line); padding:2px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.tb-prof:active{transform:scale(.94);}
+.tb-av{width:34px; height:34px; flex:0 0 auto; position:relative; display:inline-block;}
+.tb-coins{display:inline-flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto; background:var(--surface2); border:none; border-radius:999px; padding:6px 12px; cursor:pointer;}
+.tb-coins:active{transform:scale(.96);}
+.tb-shopglyph{font-size:14px; color:var(--muted); margin-left:2px;}
 .cur{font-weight:900; font-size:1.1em; line-height:1;}
-.tb-shop{background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
 /* Barra superiore in modalita' gioco: tasto indietro + titolo livello, niente cluster monete (al posto del vecchio riquadro #gametop) */
 .tb-back{flex:0 0 auto; background:var(--surface2); border:none; color:var(--text); width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;}
 .tb-gtitle{flex:1 1 auto; min-width:0; font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 #topbar:not(.gamemode) .tb-back, #topbar:not(.gamemode) .tb-gtitle{display:none;}
-#topbar.gamemode .tb-prof, #topbar.gamemode #tb-coinsbox, #topbar.gamemode .tb-streak, #topbar.gamemode .tb-shop{display:none;}
+#topbar.gamemode .tb-prof, #topbar.gamemode #tb-coinsbox, #topbar.gamemode .tb-streak{display:none;}
 .shopcoins{display:flex; align-items:center; justify-content:center; gap:6px; font-size:20px; font-weight:800; color:var(--gold); margin:2px 0 4px;}
 .scprice{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--gold); font-weight:800;}
 .sceq{font-size:11px; color:var(--muted); font-weight:700;}
@@ -129,6 +130,7 @@ body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 #streakcal .calcell.today{outline:2px solid rgba(255,255,255,.5); outline-offset:-2px;}
 /* Classifica */
 .lb-openbtn{width:100%; margin:14px 0 4px; min-height:50px; border:none; border-radius:14px; background:var(--gold); color:#14151a; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;}
+.shop-openbtn{background:var(--surface2); color:var(--text); margin-top:8px;}
 #leaderboard{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:70; display:flex; align-items:flex-end; justify-content:center;}
 #lb-box{width:100%; max-width:520px; background:var(--bg); border-radius:20px 20px 0 0; padding:0 16px calc(30px + env(safe-area-inset-bottom)); max-height:86vh; overflow:auto; box-shadow:0 -8px 30px rgba(0,0,0,.5); animation:welIn .26s ease both;}
 #lb-head{display:flex; align-items:center; justify-content:space-between; padding:14px 0 10px; position:sticky; top:0; background:var(--bg); z-index:3;}
@@ -503,10 +505,9 @@ button.levelcard:active{transform:scale(0.99);}
 <div id="topbar" hidden>
   <button class="tb-back" id="tb-back" hidden aria-label="Indietro"><i class="ti ti-arrow-left"></i></button>
   <span class="tb-gtitle" id="tb-gtitle"></span>
-  <button class="tb-prof" id="tb-prof"><span class="tb-av" id="tb-av"></span><span class="tb-name" id="tb-name"></span></button>
-  <span class="tb-coins" id="tb-coinsbox"><span class="cur">♪</span><span id="tb-coins">0</span></span>
+  <button class="tb-coins" id="tb-coinsbox" aria-label="Shop"><span class="cur">♪</span><span id="tb-coins">0</span><i class="ti ti-shopping-bag tb-shopglyph"></i></button>
   <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span><span class="tb-frz" id="tb-frz"><i class="ti ti-snowflake"></i><span id="tb-frzn">0</span></span></span>
-  <button class="tb-shop" id="tb-shop" aria-label="Shop"><i class="ti ti-shopping-bag"></i></button>
+  <button class="tb-prof" id="tb-prof" aria-label="Profilo"><span class="tb-av" id="tb-av"></span></button>
 </div>
 <div id="shopsheet" hidden><div id="shopbox"><div id="shophead"><span id="shoptitle"></span><button id="shopclose" aria-label="Chiudi"><i class="ti ti-x"></i></button></div><div id="shopbody"></div></div></div>
 <div class="wrap">
@@ -524,6 +525,7 @@ button.levelcard:active{transform:scale(0.99);}
     <div style="text-align:center;"><div id="streak" hidden></div></div>
     <div id="streakcal"></div>
     <button id="lb-open" class="lb-openbtn"><i class="ti ti-trophy"></i><span id="lb-openlbl"></span></button>
+    <button id="shop-open" class="lb-openbtn shop-openbtn"><i class="ti ti-shopping-bag"></i><span id="shop-openlbl"></span></button>
     <div class="metrics">
       <div class="metric"><div class="mv" id="m-stars">0</div><div class="ml" id="m-stars-l"></div></div>
       <div class="metric"><div class="mv" id="m-elite">0</div><div class="ml" id="m-elite-l"></div></div>
@@ -1560,7 +1562,7 @@ function renderDashboard(){
  if(ms){ds.hidden=false; ds.innerHTML='<i class="ti ti-flame" style="color:var(--gold);font-size:17px"></i> <span>'+S9.dashStudied+' <b style="color:var(--text)">'+nameForId(ms)+'</b></span>';}
  else ds.hidden=true;
  renderStreakCalendar();
- { const lo=$('lb-openlbl'); if(lo) lo.textContent=S9.lbBtn; }
+ { const lo=$('lb-openlbl'); if(lo) lo.textContent=S9.lbBtn; const so=$('shop-openlbl'); if(so) so.textContent=S9.shopTitle; }
  renderTip(); renderMedals(); // "Prossimo esercizio" rimosso; daily quest spostate nel Corso
 }
 // Calendario della serie: mese corrente, giorni giocati evidenziati in oro, oggi cerchiato
@@ -1620,7 +1622,7 @@ function updateDailyFab(){ const b=$('dailyfabbadge'); if(!b)return; const u=dai
 function openDailySheet(){ $('dailysheettitle').textContent=S9.allenaTitle; renderAllena($('dailysheetbody')); $('dailysheetbody').querySelectorAll('.allena').forEach(x=>x.addEventListener('click',closeDailySheet)); $('dailysheet').hidden=false; }
 function closeDailySheet(){ const s=$('dailysheet'); if(s) s.hidden=true; }
 // Barra superiore: streak/salva-streak + livello/XP + shop
-function updateTopbar(){ paintAvatar($('tb-av'),getAvatar(),28); $('tb-name').textContent=getName()||S9.defaultName; $('tb-coins').textContent=getCoins(); $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
+function updateTopbar(){ paintAvatar($('tb-av'),getAvatar(),34); $('tb-coins').textContent=getCoins(); $('tb-streak').textContent=getStreak(); const fz=getFreezes(); $('tb-frz').style.display=fz>0?'inline-flex':'none'; $('tb-frzn').textContent=fz; }
 function closeShop(){ const s=$('shopsheet'); if(s) s.hidden=true; }
 function openShop(){ $('shoptitle').textContent=S9.shopTitle; renderShop(); $('shopsheet').hidden=false; }
 function previewTimbre(t){ const old=timbre; timbre=t; ensureCtx(); tone(64,0.4); setTimeout(()=>tone(67,0.4),170); setTimeout(()=>{tone(72,0.5); timbre=old;},340); } // anteprima del suono
@@ -1903,10 +1905,11 @@ window.addEventListener('scroll',hideLockTip,true); // la nuvoletta sparisce all
 $('dailyfab').addEventListener('click',openDailySheet);
 $('dailysheetclose').addEventListener('click',closeDailySheet);
 $('dailysheet').addEventListener('click',e=>{ if(e.target===$('dailysheet')) closeDailySheet(); });
-$('tb-shop').addEventListener('click',openShop);
+$('tb-coinsbox').addEventListener('click',openShop); // monete (currency) -> Shop
 $('shopclose').addEventListener('click',closeShop);
 $('shopsheet').addEventListener('click',e=>{ if(e.target===$('shopsheet')) closeShop(); });
-$('tb-prof').addEventListener('click',showHome); // nome/avatar -> Profilo
+$('tb-prof').addEventListener('click',showHome); // avatar -> Profilo
+$('shop-open').addEventListener('click',openShop); // voce Shop nel Profilo
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
@@ -3499,7 +3502,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.16'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.17'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
