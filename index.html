@@ -353,11 +353,13 @@ button.levelcard:active{transform:scale(0.99);}
 #tutbox button{pointer-events:auto; justify-content:center;}
 .tut-ill{width:62px; height:62px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 4px 14px rgba(0,0,0,.25);}
 .tut-txt{font-size:16px; line-height:1.45; color:var(--text); margin:0; font-weight:600;}
-#formaintro{position:fixed; inset:0; background:var(--bg); z-index:66; display:flex; align-items:center; justify-content:center; padding:30px 24px; max-width:480px; margin:0 auto;}
-#fi-card{width:100%; max-width:380px;}
-#fi-kicker{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); margin:0 0 10px;}
-#fi-h{font-size:25px; font-weight:800; color:var(--text); margin:0 0 14px;}
-#fi-p{font-size:17px; line-height:1.6; color:var(--text); font-weight:400; margin:0; min-height:120px;}
+#formaintro{position:fixed; left:0; right:0; bottom:0; background:var(--bg); z-index:66; padding:20px 22px calc(20px + env(safe-area-inset-bottom)); max-width:480px; margin:0 auto; border-radius:22px 22px 0 0; box-shadow:0 -12px 34px rgba(0,0,0,.55); max-height:52vh; overflow:auto; border-top:1px solid var(--line);}
+#fi-card{width:100%;}
+body.fi-open #view-game #gamepanel{margin:0;}      /* ruota in alto (batte #view-game #gamepanel{margin:auto}) */
+body.fi-open #wheelbox{margin-top:8px; transform:scale(.72); transform-origin:top center;} /* ruota piu' piccola, sta sopra il pannello */
+#fi-kicker{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--gold); margin:0 0 8px;}
+#fi-h{font-size:23px; font-weight:800; color:var(--text); margin:0 0 10px;}
+#fi-p{font-size:16px; line-height:1.55; color:var(--text); font-weight:400; margin:0; min-height:76px;}
 #fi-p b{color:var(--gold); font-weight:700;}
 #fi-playrow{display:flex; justify-content:center; margin-top:20px;}
 #fi-play{justify-content:center;}
@@ -3040,8 +3042,9 @@ function beginShapeEx(c,w,skipIntro){
  if(skipIntro) shapeExRound(0); else showFormaIntro();
 }
 let fiIdx=0, fiSteps=[], fiPlays=[];
-function fiArp(d,withChord){ ensureCtx(); clearTimers(); let t=0; const ns=game.shape.map(iv=>d+iv); ns.forEach(n=>{ timers.push(setTimeout(()=>tone(60+(root||0)+n,0.55),t)); t+=330; }); if(withChord) timers.push(setTimeout(()=>ns.forEach(n=>tone(60+(root||0)+n,1.2)), t+160)); }
-function fiSeq(roots){ ensureCtx(); clearTimers(); let t=0; roots.forEach(d=>{ const ns=game.shape.map(iv=>d+iv); ns.forEach((n,i)=>{ timers.push(setTimeout(()=>tone(60+(root||0)+n,0.5),t+i*170)); }); timers.push(setTimeout(()=>ns.forEach(n=>tone(60+(root||0)+n,0.7)), t+ns.length*170+40)); t += ns.length*170+800; }); }
+function fiHit(n,ms){ const k=(((n%12)+12)%12); flash(k,ms||300,true); tone(60+(root||0)+n,(ms||300)/1000+0.15); } // suona E accende la nota sulla ruota
+function fiArp(d,withChord){ ensureCtx(); clearTimers(); let t=0; const ns=game.shape.map(iv=>d+iv); ns.forEach(n=>{ timers.push(setTimeout(()=>fiHit(n,360),t)); t+=380; }); if(withChord) timers.push(setTimeout(()=>ns.forEach(n=>fiHit(n,700)), t+180)); }
+function fiSeq(roots){ ensureCtx(); clearTimers(); let t=0; roots.forEach(d=>{ const ns=game.shape.map(iv=>d+iv); ns.forEach((n,i)=>{ timers.push(setTimeout(()=>fiHit(n,300),t+i*200)); }); timers.push(setTimeout(()=>ns.forEach(n=>fiHit(n,560)), t+ns.length*200+60)); t += ns.length*200+950; }); }
 function showFormaIntro(){
  fiIdx=0;
  const rootsStr=game.roots.map(d=>NOTE[((d%12)+12)%12]).join(', ');
@@ -3049,8 +3052,10 @@ function showFormaIntro(){
  const r0=game.roots[0];
  fiPlays=[ ()=>fiArp(r0,true), ()=>fiArp(r0,false), ()=>fiSeq(game.roots), ()=>fiArp(r0,true) ];
  $('fi-kicker').textContent=S9.formaMode+' · '+levelName(game.c,game.w);
+ document.body.classList.add('fi-open'); $('controls').hidden=true; $('bossbar').hidden=true; $('status').hidden=true; // ruota visibile, niente UI di gioco
  $('formaintro').hidden=false; renderFiStep();
 }
+function fiClose(){ document.body.classList.remove('fi-open'); $('formaintro').hidden=true; clearTimers(); $('controls').hidden=false; $('bossbar').hidden=false; $('status').hidden=false; }
 function renderFiStep(){
  clearTimers();
  const s=fiSteps[fiIdx], last=fiIdx===fiSteps.length-1;
@@ -3061,8 +3066,8 @@ function renderFiStep(){
  $('fi-next').innerHTML='<span>'+(last?S9.formaStart:S9.fiNext)+'</span>';
 }
 function fiPlay(){ const fn=fiPlays[fiIdx]; if(fn) fn(); }
-function fiNext(){ clearTimers(); if(fiIdx<fiSteps.length-1){ fiIdx++; renderFiStep(); } else { $('formaintro').hidden=true; shapeExRound(0); } }
-function fiBack(){ clearTimers(); if(fiIdx>0){ fiIdx--; renderFiStep(); } else { $('formaintro').hidden=true; showLevels(); } }
+function fiNext(){ clearTimers(); if(fiIdx<fiSteps.length-1){ fiIdx++; renderFiStep(); } else { fiClose(); shapeExRound(0); } }
+function fiBack(){ clearTimers(); if(fiIdx>0){ fiIdx--; renderFiStep(); } else { fiClose(); showLevels(); } }
 function shapeExRound(i){
  clearTimers(); game.ri=i; const d=game.roots[i];
  game.planted=game.shape.map(iv=>d+iv);                       // ascendente per il suono
@@ -3651,7 +3656,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.26'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.27'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
