@@ -58,19 +58,19 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #topbar{position:fixed; left:0; right:0; top:0; margin:0 auto; max-width:480px; display:flex; align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--line); padding:calc(8px + env(safe-area-inset-top)) 14px 8px; z-index:50; box-shadow:0 3px 12px rgba(0,0,0,.5);}
 #topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text);}
 .tb-frz{color:#7cc7ff; display:inline-flex; align-items:center; gap:3px; margin-left:6px;}
-.tb-streak{margin-left:auto;}
-.tb-prof{margin-left:10px; flex:0 0 auto; background:none; border:2px solid var(--line); padding:2px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.tb-prof{flex:0 0 auto; background:none; border:2px solid var(--line); padding:2px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .tb-prof:active{transform:scale(.94);}
 .tb-av{width:34px; height:34px; flex:0 0 auto; position:relative; display:inline-block;}
-.tb-coins{display:inline-flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto; background:var(--surface2); border:none; border-radius:999px; padding:6px 12px; cursor:pointer;}
-.tb-coins:active{transform:scale(.96);}
-.tb-shopglyph{font-size:14px; color:var(--muted); margin-left:2px;}
+.tb-streak{margin-left:8px;}
+.tb-coins{margin-left:auto; display:inline-flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto; background:var(--surface2); border:none; border-radius:999px; padding:6px 12px;}
+.tb-shop{background:var(--gold); color:#1b1206; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer; flex:0 0 auto;}
+.tb-shop:active{transform:scale(.94);}
 .cur{font-weight:900; font-size:1.1em; line-height:1;}
 /* Barra superiore in modalita' gioco: tasto indietro + titolo livello, niente cluster monete (al posto del vecchio riquadro #gametop) */
 .tb-back{flex:0 0 auto; background:var(--surface2); border:none; color:var(--text); width:38px; height:38px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; font-size:20px; cursor:pointer;}
 .tb-gtitle{flex:1 1 auto; min-width:0; font-size:15px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 #topbar:not(.gamemode) .tb-back, #topbar:not(.gamemode) .tb-gtitle{display:none;}
-#topbar.gamemode .tb-prof, #topbar.gamemode #tb-coinsbox, #topbar.gamemode .tb-streak{display:none;}
+#topbar.gamemode .tb-prof, #topbar.gamemode #tb-coinsbox, #topbar.gamemode .tb-streak, #topbar.gamemode .tb-shop{display:none;}
 .shopcoins{display:flex; align-items:center; justify-content:center; gap:6px; font-size:20px; font-weight:800; color:var(--gold); margin:2px 0 4px;}
 .scprice{display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--gold); font-weight:800;}
 .sceq{font-size:11px; color:var(--muted); font-weight:700;}
@@ -515,9 +515,10 @@ button.levelcard:active{transform:scale(0.99);}
 <div id="topbar" hidden>
   <button class="tb-back" id="tb-back" hidden aria-label="Indietro"><i class="ti ti-arrow-left"></i></button>
   <span class="tb-gtitle" id="tb-gtitle"></span>
-  <button class="tb-coins" id="tb-coinsbox" aria-label="Shop"><span class="cur">♪</span><span id="tb-coins">0</span><i class="ti ti-shopping-bag tb-shopglyph"></i></button>
-  <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span></span>
   <button class="tb-prof" id="tb-prof" aria-label="Profilo"><span class="tb-av" id="tb-av"></span></button>
+  <span class="tb-item tb-streak"><i class="ti ti-flame" style="color:#f59e0b"></i><span id="tb-streak">0</span></span>
+  <span class="tb-coins" id="tb-coinsbox"><span class="cur">♪</span><span id="tb-coins">0</span></span>
+  <button class="tb-shop" id="tb-shop" aria-label="Shop"><i class="ti ti-shopping-bag"></i></button>
 </div>
 <div id="shopsheet" hidden><div id="shopbox"><div id="shophead"><span id="shoptitle"></span><button id="shopclose" aria-label="Chiudi"><i class="ti ti-x"></i></button></div><div id="shopbody"></div></div></div>
 <div class="wrap">
@@ -1917,7 +1918,7 @@ window.addEventListener('scroll',hideLockTip,true); // la nuvoletta sparisce all
 $('dailyfab').addEventListener('click',openDailySheet);
 $('dailysheetclose').addEventListener('click',closeDailySheet);
 $('dailysheet').addEventListener('click',e=>{ if(e.target===$('dailysheet')) closeDailySheet(); });
-$('tb-coinsbox').addEventListener('click',openShop); // monete (currency) -> Shop
+$('tb-shop').addEventListener('click',openShop); // icona shop -> Shop (separata dalle monete)
 $('shopclose').addEventListener('click',closeShop);
 $('shopsheet').addEventListener('click',e=>{ if(e.target===$('shopsheet')) closeShop(); });
 $('tb-prof').addEventListener('click',showHome); // avatar -> Profilo
@@ -3514,7 +3515,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.20'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.21'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
