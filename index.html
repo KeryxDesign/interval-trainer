@@ -769,7 +769,7 @@ it:{
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
  modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", shopEquip:"Usa", shopEquipped:"In uso", shopNoCoins:"Monete insufficienti", shopGetIt:"Compralo nello Shop", shopFreezeSec:"Salva-streak", shopFreezeName:"Congela la serie", shopFreezeDesc:"Salta un giorno senza perdere lo streak (max 3).", shopFreezeMax:"Hai il massimo", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
- chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
+ chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, qualHow:"Come si costruisce:", qualBuild:{maj:"fondamentale + 3ª maggiore + 5ª giusta",min:"fondamentale + 3ª minore + 5ª giusta",dim:"fondamentale + 3ª minore + 5ª diminuita",sevM:"accordo maggiore + 7ª maggiore",sev7:"accordo maggiore + 7ª minore",sevm:"accordo minore + 7ª minore",semidim:"accordo diminuito + 7ª minore",six:"accordo maggiore + 6ª maggiore"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 6 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
  ldListen:"Ascolta i suoni di questo livello. Tocca per sentirli.", ldMore:"Vuoi la teoria? (facoltativa)", ldReview:"Ripassa la teoria",
@@ -951,7 +951,7 @@ en:{
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
  modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", shopEquip:"Use", shopEquipped:"In use", shopNoCoins:"Not enough coins", shopGetIt:"Get it in the Shop", shopFreezeSec:"Streak freeze", shopFreezeName:"Freeze your streak", shopFreezeDesc:"Skip a day without losing your streak (max 3).", shopFreezeMax:"You're maxed out", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
- chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
+ chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, qualHow:"How it's built:", qualBuild:{maj:"root + major 3rd + perfect 5th",min:"root + minor 3rd + perfect 5th",dim:"root + minor 3rd + diminished 5th",sevM:"major chord + major 7th",sev7:"major chord + minor 7th",sevm:"minor chord + minor 7th",semidim:"diminished chord + minor 7th",six:"major chord + major 6th"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 6-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
  ldListen:"Listen to this level's sounds. Tap to hear them.", ldMore:"Want the theory? (optional)", ldReview:"Review the theory",
@@ -1150,28 +1150,18 @@ function ring(k){return k===0?';box-shadow:0 0 0 2.5px rgba(255,255,255,.72)':''
 const CBASE={pent:[0], maj:[0,2,4,7,9], pmin:[0]}; // la casa (tonica) e' sempre presente: si impara nel Livello 0 "La casa", non e' nota nuova di nessun livello
 const CWADD={pent:[[7],[4],[2],[9]], maj:[[11],[5]], pmin:[[7],[3],[5],[10]]};
 // ACCORDI come "livelli" extra dopo le note del corso: pool ristretta ai gradi dell'accordo (movable-do). notes = semitoni dalla tonica
+// ACCORDI per QUALITA' (forme mobili dalla fondamentale): la tonica e' random a ogni partita,
+// quindi impari la FORMA (maggiore, minore, ...), non il grado. notes = semitoni dalla fondamentale.
 const CHORDS={ maj:[
- // TRIADI
- {sec:'tri', n:'I',   sub:'do mi sol', q:'maj', notes:[0,4,7]},
- {sec:'tri', n:'IV',  sub:'fa la do',  q:'maj', notes:[5,9,0]},
- {sec:'tri', n:'V',   sub:'sol si re', q:'maj', notes:[7,11,2]},
- {sec:'tri', n:'vi',  sub:'la do mi',  q:'min', notes:[9,0,4]},
- {sec:'tri', n:'ii',  sub:'re fa la',  q:'min', notes:[2,5,9]},
- {sec:'tri', n:'iii', sub:'mi sol si', q:'min', notes:[4,7,11]},
- {sec:'tri', n:'vii°',sub:'si re fa',  q:'dim', notes:[11,2,5]},
+ // TRIADI (3 note)
+ {sec:'tri', q:'maj',     notes:[0,4,7]},
+ {sec:'tri', q:'min',     notes:[0,3,7]},
+ {sec:'tri', q:'dim',     notes:[0,3,6]},
  // SETTIME (4 note)
- {sec:'sev', n:'Imaj7',  sub:'do mi sol si', q:'sevM',    notes:[0,4,7,11]},
- {sec:'sev', n:'IVmaj7', sub:'fa la do mi',  q:'sevM',    notes:[5,9,0,4]},
- {sec:'sev', n:'V7',     sub:'sol si re fa', q:'sev7',    notes:[7,11,2,5]},
- {sec:'sev', n:'vi7',    sub:'la do mi sol', q:'sevm',    notes:[9,0,4,7]},
- {sec:'sev', n:'ii7',    sub:'re fa la do',  q:'sevm',    notes:[2,5,9,0]},
- {sec:'sev', n:'iii7',   sub:'mi sol si re', q:'sevm',    notes:[4,7,11,2]},
- {sec:'sev', n:'viiø7',  sub:'si re fa la',  q:'semidim', notes:[11,2,5,9]},
- // SESTE (4 note, solo diatoniche)
- {sec:'six', n:'I6',  sub:'do mi sol la', q:'six', notes:[0,4,7,9]},
- {sec:'six', n:'IV6', sub:'fa la do re',  q:'six', notes:[5,9,0,2]},
- {sec:'six', n:'V6',  sub:'sol si re mi', q:'six', notes:[7,11,2,4]},
- {sec:'six', n:'ii6', sub:'re fa la si',  q:'six', notes:[2,5,9,11]},
+ {sec:'sev', q:'sevM',    notes:[0,4,7,11]},
+ {sec:'sev', q:'sev7',    notes:[0,4,7,10]},
+ {sec:'sev', q:'sevm',    notes:[0,3,7,10]},
+ {sec:'sev', q:'semidim', notes:[0,3,6,10]},
 ]};
 const COURSE_IDS=['pent','maj','pmin'];
 let curCourse=COURSE_IDS.includes(localStorage.getItem('hm_course'))?localStorage.getItem('hm_course'):'pent';
@@ -1212,7 +1202,7 @@ function isChord(c,w){return w>=noteLevels(c);}
 function chordAt(c,w){return chordList(c)[w-noteLevels(c)];}
 function chordNotes(c,w){return [...new Set(chordAt(c,w).notes)].sort((a,b)=>a-b);}
 function levelPool(c,w){return isChord(c,w)?chordNotes(c,w):cumSet(c,w);} // note giocabili del livello (accordo = note dell'accordo)
-function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+chordAt(c,w).n):plainNames(c,w);}
+function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+S9.qual[chordAt(c,w).q]):plainNames(c,w);}
 function startNote(pool){return pool.includes(0)?0:pool[0];} // melodia parte dalla casa se c'e', altrimenti dalla prima nota dell'accordo
 function studyNote(c,w){ return isChord(c,w)?null:CWADD[c][w][CWADD[c][w].length-1]; } // la nota nuova del livello (da proporre come 2a, subito dopo la tonica)
 function pieBg(cols){const n=cols.length; let s='conic-gradient('; for(let i=0;i<n;i++){const a=Math.round(i*360/n), b=Math.round((i+1)*360/n); s+=cols[i]+' '+a+'deg '+b+'deg'+(i<n-1?', ':'');} return s+')';} // torta a fette uguali coi colori delle note dell'accordo
@@ -2240,7 +2230,7 @@ function renderPath(){
    if(ch){ const pv=isChord(c,w-1)?chordAt(c,w-1):null; if(!pv||pv.sec!==ch.sec){ startSec(); const sh=document.createElement('div'); sh.className='boardsub'; sh.textContent=S9.chordSecs[ch.sec]; curSec.appendChild(sh); } } // sezione accordi (Triadi/Settime/Seste) con sfondo proprio
    const k=ch?ch.notes[0]:CWADD[c][w][CWADD[c][w].length-1]; // colore = radice dell'accordo / nota nuova
    const pie=ch?chordNotes(c,w).map(n=>C[n].h):null; // torta coi colori delle note dell'accordo
-   const nm=ch?(S9.chordWord+' '+ch.n):((w+1)+'. '+plainNames(c,w));
+   const nm=ch?(S9.chordWord+' '+S9.qual[ch.q]):((w+1)+'. '+plainNames(c,w));
    const lvOpen=unlockAll()||worldUnlocked(c,w);
    const lvReason=(w===0&&c===COURSE_IDS[0])?S9.ulCasa:S9.ulPrevBoss; // perche' il livello e' bloccato
    if(!lvOpen){ const nl=document.createElement('div'); nl.className='notelbl'; nl.innerHTML='<b>'+nm+'</b>'; curSec.appendChild(nl);
@@ -2249,7 +2239,7 @@ function renderPath(){
    const thDone=!!localStorage.getItem('it_th_'+c+'_'+w);
    const hdr=document.createElement('button'); hdr.className='notehdr'+(thDone?' done':'');
    const hicon=ch?'<span class="nh-pie" style="background:'+pieBg(pie)+'"></span>':'<i class="ti ti-'+C[k].ic+'" style="color:'+C[k].h+'"></i>';
-   const ivname=ch?ch.sub:(S9.INM[k]+(S9.DEG[k]&&S9.DEG[k]!==S9.INM[k]?' · '+S9.DEG[k]:'')); // sotto al nome: intervallo + ruolo (es. quinta giusta · dominante)
+   const ivname=ch?S9.qualBuild[ch.q]:(S9.INM[k]+(S9.DEG[k]&&S9.DEG[k]!==S9.INM[k]?' · '+S9.DEG[k]:'')); // accordo: come si costruisce; nota: intervallo + ruolo
    hdr.innerHTML='<span class="nh-top">'+hicon+'<span class="nh-name">'+nm+'</span><i class="ti ti-book-2 nh-ch"></i></span><span class="nh-iv">'+ivname+'</span>';
    curSec.appendChild(hdr);
    const panel=document.createElement('div'); panel.className='theorypanel'; panel.hidden=true;
@@ -2313,7 +2303,7 @@ function plainNames(c,w){const ns=CWADD[c][w].map(k=>cap(S9.NM[k])); return ns.l
 function buildTheoryBody(c,w){
  const ch=isChord(c,w)?chordAt(c,w):null;
  const notes=ch?chordNotes(c,w):CWADD[c][w];
- const intro=ch?(S9.chordWord+' <b>'+ch.n+'</b> ('+ch.sub+') · '+S9.qual[ch.q]+'.<br><br>'+paraBr(S9.chordIntro)):paraBr(S9.courses[c].levels[w].th);
+ const intro=ch?('<b>'+S9.chordWord+' '+S9.qual[ch.q]+'</b><br>'+S9.qualHow+' '+S9.qualBuild[ch.q]+'.<br><br>'+paraBr(S9.chordIntro)):paraBr(S9.courses[c].levels[w].th);
  // Teoria IN CHIARO sempre aperta: intro + ruolo di ogni suono (con ascolto) + dettaglio semitoni
  let body='<p style="font-size:16px; line-height:1.6; color:var(--text); margin:0 0 18px;">'+intro+'</p>';
  let blocks='';
@@ -3524,7 +3514,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.19'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.20'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
