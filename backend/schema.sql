@@ -9,8 +9,8 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   nickname text not null
-    check (char_length(nickname) between 2 and 16)
-    check (nickname ~ '^[A-Za-z0-9_ ]{2,16}$'),   -- charset sicuro (anti-XSS lato dato)
+    check (char_length(nickname) between 2 and 28)
+    check (nickname ~ '^[A-Za-z0-9_ ]{2,28}$'),   -- charset sicuro (anti-XSS lato dato)
   created_at timestamptz not null default now()
 );
 -- nickname unico (niente due "Mozart" in classifica)
