@@ -766,7 +766,8 @@ it:{
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca battendo il Boss del livello '+n,
  ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi', ulForma:'Prima fai «Forma»',
- formaMode:'Forma', formaCount:'fondamentali', formaRoot:'Fondamentale:', formaTap:'Tocca le note dell’accordo', formaSame:'Stessa forma:', formaWin:'Hai capito la forma!', formaWinSub:'Stesso accordo, fondamentali diverse: è sempre lo stesso.',
+ formaMode:'Forma', formaCount:'fondamentali', formaRoot:'Fondamentale:', formaTap:'Tocca le note dell’accordo', formaSame:'Stessa forma:', formaWin:'Hai capito la forma!', formaWinSub:'Stesso accordo, fondamentali diverse: è sempre lo stesso.', formaStart:'Iniziamo',
+ formaIntro:(q,build,roots)=>'Un <b>accordo</b> sono più note suonate insieme. La sua <b>forma</b> è la ricetta dei passi tra le note: l’accordo '+q+' è sempre <b>'+build+'</b>.<br><br>La stessa forma puoi costruirla partendo da note diverse. Qui la userai su <b>'+roots+'</b>: cambia la nota di partenza, ma la forma (e il sapore) resta identica.<br><br>Ogni volta: ascolta l’accordo, poi tocca sulla ruota le note che lo compongono.',
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
@@ -949,7 +950,8 @@ en:{
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock by beating the Boss of level '+n,
  ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first', ulForma:'Do «Shape» first',
- formaMode:'Shape', formaCount:'roots', formaRoot:'Root:', formaTap:'Tap the notes of the chord', formaSame:'Same shape:', formaWin:'You got the shape!', formaWinSub:'Same chord, different roots: it never changes.',
+ formaMode:'Shape', formaCount:'roots', formaRoot:'Root:', formaTap:'Tap the notes of the chord', formaSame:'Same shape:', formaWin:'You got the shape!', formaWinSub:'Same chord, different roots: it never changes.', formaStart:'Let’s go',
+ formaIntro:(q,build,roots)=>'A <b>chord</b> is several notes played together. Its <b>shape</b> is the recipe of steps between the notes: a '+q+' chord is always <b>'+build+'</b>.<br><br>You can build the same shape starting from different notes. Here you’ll use it on <b>'+roots+'</b>: the starting note changes, but the shape (and the flavor) stays the same.<br><br>Each time: listen to the chord, then tap on the wheel the notes that make it up.',
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
@@ -2980,12 +2982,12 @@ function reviewWin(){
 }
 // ===== ESERCIZIO FORMA: la stessa forma di accordo piantata su fondamentali diverse della scala =====
 // Insegna che la qualita' (es. maggiore) e' SEMPRE la stessa forma, su radici diverse (do, fa, sol...).
-function beginShapeEx(c,w){
+function beginShapeEx(c,w,skipIntro){
  clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
  const ch=chordAt(c,w); const shape=[...new Set(ch.notes)].sort((a,b)=>a-b);
  const roots=chordRootsInScale(c,shape); const scaleNotes=(SCALES[courseScale(c)]||SCALES.maj).slice();
  game={kind:'shapeex', c:c, w:w, q:ch.q, shape:shape, roots:roots, ri:0, notes:scaleNotes, planted:[], chord:[], got:[], lives:3, name:levelName(c,w)};
- root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
+ root=0; state='idle'; seq=[]; dur=[];                         // tonica fissa su DO: esempi sempre do/fa/sol, piu' chiari
  setView('free');
  $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
  showGameTop(levelName(c,w)+' · '+S9.formaMode);
@@ -2995,7 +2997,12 @@ function beginShapeEx(c,w){
  game.lives=3; $('bossbar').hidden=false; renderBossBar();
  render(); $('freetry').hidden=true;
  stopDrone(); showDroneToggle(false);
- shapeExRound(0);
+ if(skipIntro) shapeExRound(0); else shapeExIntro();
+}
+function shapeExIntro(){
+ const rootsStr=game.roots.map(d=>NOTE[((d%12)+12)%12]).join(', ');
+ lessonShow({ text:S9.formaIntro(S9.qual[game.q], S9.qualBuild[game.q], rootsStr),
+  primary:{ label:S9.formaStart, fn:()=>{ $('tutbox').hidden=true; $('status').hidden=false; shapeExRound(0); } } });
 }
 function shapeExRound(i){
  clearTimers(); game.ri=i; const d=game.roots[i];
@@ -3173,7 +3180,7 @@ function centerPlay(){
  const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
  ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='shapeex'){ beginShapeEx(game.c,game.w); } else if(game.kind==='chord'){ beginChord(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w,true); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w,true):beginElite(game.c,game.w,true); } else beginGame(); } }; // restart boss: keep=true -> stessa tonalita'
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='shapeex'){ beginShapeEx(game.c,game.w,true); } else if(game.kind==='chord'){ beginChord(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w,true); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w,true):beginElite(game.c,game.w,true); } else beginGame(); } }; // restart boss: keep=true -> stessa tonalita'
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
@@ -3585,7 +3592,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.22'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.23'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
