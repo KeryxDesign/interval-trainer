@@ -58,7 +58,8 @@ h1{font-size:22px; font-weight:700; letter-spacing:-0.02em; margin:0; cursor:poi
 #topbar{position:fixed; left:0; right:0; top:0; margin:0 auto; max-width:480px; display:flex; align-items:center; gap:12px; background:var(--surface); border-bottom:1px solid var(--line); padding:calc(8px + env(safe-area-inset-top)) 14px 8px; z-index:50; box-shadow:0 3px 12px rgba(0,0,0,.5);}
 #topbar .tb-item{display:flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--text);}
 .tb-frz{color:#7cc7ff; display:inline-flex; align-items:center; gap:3px; margin-left:6px;}
-.tb-prof{margin-left:auto; flex:0 0 auto; background:none; border:2px solid var(--line); padding:2px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+.tb-streak{margin-left:auto;}
+.tb-prof{margin-left:10px; flex:0 0 auto; background:none; border:2px solid var(--line); padding:2px; cursor:pointer; border-radius:50%; display:flex; align-items:center; justify-content:center;}
 .tb-prof:active{transform:scale(.94);}
 .tb-av{width:34px; height:34px; flex:0 0 auto; position:relative; display:inline-block;}
 .tb-coins{display:inline-flex; align-items:center; gap:5px; font-weight:800; font-size:15px; color:var(--gold); flex:0 0 auto; background:var(--surface2); border:none; border-radius:999px; padding:6px 12px; cursor:pointer;}
@@ -85,6 +86,15 @@ body.hastop .wrap{padding-top:calc(72px + env(safe-area-inset-top));}
 #shopclose{background:var(--gold); border:none; color:#1b1206; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex:0 0 auto;}
 .shopsec{font-size:14px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); margin:16px 0 10px;}
 .shopgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+.frzcard{background:var(--surface2); border-radius:14px; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
+.frzinfo{display:flex; align-items:center; gap:10px; min-width:0;}
+.frzinfo>i{font-size:26px; color:#7cc7ff; flex:0 0 auto;}
+.frztitle{font-size:14px; font-weight:800; color:var(--text);}
+.frzdesc{font-size:12px; line-height:1.35; color:var(--muted); margin-top:2px;}
+.frzright{display:flex; flex-direction:column; align-items:center; gap:6px; flex:0 0 auto;}
+.frzcount{font-size:13px; font-weight:800; color:#7cc7ff;}
+.frzbuy{background:var(--gold); color:#1b1206; border:none; border-radius:999px; padding:8px 16px; font-size:14px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;}
+.frzbuy.maxed{background:var(--surface); color:var(--muted); cursor:default; font-weight:700;}
 .shopcard{background:var(--surface2); border:2px solid transparent; border-radius:14px; padding:12px 6px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; color:var(--text); font-size:13px; font-weight:700; min-height:78px; justify-content:center;}
 .shopcard.on{border-color:var(--gold); color:var(--gold);}
 .shopcard.lock{opacity:.55; cursor:default;}
@@ -554,7 +564,7 @@ button.levelcard:active{transform:scale(0.99);}
   </div>
 
   <nav class="tabs" id="tabs" hidden>
-    <button class="tab" id="tab-home"><i class="ti ti-user"></i><span class="tablbl"></span></button>
+    <button class="tab" id="tab-home"><i class="ti ti-trophy"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-free"><i class="ti ti-music"></i><span class="tablbl"></span></button>
     <button class="tab" id="tab-corso"><span class="corsodisc"></span><span class="tablbl"></span></button>
     <button class="tab" id="tab-guide"><i class="ti ti-book"></i><span class="tablbl"></span></button>
@@ -758,7 +768,7 @@ it:{
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
- modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", shopEquip:"Usa", shopEquipped:"In uso", shopNoCoins:"Monete insufficienti", shopGetIt:"Compralo nello Shop", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
+ modes:["Facile","Normale","Difficile"], trainTitle:"Training", xpLevel:"Livello", shopTitle:"Shop", shopAvatars:"Avatar", shopEquip:"Usa", shopEquipped:"In uso", shopNoCoins:"Monete insufficienti", shopGetIt:"Compralo nello Shop", shopFreezeSec:"Salva-streak", shopFreezeName:"Congela la serie", shopFreezeDesc:"Salta un giorno senza perdere lo streak (max 3).", shopFreezeMax:"Hai il massimo", thGot:"Ho capito", thPlay:"Prova: casa + questa nota", thWinT:"Orecchio pronto!",
  chordSecs:{tri:"Triadi",sev:"Settime",six:"Seste"}, chordWord:"Accordo", thPlayChord:"Prova l'accordo", qual:{maj:"maggiore",min:"minore",dim:"diminuito",sevM:"settima maggiore",sev7:"settima di dominante",sevm:"settima minore",semidim:"semidiminuito",six:"sesta"}, chordIntro:"Senti le note una dopo l'altra, in arpeggio, e imparale come un suono solo.",
  modeDesc:["costruisci la melodia pezzo dopo pezzo · gli aiuti calano","ti dà una melodia da 6 e la ricostruisci, la vedi","costruisci una nota alla volta, solo a orecchio"],
  ldLearn:"Cosa imparerai", ldDif:"Inizia a giocare",
@@ -940,7 +950,7 @@ en:{
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
- modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", shopEquip:"Use", shopEquipped:"In use", shopNoCoins:"Not enough coins", shopGetIt:"Get it in the Shop", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
+ modes:["Easy","Normal","Hard"], trainTitle:"Training", xpLevel:"Level", shopTitle:"Shop", shopAvatars:"Avatars", shopEquip:"Use", shopEquipped:"In use", shopNoCoins:"Not enough coins", shopGetIt:"Get it in the Shop", shopFreezeSec:"Streak freeze", shopFreezeName:"Freeze your streak", shopFreezeDesc:"Skip a day without losing your streak (max 3).", shopFreezeMax:"You're maxed out", thGot:"Got it", thPlay:"Try: home + this note", thWinT:"Ear ready!",
  chordSecs:{tri:"Triads",sev:"Sevenths",six:"Sixths"}, chordWord:"Chord", thPlayChord:"Try the chord", qual:{maj:"major",min:"minor",dim:"diminished",sevM:"major seventh",sev7:"dominant seventh",sevm:"minor seventh",semidim:"half-diminished",six:"sixth"}, chordIntro:"Hear the notes one after another, as an arpeggio, and learn them as a single sound.",
  modeDesc:["build the melody piece by piece · hints fade","you get a 6-note melody to rebuild, you see it","build it one note at a time, by ear only"],
  ldLearn:"What you'll learn", ldDif:"Start playing",
@@ -1261,6 +1271,7 @@ function rebalanceCoins(){
 function timbreOwned(t){ return unlockAll()||t==='pure'||t==='scoreggia'||isOwned('t:'+t); } // pure e Tromba posteriore gratis dall'inizio; "sblocca tutto" il resto
 function avatarOwned(i){ return unlockAll()||i===0||isOwned('a:'+i); } // ...e gli avatar
 const TIMBRE_PRICE={corda:150,pad:250,voce:350,carillon:500,organo:700,scoreggia:400};
+const FREEZE_PRICE=200;
 function avatarPrice(i){ return 100+(Math.max(1,i)-1)*60; }
 function addXP(n){ if(!n)return; const before=xpInfo().lvl; localStorage.setItem('hm_xp', String(getXP()+n)); const after=xpInfo().lvl;
  if(after>before){ let fr=getFreezes(); for(let L=before+1;L<=after;L++){ if(L%2===0) fr++; } setFreezes(fr); } // +1 salva-streak ogni 2 livelli (max 3)
@@ -1285,8 +1296,8 @@ async function lbAuth(){ const supa=await getSupa(); let {data:{session}}=await 
 async function lbEnroll(nick){ const {supa,user}=await lbAuth(); const {error}=await supa.from('profiles').upsert({id:user.id, nickname:nick}); if(error){ if(error.code==='23505') throw new Error('NICK_TAKEN'); throw error; } localStorage.setItem('hm_lb_nick',nick); }
 async function lbSubmit(){ if(!lbEnrolled())return; try{ const {supa}=await lbAuth(); await supa.rpc('submit_weekly_xp',{p_xp:Math.min(20000,weeklyXP())}); }catch(e){ console.warn('lbSubmit',e); } }
 async function lbFetch(){ const supa=await getSupa(); const wk=isoWeek(new Date()); return await supa.from('weekly_scores').select('xp, profiles(nickname)').eq('week',wk).gt('xp',0).order('xp',{ascending:false}).limit(100); }
-function openLeaderboard(){ const ov=$('leaderboard'); if(!ov) return; ov.hidden=false; $('lb-title').textContent=S9.lbTitle; $('lb-enrolltitle').textContent=S9.lbEnrollTitle; $('lb-nickinput').setAttribute('placeholder',S9.lbNickPh); $('lb-enrollbtn').textContent=S9.lbEnrollBtn; $('lb-privacy').textContent=S9.lbPrivacy; lbRefresh(); }
-function closeLeaderboard(){ const ov=$('leaderboard'); if(ov) ov.hidden=true; }
+function openLeaderboard(){ const ov=$('leaderboard'); if(!ov) return; ov.hidden=false; { const th=$('tab-home'); if(th) th.classList.add('on'); } $('lb-title').textContent=S9.lbTitle; $('lb-enrolltitle').textContent=S9.lbEnrollTitle; $('lb-nickinput').setAttribute('placeholder',S9.lbNickPh); $('lb-enrollbtn').textContent=S9.lbEnrollBtn; $('lb-privacy').textContent=S9.lbPrivacy; lbRefresh(); }
+function closeLeaderboard(){ const ov=$('leaderboard'); if(ov) ov.hidden=true; const th=$('tab-home'); if(th) th.classList.remove('on'); }
 async function lbRefresh(){ const body=$('lb-body'), enroll=$('lb-enroll');
  if(!lbEnrolled()){ enroll.hidden=false; body.innerHTML=''; $('lb-yourxp').textContent=''; if(!localStorage.getItem('hm_lb_nick'))$('lb-nickinput').value=(getName()||'').replace(/[^A-Za-z0-9_ ]/g,'').slice(0,16); return; }
  enroll.hidden=true; $('lb-yourxp').textContent=S9.lbYourXp+': '+weeklyXP();
@@ -1314,7 +1325,7 @@ function applyStatic(){
  const cd=$('tab-corso').querySelector('.corsodisc'); if(cd){cd.innerHTML='<span class="cddots"></span>'; const dd=cd.querySelector('.cddots'); dd.style.cssText='position:relative;display:block;width:42px;height:42px;'; paintDots12(dd,42);} // 12 pallini in cerchio, centrati nel disco (flex)
  $('tab-corso').querySelector('.tablbl').textContent=S9.tabCorso;
  $('tab-free').querySelector('.tablbl').textContent=S9.tabs[1];
- $('tab-home').querySelector('.tablbl').textContent=S9.tabProfile;
+ $('tab-home').querySelector('.tablbl').textContent=S9.lbBtn;
  $('tab-guide').querySelector('.tablbl').textContent=S9.tabs[3];
  $('tab-settings').querySelector('.tablbl').textContent=S9.tabSettings;
  updateUnlockLabel();
@@ -1444,9 +1455,10 @@ function setView(name){
  ['levels','guide','leveldetail'].forEach(v=>{$('view-'+v).hidden=name!==v;});
  $('view-game').hidden=name!=='free';
  // tab attivo: Corso=livelli, Home(centro)=dashboard, Impostazioni=settings
- const tabFor={levels:'corso', leveldetail:'corso', free:'free', guide:'guide', home:'home', settings:'settings'};
+ const tabFor={levels:'corso', leveldetail:'corso', free:'free', guide:'guide', settings:'settings'};
  const ta=tabFor[name]||name;
- ['corso','free','home','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ ['corso','free','guide','settings'].forEach(t=>{$('tab-'+t).classList.toggle('on',t===ta);});
+ { const th=$('tab-home'); if(th) th.classList.remove('on'); } // tab-home = Classifica (overlay): mai 'on' da una view
  const fab=$('dailyfab'); if(fab){ const show=(name==='levels'); fab.hidden=!show; if(!show)closeDailySheet(); else updateDailyFab(); } // tondo daily: SOLO nel Corso
  const tb=$('topbar'); if(tb){ const showTb=['levels','home','guide','settings','free'].includes(name); tb.hidden=!showTb; document.body.classList.toggle('hastop',showTb); if(showTb){ tb.classList.remove('gamemode'); const bk=$('tb-back'); if(bk) bk.hidden=true; updateTopbar(); } else closeShop(); } // barra superiore su tutte le schermate dei 5 tab; in gioco showGameTop() la rimette in modalita' indietro+titolo
  scrollTop();
@@ -1630,9 +1642,19 @@ function equipTimbre(t){ timbre=t; localStorage.setItem('hm_timbre',t); }
 function equipAvatar(i){ localStorage.setItem('hm_avatar',String(i)); }
 function priceTag(p){ return '<span class="scprice"><span class="cur">♪</span>'+p+'</span>'; }
 function ownTag(eq){ return '<span class="'+(eq?'scok':'sceq')+'">'+(eq?S9.shopEquipped:S9.shopEquip)+'</span>'; }
+function renderFreezeShop(){
+ const fb=$('shop-freeze'); if(!fb) return;
+ const fz=getFreezes(), maxed=fz>=3, price=FREEZE_PRICE;
+ fb.innerHTML='<div class="frzcard"><div class="frzinfo"><i class="ti ti-snowflake"></i><div><div class="frztitle">'+S9.shopFreezeName+'</div><div class="frzdesc">'+S9.shopFreezeDesc+'</div></div></div>'
+  +'<div class="frzright"><div class="frzcount">'+fz+'/3</div><button class="frzbuy'+(maxed?' maxed':'')+'" id="frzbuybtn"'+(maxed?' disabled':'')+'>'+(maxed?S9.shopFreezeMax:('<span class="cur">♪</span>'+price))+'</button></div></div>';
+ if(maxed) return;
+ const bb=$('frzbuybtn'); if(!bb) return;
+ bb.addEventListener('click',()=>{ if(getFreezes()>=3) return; if(getCoins()<price){ showLockTip(bb,S9.shopNoCoins); return; } setCoins(getCoins()-price); setFreezes(getFreezes()+1); renderShop(); updateTopbar(); });
+}
 function renderShop(){
  const box=$('shopbody'); const TIC={pure:'wave-sine',corda:'guitar-pick',pad:'cloud',voce:'microphone-2',carillon:'bell',organo:'keyboard',scoreggia:'wind',gatto:'cat'};
- box.innerHTML='<div class="shopcoins"><span class="cur">♪</span> '+getCoins()+'</div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
+ box.innerHTML='<div class="shopcoins"><span class="cur">♪</span> '+getCoins()+'</div><div class="shopsec">'+S9.shopFreezeSec+'</div><div id="shop-freeze"></div><div class="shopsec">'+S9.timbreLbl+'</div><div class="shopgrid" id="shop-timbres"></div><div class="shopsec">'+S9.shopAvatars+'</div><div class="shopgrid" id="shop-avatars"></div>';
+ renderFreezeShop();
  const tg=$('shop-timbres');
  TIMBRES.forEach(t=>{ const own=timbreOwned(t), eq=(t===timbre), price=TIMBRE_PRICE[t]||0;
   const b=document.createElement('button'); b.className='shopcard'+(eq?' on':'')+(own?'':' buy');
@@ -1898,7 +1920,7 @@ function setStatus(txt,cls){
 $('tab-corso').addEventListener('click',showLevels);
 $('tab-free').addEventListener('click',showFree);
 $('startcoursebtn').addEventListener('click',startCourseNow);
-$('tab-home').addEventListener('click',showHome);
+$('tab-home').addEventListener('click',openLeaderboard); // tab in basso = Classifica
 $('tab-guide').addEventListener('click',showGuide);
 $('tab-settings').addEventListener('click',showSettings);
 window.addEventListener('scroll',hideLockTip,true); // la nuvoletta sparisce allo scroll
@@ -2939,7 +2961,7 @@ function beginReview(){ // SFIDA 2 - PASSO PASSO: costruisci la melodia una nota
  game={kind:'bossgrow', review:true, c:null, w:null, name:S9.reviewTitle, notes:pool, target:6, lives:3, melReplays:3, scaleReplays:3};
  root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on');
  showGameTop(S9.reviewTitle);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='–'; $('best').textContent=String(6); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
@@ -2974,7 +2996,7 @@ function beginChord(){
  game={kind:'chord', c:null, w:null, name:S9.chordTitle, notes:chord.slice(), chord:chord.slice(), got:[], lives:3, root:Math.floor(Math.random()*12)};
  root=game.root; state='idle'; seq=[]; dur=[];
  setView('free');
- $('tab-free').classList.remove('on'); $('tab-home').classList.add('on');
+ $('tab-free').classList.remove('on');
  showGameTop(S9.chordTitle);
  $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
  $('round').textContent='0/'+chord.length; $('best').textContent=String(chord.length); $('bestlbl').textContent=S9.bossTarget; $('reveal').innerHTML='';
@@ -3502,7 +3524,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.17'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.18'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
