@@ -765,7 +765,8 @@ it:{
  unlock:"Sblocca tutto (livelli + Shop)", unlockOn:"⚠ Sblocco totale ATTIVO (livelli + Shop)",
  resetData:"Cancella tutti i dati di gioco", resetTitle:"Cancellare tutti i dati?", resetBody:"Perderai stelle, sblocchi, boss ed elite di tutti i corsi e ripartirai da zero. Le impostazioni (nome, lingua, dimensione testo) restano. Non si può annullare.", resetOk:"Sì, cancella tutto", resetCancel:"Annulla",
  lockReq:n=>'Sblocca battendo il Boss del livello '+n,
- ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi',
+ ulCasa:'Prima finisci «La casa»', ulPrevBoss:'Batti prima il Boss del livello precedente', ulTraining:'Prima finisci il Training', ulPrevMode:m=>'Prima finisci «'+S9.modes[m-1]+'»', ulBoss:'Fai prima tutti e 3 i modi', ulForma:'Prima fai «Forma»',
+ formaMode:'Forma', formaCount:'fondamentali', formaRoot:'Fondamentale:', formaTap:'Tocca le note dell’accordo', formaSame:'Stessa forma:', formaWin:'Hai capito la forma!', formaWinSub:'Stesso accordo, fondamentali diverse: è sempre lo stesso.',
  lockMode:"★★★ nella precedente", bestShort:"best",
  level:"Livello", back:"Livelli",
  modeSuffix:["","",""],
@@ -947,7 +948,8 @@ en:{
  unlock:"Unlock all (levels + Shop)", unlockOn:"⚠ ALL UNLOCKED is ON (levels + Shop)",
  resetData:"Delete all game data", resetTitle:"Delete all data?", resetBody:"You'll lose stars, unlocks, bosses and elites in every course and start over. Settings (name, language, text size) stay. This can't be undone.", resetOk:"Yes, delete everything", resetCancel:"Cancel",
  lockReq:n=>'Unlock by beating the Boss of level '+n,
- ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first',
+ ulCasa:'Finish «Home» first', ulPrevBoss:'Beat the previous level Boss first', ulTraining:'Finish the Training first', ulPrevMode:m=>'Finish «'+S9.modes[m-1]+'» first', ulBoss:'Do all 3 modes first', ulForma:'Do «Shape» first',
+ formaMode:'Shape', formaCount:'roots', formaRoot:'Root:', formaTap:'Tap the notes of the chord', formaSame:'Same shape:', formaWin:'You got the shape!', formaWinSub:'Same chord, different roots: it never changes.',
  lockMode:"★★★ in the previous one", bestShort:"best",
  level:"Level", back:"Levels",
  modeSuffix:["","",""],
@@ -1192,7 +1194,7 @@ function updateUnlockLabel(){const t=$('unlocktxt'); if(t)t.textContent=unlockAl
 // livello successivo: si sblocca battendo l'Elite del livello precedente (che introduce la nota)
 function worldUnlocked(c,i){ if(unlockAll()) return true; if(i===0) return c!==COURSE_IDS[0] || !!localStorage.getItem('hm_casa_done'); return !!localStorage.getItem('hm_elite_'+c+'_'+(i-1)); } // il primo livello si sblocca solo dopo la casa (Livello 0)
 // modi in ordine (Facile->Normale->Difficile); il Boss invece e' sempre tentabile (test-out) -> gestito a parte
-function modeUnlocked(c,w,m){ if(unlockAll()) return true; if(!worldUnlocked(c,w)) return false; if(m===0) return isChord(c,w)||starsOf(c,w,'t')>=1; return starsOf(c,w,m-1)>=1; } // Facile (m0) si sblocca finendo il Training (note); accordi senza Training
+function modeUnlocked(c,w,m){ if(unlockAll()) return true; if(!worldUnlocked(c,w)) return false; if(m===0) return isChord(c,w)?formaDone(c,w):starsOf(c,w,'t')>=1; return starsOf(c,w,m-1)>=1; } // Facile (m0): note dopo il Training, accordi dopo la Forma
 function bossUnlocked(c,w){ return unlockAll() || starsOf(c,w,2)>=1; } // niente skip: il Boss si sblocca solo dopo aver fatto i 3 modi
 function cumSet(c,wi){let s=(CBASE[c]||[]).slice(); for(let i=0;i<=wi;i++)s=s.concat(CWADD[c][i]); return [...new Set(s)].sort((a,b)=>a-b);}
 // livelli = note (CWADD) + accordi (CHORDS) in coda. w continuo: i primi sono note, poi accordi
@@ -1202,6 +1204,9 @@ function totLevels(c){return noteLevels(c)+chordList(c).length;}
 function isChord(c,w){return w>=noteLevels(c);}
 function chordAt(c,w){return chordList(c)[w-noteLevels(c)];}
 function chordNotes(c,w){return [...new Set(chordAt(c,w).notes)].sort((a,b)=>a-b);}
+// gradi della scala dove quella forma di accordo esiste (es. maggiore -> do, fa, sol nella scala magg.)
+function chordRootsInScale(c,shape){ const sc=SCALES[courseScale(c)]||SCALES.maj; const set=new Set(sc); const out=[]; sc.forEach(d=>{ if(shape.every(iv=>set.has(((d+iv)%12+12)%12))) out.push(d); }); return out; }
+function formaDone(c,w){ return unlockAll()||!!localStorage.getItem('hm_forma_'+c+'_'+w); }
 function levelPool(c,w){return isChord(c,w)?chordNotes(c,w):cumSet(c,w);} // note giocabili del livello (accordo = note dell'accordo)
 function levelName(c,w){return isChord(c,w)?(S9.chordWord+' '+S9.qual[chordAt(c,w).q]):plainNames(c,w);}
 function startNote(pool){return pool.includes(0)?0:pool[0];} // melodia parte dalla casa se c'e', altrimenti dalla prima nota dell'accordo
@@ -1217,7 +1222,7 @@ function courseUnlocked(c){
 }
 function maxUnlockedWorld(c){let m=0; for(let i=0;i<CWADD[c].length;i++){if(worldUnlocked(c,i))m=i;} return m;}
 function trainPool(c,w){return [...new Set([0,...CWADD[c][w]])].sort((a,b)=>a-b);} // Training: solo tonica + nota nuova
-function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.pool)return game.pool; if(game.kind==='boss'||game.kind==='bossgrow'||game.kind==='chord')return game.notes; if(game.kind==='free')return game.notes||SCALES[scale]; return game.training?trainPool(game.c,game.w):levelPool(game.c,game.w);}
+function activeSet(){if(game.kind==='tut')return[0,7]; if(game.kind==='casa')return[0,2,4,7,9]; if(game.pool)return game.pool; if(game.kind==='boss'||game.kind==='bossgrow'||game.kind==='chord'||game.kind==='shapeex')return game.notes; if(game.kind==='free')return game.notes||SCALES[scale]; return game.training?trainPool(game.c,game.w):levelPool(game.c,game.w);}
 function courseScale(c){return c==='pent'?'pmaj':(c==='maj'?'maj':c);}
 // le note NUOVE di un livello si sbloccano nel free play solo battendo l'ELITE di quel livello
 function unlockedNotes(c){ if(!unlockAll()&&!courseUnlocked(c)) return []; const s=new Set(CBASE[c]||[]); S9.courses[c].levels.forEach((_,w)=>{ if(unlockAll()||localStorage.getItem('hm_elite_'+c+'_'+w)) CWADD[c][w].forEach(k=>s.add(k)); }); return [...s].sort((a,b)=>a-b);}
@@ -1926,7 +1931,7 @@ $('shop-open').addEventListener('click',openShop); // voce Shop nel Profilo
 $('backbtn').addEventListener('click',function(){
  clearTimers(); stopAllHeld(); stopMic(); state='idle';
  // torna alla schermata da cui sei partito, non sempre alla home
- if(game.daily||game.endless||game.review||game.kind==='chord') showLevels();     // sfide del giorno -> tornano al Corso
+ if(game.daily||game.endless||game.review||game.kind==='chord'||game.kind==='shapeex') showLevels();     // sfide/forma -> tornano al Corso
  else if((game.kind==='level'||game.kind==='boss'||game.kind==='bossgrow')&&game.w!=null) showLevels(); // ogni modo/Boss di livello -> torna al percorso
  else showLevels();                                                            // Libero -> lista livelli
 });
@@ -2251,9 +2256,11 @@ function renderPath(){
    panel.querySelector('.thgot').addEventListener('click',()=>{ localStorage.setItem('it_th_'+c+'_'+w,'1'); renderPath(); });
    // Training (solo note): primo livello, 2 note, mostrato e in dissolvenza come Facile ma piu' facile
    if(!ch){ const tsn=starsOf(c,w,'t'); node({color:colOf(k), ic:C[k].ic, ex:'school', ring:tsn/3, locked:!(unlockAll()||worldUnlocked(c,w)), lockMsg:lvReason, next:isNext({c:c,w:w,training:true}), onClick:()=>startLevel(c,w,'t')}); }
+   // Accordo: 1o step = FORMA (stessa forma su fondamentali diverse della scala), poi i modi melodia
+   if(ch){ const fd=formaDone(c,w); node({color:colOf(k), pie:pie, ic:'', ex:'shape', ring:fd?1:null, locked:!(unlockAll()||worldUnlocked(c,w)), lockMsg:lvReason, onClick:()=>showLoading(()=>beginShapeEx(c,w),{c:c,w:w})}); }
    // Modi: accordo = torta coi colori delle note; nota = simbolo singolo. Esercizio = icona univoca, anello = stelle
    [0,1,2].forEach(m=>{ const mu=modeUnlocked(c,w,m), sn=starsOf(c,w,m);
-    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, lockMsg:(m===0?S9.ulTraining:S9.ulPrevMode(m)), next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
+    node({color:colOf(k), pie:pie, ic:ch?'':C[k].ic, ex:MODE_EX[m], ring:sn/3, locked:!mu, lockMsg:(m===0?(ch?S9.ulForma:S9.ulTraining):S9.ulPrevMode(m)), next:mu&&isNext({c:c,w:w,m:m}), onClick:()=>startLevel(c,w,m)}); });
    // Boss: SEMPRE giocabile (skip). Se i modi non sono fatti = grigio col lucchetto rosso, ma battendolo sblocca tutto cio' che c'e' prima. Fatto = anello giallo + stella
    const eDone=!!localStorage.getItem('hm_elite_'+c+'_'+w); const bUnl=unlockAll()||bossUnlocked(c,w);
    node({color:colOf(k), pie:pie, ic:'skull', label:S9.boss, ring:eDone?1:null, stars:eDone?'★':null, testout:(!eDone&&!bUnl), next:isNext({c:c,w:w,boss:true}), onClick:()=>showLoading(()=>beginElite(c,w),{c:c,w:w})});
@@ -2971,6 +2978,68 @@ function reviewWin(){
  $('celtitle').textContent=S9.reviewWin; $('celname').innerHTML='<b>'+S9.reviewWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
  celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
+// ===== ESERCIZIO FORMA: la stessa forma di accordo piantata su fondamentali diverse della scala =====
+// Insegna che la qualita' (es. maggiore) e' SEMPRE la stessa forma, su radici diverse (do, fa, sol...).
+function beginShapeEx(c,w){
+ clearTimers(); stopAllHeld(); stopMic(); resetSpeed();
+ const ch=chordAt(c,w); const shape=[...new Set(ch.notes)].sort((a,b)=>a-b);
+ const roots=chordRootsInScale(c,shape); const scaleNotes=(SCALES[courseScale(c)]||SCALES.maj).slice();
+ game={kind:'shapeex', c:c, w:w, q:ch.q, shape:shape, roots:roots, ri:0, notes:scaleNotes, planted:[], chord:[], got:[], lives:3, name:levelName(c,w)};
+ root=Math.floor(Math.random()*12); state='idle'; seq=[]; dur=[];
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
+ showGameTop(levelName(c,w)+' · '+S9.formaMode);
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('modechip').hidden=true;
+ $('best').textContent=String(roots.length); $('bestlbl').textContent=S9.formaCount; $('reveal').innerHTML='';
+ $('bscale').hidden=true; $('rehtxt').textContent=S9.rehear; $('rehear').style.opacity='1'; $('optsrow').classList.remove('optswrap');
+ game.lives=3; $('bossbar').hidden=false; renderBossBar();
+ render(); $('freetry').hidden=true;
+ stopDrone(); showDroneToggle(false);
+ shapeExRound(0);
+}
+function shapeExRound(i){
+ clearTimers(); game.ri=i; const d=game.roots[i];
+ game.planted=game.shape.map(iv=>d+iv);                       // ascendente per il suono
+ game.chord=[...new Set(game.planted.map(x=>((x%12)+12)%12))];// classi di nota da toccare
+ game.got=[]; state='idle';
+ $('round').textContent=(i+1)+'/'+game.roots.length;
+ game.rootName=NOTE[(((root+d)%12)+12)%12];
+ setStatus(S9.formaRoot+' '+game.rootName);
+ render();
+ const dd=((d%12)+12)%12; flash(dd,520,true);                 // evidenzia la fondamentale
+ timers.push(setTimeout(()=>shapeExPlay(), 700));
+}
+function shapeExPlay(){
+ ensureCtx(); state='play'; clearTimers(); setStatus(S9.listen);
+ let t=0; game.planted.forEach(n=>{ timers.push(setTimeout(()=>{ flash(((n%12)+12)%12,360,true); tone(60+root+n,0.5); },t)); t+=320; });
+ timers.push(setTimeout(()=>{ state='input'; setStatus(S9.formaTap+' · '+game.rootName); }, t+220));
+}
+function shapeExReplay(){ if(game.kind!=='shapeex') return; if(state!=='input'&&state!=='play') return; shapeExPlay(); }
+function shapeExPress(k,held){
+ if(state!=='input') return; ensureCtx();
+ if(game.got.includes(k)){ flash(k,260,true); if(!held) tone(60+root+k,0.4); return; }
+ if(game.chord.includes(k)){
+  game.got.push(k); flash(k,300,true); if(!held) tone(60+root+k,0.45);
+  if(game.got.length>=game.chord.length){ state='over'; chime(); shapeExRoundWin(); }
+ } else {
+  game.lives--; buzz(); renderBossBar(); flash(k,300,true); if(!held) tone(60+root+k,0.5);
+  if(game.lives<=0){ state='over'; shapeExFail(); }
+  else { setStatus(S9.bossWrong,'err'); timers.push(setTimeout(()=>{ if(state==='input') setStatus(S9.formaTap+' · '+game.rootName); }, 900)); }
+ }
+}
+function shapeExRoundWin(){
+ clearTimers(); setStatus(S9.formaSame+' '+S9.qualBuild[game.q],'ok');
+ game.planted.forEach(n=>tone(60+root+n,0.95));             // l'accordo intero, insieme
+ timers.push(setTimeout(()=>{ if(game.ri+1<game.roots.length) shapeExRound(game.ri+1); else shapeExDone(); }, 1400));
+}
+function shapeExFail(){ $('bossbar').hidden=true; setStatus(S9.bossFail,'err'); $('reveal').innerHTML=''; centerPlay(); }
+function shapeExDone(){
+ if(!localStorage.getItem('hm_forma_'+game.c+'_'+game.w)){ localStorage.setItem('hm_forma_'+game.c+'_'+game.w,'1'); addXP(40); }
+ $('bossbar').hidden=true; $('freetry').hidden=true;
+ $('celico').innerHTML='<div style="width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;color:#14151a"><i class="ti ti-shape" style="font-size:36px"></i></div>';
+ $('celtitle').textContent=S9.formaWin; $('celname').innerHTML='<b>'+S9.formaWinSub+'</b>'; $('celtap').textContent=S9.unlockTap;
+ celebrateCb=()=>showLevels(); $('celebrate').hidden=false; chime(); setTimeout(chime,260);
+}
 // ===== SFIDA 3 - SUONI INSIEME: 3-4 note studiate suonate INSIEME; le riconosci toccandole (insieme, ordine libero) =====
 function chordDoneToday(){ return localStorage.getItem('hm_dchord')===dayStr(new Date()); }
 function beginChord(){
@@ -3104,7 +3173,7 @@ function centerPlay(){
  const d=Math.round(S*0.18); // cerchio play a meta' del centro (#ctr e' S*0.36)
  ct.innerHTML='<div style="width:'+d+'px;height:'+d+'px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.3)"><i class="ti ti-player-play" style="font-size:'+Math.round(d*0.5)+'px;color:var(--bg)"></i></div>';
  ct.style.opacity='1'; ct.style.pointerEvents='auto';
- ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='chord'){ beginChord(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w,true); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w,true):beginElite(game.c,game.w,true); } else beginGame(); } }; // restart boss: keep=true -> stessa tonalita'
+ ct.onclick=()=>{ if(state==='idle'||state==='over'){ if(game.endless){ beginEndless(); } else if(game.daily){ beginDaily(); } else if(game.review){ beginReview(); } else if(game.kind==='shapeex'){ beginShapeEx(game.c,game.w); } else if(game.kind==='chord'){ beginChord(); } else if(game.kind==='bossgrow'){ beginDifficile(game.c,game.w,true); } else if(game.kind==='boss'){ game.m===1?beginNormale(game.c,game.w,true):beginElite(game.c,game.w,true); } else beginGame(); } }; // restart boss: keep=true -> stessa tonalita'
 }
 function clearCenter(){const ct=$('ctr'); if(ct){delete ct.dataset.mode; ct.style.opacity='0'; ct.style.pointerEvents='none'; ct.onclick=null;}}
 function clearTimers(){timers.forEach(t=>clearTimeout(t)); timers=[];}
@@ -3405,6 +3474,7 @@ function press(k,held){
  if(game.kind==='casa'){casaPress(k); return;}
  if(game.kind==='boss'){ if(state==='input'){bossHit(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(game.kind==='bossgrow'){ if(state==='input'){bossGrowPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+k,0.38);} return; }
+ if(game.kind==='shapeex'){ if(state==='input'){shapeExPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(game.kind==='chord'){ if(state==='input'){chordPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(state==='input'){hit(k,false,held); return;}
  if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
@@ -3471,7 +3541,7 @@ $('wel-next').addEventListener('click',()=>{
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
-$('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='chord'){chordReplay(); return;} if(game.kind==='bossgrow'){bossMelodyReplay(); return;} if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
+$('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='shapeex'){shapeExReplay(); return;} if(game.kind==='chord'){chordReplay(); return;} if(game.kind==='bossgrow'){bossMelodyReplay(); return;} if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('bscale').addEventListener('click',function(){this.blur(); bossScaleReplay();});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
 $('rootsel').addEventListener('change',e=>{root=+e.target.value; updateNotes();});
@@ -3515,7 +3585,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.21'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.22'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
