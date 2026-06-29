@@ -364,6 +364,9 @@ body.fi-open #wheelbox{margin-top:8px; transform:scale(.72); transform-origin:to
 .wel-note-btn{width:96px; height:96px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; font-size:40px; cursor:pointer; margin:0 auto; transition:transform .12s ease;}
 .wel-note-btn:active{transform:scale(.93);}
 .wel-note-btn.pulse{animation:welPop .5s cubic-bezier(.2,.9,.3,1.2);}
+.legrow{display:flex; align-items:center; gap:11px; margin:0 0 10px;}
+.legdot{width:34px; height:34px; flex:0 0 auto; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;}
+.legtxt{font-size:14px; line-height:1.4; color:var(--text);}
 #fi-playrow{display:flex; justify-content:center; margin-top:20px;}
 #fi-play{justify-content:center;}
 #fi-dots{display:flex; gap:8px; justify-content:center; margin:20px 0 18px;}
@@ -943,6 +946,8 @@ it:{
  IV:['T','2m','2M','3m','3M','4G','TT','5G','6m','6M','7m','7M'],
  INM:['tonica','seconda minore','seconda maggiore','terza minore','terza maggiore','quarta giusta','tritono','quinta giusta','sesta minore','sesta maggiore','settima minore','settima maggiore'],
  DEG:['tonica','sopratonica minore','sopratonica maggiore','mediante minore','mediante maggiore','sottodominante','tritono','dominante','sopradominante minore','sopradominante maggiore','sottotonica','sensibile'],
+ noteFeel:['casa: riposo e sicurezza, tutto torna qui','tensione pungente, a un passo da casa','un passo: movimento, cammina','malinconia morbida','sole: luce, gioia, apertura','ponte: appoggio, transizione','vertigine: instabile, vuole sciogliersi','pilastro: solido, riporta a casa','nostalgia dolce-amara','leggera, aperta, sospesa','attesa morbida, sospensione','scossa: tira forte verso casa'],
+ colorLegendTitle:'Colori e sensazioni', colorLegendIntro:'I colori e i simboli non sono decorazione: sono la <b>sensazione</b> che ogni nota dà. Toccale anche nel gioco per sentirle.',
  NM:['casa','fiamma','passo','luna','sole','ponte','vortice','pilastro','ombra','nuvola','onda','fulmine'],
  courses:{
   pent:{title:"Pentatonica maggiore", desc:"Cinque note che insieme <b>suonano sempre bene</b>. Niente gradini piccoli, niente tensione. Tutto <b>galleggia</b>. È la scala <b>più usata al mondo</b>, dal blues alle canzoni popolari. Qui costruisci le <b>basi del tuo orecchio</b>: casa, apertura, movimento.",
@@ -1140,6 +1145,8 @@ en:{
  IV:['T','m2','M2','m3','M3','P4','TT','P5','m6','M6','m7','M7'],
  INM:['unison','minor 2nd','major 2nd','minor 3rd','major 3rd','perfect 4th','tritone','perfect 5th','minor 6th','major 6th','minor 7th','major 7th'],
  DEG:['tonic','minor supertonic','major supertonic','minor mediant','major mediant','subdominant','tritone','dominant','minor submediant','major submediant','subtonic','leading tone'],
+ noteFeel:['home: rest and safety, everything returns here','sharp tension, one step from home','a step: movement, walking','soft melancholy','sun: light, joy, openness','bridge: support, transition','vertigo: unstable, wants to resolve','pillar: solid, pulls back home','bittersweet nostalgia','light, open, suspended','soft waiting, suspension','jolt: pulls strongly home'],
+ colorLegendTitle:'Colors & feelings', colorLegendIntro:'Colors and symbols aren’t decoration: they’re the <b>feeling</b> each note gives. Tap them in the game too to hear them.',
  NM:['home','flame','step','moon','sun','bridge','vortex','pillar','shadow','cloud','wave','bolt'],
  courses:{
   pent:{title:"Major pentatonic", desc:"Five notes that <b>always sound good</b> together. No small steps, no tension. Everything <b>floats</b>. It's the <b>most used scale in the world</b>, from blues to folk songs. Here you build the <b>base of your ear</b>: home, openness, movement.",
@@ -1494,6 +1501,15 @@ function renderGuide(){
   const head=d.querySelector('.ghead'), body=d.querySelector('.gbody');
   head.onclick=()=>{ const willOpen=body.hidden; gd.querySelectorAll('.gbody').forEach(b=>b.hidden=true); gd.querySelectorAll('.gcard.acc').forEach(c=>c.classList.remove('open')); if(willOpen){ body.hidden=false; d.classList.add('open'); } };
   gd.appendChild(d); });
+ // Legenda "Colori e sensazioni" nelle Basi: rende esplicito che il colore = la sensazione della nota
+ if(guideSec===0){
+  let rows=''; [0,2,4,5,7,9,11].forEach(k=>{ rows+='<div class="legrow"><span class="legdot" style="background:'+C[k].h+';color:'+ink(k)+ring(k)+'"><i class="ti ti-'+C[k].ic+'"></i></span><span class="legtxt"><b>'+S9.INM[k]+'</b> — '+S9.noteFeel[k]+'</span></div>'; });
+  const card=document.createElement('div'); card.className='gcard acc';
+  card.innerHTML='<button type="button" class="ghead"><i class="ti ti-palette"></i><span>'+S9.colorLegendTitle+'</span><i class="ti ti-chevron-down gchev"></i></button><div class="gbody" hidden><p style="margin:0 0 14px">'+S9.colorLegendIntro+'</p>'+rows+'</div>';
+  const head=card.querySelector('.ghead'), body=card.querySelector('.gbody');
+  head.onclick=()=>{ const willOpen=body.hidden; gd.querySelectorAll('.gbody').forEach(b=>b.hidden=true); gd.querySelectorAll('.gcard.acc').forEach(c=>c.classList.remove('open')); if(willOpen){ body.hidden=false; card.classList.add('open'); } };
+  gd.appendChild(card);
+ }
  // Hero introduttivo + bottone tutorial solo nella sezione "Le basi" (cosi' le altre partono
  // subito con chip + schede, navigabili senza scrollare).
  const isBasics=(guideSec===0);
@@ -3610,7 +3626,7 @@ function press(k,held){
  if(game.kind==='shapeex'){ if(state==='input'){shapeExPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(game.kind==='chord'){ if(state==='input'){chordPress(k,held);} else if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);} return; }
  if(state==='input'){hit(k,false,held); return;}
- if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38);}
+ if(state==='idle'||state==='over'){ensureCtx(); flash(k,300,true); tone(60+root+k,0.38); if(game.kind==='free'){ setStatus(S9.INM[k]+' · '+S9.noteFeel[k]); } } // libero: tocca una nota e leggi/senti la sua sensazione
 }
 function hit(k,fromMic,held){
  if(state!=='input') return; ensureCtx();
@@ -3721,7 +3737,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.35'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.36'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
