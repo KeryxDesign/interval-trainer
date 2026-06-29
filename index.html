@@ -919,6 +919,7 @@ it:{
  tut2:"Bene! Questo è il suono di casa. Ora tocca il cerchio azzurro e senti com'è diverso.",
  tut3:"Due colori, due suoni. Ora ne suono due di fila: ascoltali e ripetili toccandoli nello stesso ordine.",
  tutGo:"tocca a te: ripeti le due note", startCourse:"Inizia il corso", tutFree:"Prova le note liberamente, poi inizia il corso quando vuoi.",
+ musColors:"Ecco le tue 5 note: ognuna ha un <b>colore</b> e un <b>simbolo</b>.\n\nToccale e ascolta. Con queste non puoi sbagliare: suona quello che vuoi.", musColorsBtn:"Vai, fammi suonare",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
  tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
  casaTitle:"La casa", casaCardTitle:"La casa", casaCardSub:"La tua prima nota: la casa. 2 minuti.", casaNew:"Parti da qui",
@@ -1115,6 +1116,7 @@ en:{
  tut2:"Good! That's the sound of home. Now tap the blue circle and hear how different it is.",
  tut3:"Two colors, two sounds. Now I'll play two in a row: listen and repeat them by tapping in the same order.",
  tutGo:"your turn: repeat the two notes", startCourse:"Start the course", tutFree:"Play the notes freely, then start the course whenever you like.",
+ musColors:"Here are your 5 notes: each has a <b>color</b> and a <b>symbol</b>.\n\nTap them and listen. With these you can't go wrong: play whatever you like.", musColorsBtn:"Let me play",
  tutRetry:"No, the first one was home (the red one). Try again.",
  tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
  casaTitle:"Home", casaCardTitle:"Home", casaCardSub:"Your first note: home. 2 minutes.", casaNew:"Start here",
@@ -2078,6 +2080,22 @@ function startCasa(){
  casaStep(1);
 }
 function casaPress(k){ ensureCtx(); flash(k,360,true); tone(60+k,0.5); } // tocca i cerchi per suonare (intro + sandbox finale)
+// FAST-START per chi gia' suona (ramo "Si, so suonare"): salta il Livello 0 nota-per-nota,
+// micro-intro dei colori sulle 5 note pentatoniche, poi pentatonica libera + "Inizia il corso".
+function musPentArp(){ ensureCtx(); clearTimers(); let t=0; [0,2,4,7,9].forEach(k=>{ timers.push(setTimeout(()=>{flash(k,340,true); tone(60+k,0.5);},t)); t+=250; }); }
+function startMusFast(){
+ clearTimers(); stopMic(); stopAllHeld(); game={kind:'casa'}; root=0; state='idle'; seq=[];
+ setView('free');
+ $('tab-free').classList.remove('on'); $('tab-corso').classList.add('on');
+ showGameTop(S9.fsTitle); $('goalbar').hidden=true; $('rowsetup').hidden=true; $('bossbar').hidden=true; $('freetry').hidden=true;
+ $('round').textContent='–'; $('best').textContent='–'; $('reveal').innerHTML='';
+ $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true;
+ render(); clearCenter(); tutAllow([0,2,4,7,9]); // solo le 5 note pentatoniche accese
+ timers.push(setTimeout(musPentArp,300));
+ lessonShow({ text:S9.musColors,
+  secondary:{label:S9.casaListen, fn:musPentArp},
+  primary:{label:S9.musColorsBtn, fn:()=>{ localStorage.setItem('hm_casa_done','1'); if(!localStorage.getItem('hm_casa_xp')){localStorage.setItem('hm_casa_xp','1'); addXP(50);} tutToFree(); }} });
+}
 let casaPhrase=0;
 const CASA_PHRASES=[[0,4,7,4,0],[0,2,4,2,0],[0,7,9,7,0],[0,9,7,4,0]]; // piccole melodie pentatoniche che TORNANO a casa
 function casaReturn(){ ensureCtx(); clearTimers(); const sq=CASA_PHRASES[casaPhrase%CASA_PHRASES.length]; casaPhrase++; let t=220;
@@ -3640,7 +3658,7 @@ $('fs-play').addEventListener('click',startFreeGame);
 $('wel-next').addEventListener('click',()=>{
  const list=welList();
  if(welStep<list.length-1){welStep++; renderWelStep(); return;}
- if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; showLoading(startCasa,{casa:true,c:COURSE_IDS[0]}); }
+ if(welMode==='pre'){ localStorage.setItem('hm_welcome_seen','1'); $('welcome').hidden=true; const go=(welBranch==='mus')?startMusFast:startCasa; showLoading(go,{casa:true,c:COURSE_IDS[0]}); }
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
@@ -3691,7 +3709,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.33'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.34'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
