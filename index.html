@@ -2151,7 +2151,8 @@ function casaComplete(){
  $('celtitle').textContent=S9.casaWinTitle;
  $('celname').innerHTML='<b>'+S9.casaCardTitle+'</b><br><span style="color:var(--gold);font-size:14px">'+S9.casaWinSub+'</span>';
  $('celtap').textContent=S9.unlockTap;
- celebrateCb=()=>showLevels();
+ // niente salto secco alla mappa: dopo "La casa" si va dritti al primo gioco guidato (Livello 1, Training)
+ celebrateCb=()=>{ localStorage.setItem('hm_intro_done','1'); startLevel(COURSE_IDS[0],0,'t'); };
  $('celebrate').hidden=false; chime(); setTimeout(chime,260);
 }
 // ===== Assaggio guidato di ogni nuova nota (alla prima apertura del livello) =====
@@ -3737,7 +3738,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.36'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.37'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
