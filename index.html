@@ -361,6 +361,9 @@ body.fi-open #wheelbox{margin-top:8px; transform:scale(.72); transform-origin:to
 #fi-h{font-size:23px; font-weight:800; color:var(--text); margin:0 0 10px;}
 #fi-p{font-size:16px; line-height:1.55; color:var(--text); font-weight:400; margin:0; min-height:76px;}
 #fi-p b{color:var(--gold); font-weight:700;}
+.wel-note-btn{width:96px; height:96px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; font-size:40px; cursor:pointer; margin:0 auto; transition:transform .12s ease;}
+.wel-note-btn:active{transform:scale(.93);}
+.wel-note-btn.pulse{animation:welPop .5s cubic-bezier(.2,.9,.3,1.2);}
 #fi-playrow{display:flex; justify-content:center; margin-top:20px;}
 #fi-play{justify-content:center;}
 #fi-dots{display:flex; gap:8px; justify-content:center; margin:20px 0 18px;}
@@ -683,7 +686,8 @@ body.fi-open #wheelbox{margin-top:8px; transform:scale(.72); transform-origin:to
       <button class="btn primary" id="wel-forkyes" style="justify-content:center; padding:14px; font-size:16px;"></button>
       <button class="btn" id="wel-forkno" style="justify-content:center; padding:14px; font-size:16px;"></button>
     </div>
-    <button class="btn" id="wel-sound" hidden style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px; margin:0 0 14px;"></button>
+    <button id="wel-sound" hidden class="wel-note-btn" aria-label="Senti la nota"></button>
+    <p id="wel-soundcap" hidden style="font-size:13px; color:var(--muted); margin:8px 0 16px;"></p>
     <button class="btn primary" id="wel-next" style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px;"></button>
     <button id="wel-skip" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; margin-top:4px;"></button>
   </div>
@@ -1946,7 +1950,9 @@ function renderWelPre(){
  let txt = step.k==='cosa'?S9.welCosa : step.k==='fork'?S9.welForkQ : step.k==='branch'?(welBranch==='mus'?S9.welMus:S9.welBeg) : S9.welSound;
  welSetText(txt);
  if(isFork){ $('wel-forkyes').textContent=S9.welForkYes; $('wel-forkno').textContent=S9.welForkNo; }
- if(isSound){ $('wel-sound').innerHTML='<i class="ti ti-volume"></i><span>'+S9.welSoundBtn+'</span>'; }
+ const cap=$('wel-soundcap');
+ if(isSound){ const s=$('wel-sound'); s.style.background=C[0].h; s.style.color=ink(0); s.style.boxShadow='0 0 0 3px rgba(255,255,255,.7)'; s.innerHTML='<i class="ti ti-'+C[0].ic+'"></i>'; cap.textContent=S9.welSoundBtn; cap.hidden=false; }
+ else cap.hidden=true;
  let dots=''; flow.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
  $('wel-dots').innerHTML=dots;
  $('wel-next').textContent=last?S9.welProva:S9.welNext; $('wel-skip').style.display='block'; $('welcome').scrollTop=0;
@@ -3640,7 +3646,7 @@ $('wel-next').addEventListener('click',()=>{
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
 $('wel-forkyes').addEventListener('click',()=>welPick('mus'));
 $('wel-forkno').addEventListener('click',()=>welPick('beg'));
-$('wel-sound').addEventListener('click',function(){this.blur(); ensureCtx(); tone(60,0.8);}); // controllo suono: una nota chiara
+$('wel-sound').addEventListener('click',function(){this.blur(); ensureCtx(); tone(60,0.85); this.classList.remove('pulse'); void this.offsetWidth; this.classList.add('pulse');}); // controllo suono = la nota "casa" del gioco (colore+simbolo)
 $('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='shapeex'){shapeExReplay(); return;} if(game.kind==='chord'){chordReplay(); return;} if(game.kind==='bossgrow'){bossMelodyReplay(); return;} if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('bscale').addEventListener('click',function(){this.blur(); bossScaleReplay();});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
@@ -3685,7 +3691,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.31'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.32'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
