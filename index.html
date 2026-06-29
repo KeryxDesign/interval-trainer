@@ -679,6 +679,11 @@ body.fi-open #wheelbox{margin-top:8px; transform:scale(.72); transform-origin:to
     <div id="wel-ill" hidden></div>
     <p id="wel-step" style="font-size:18px; line-height:1.55; color:var(--text); margin:0 0 26px; max-width:340px;"></p>
     <div id="wel-dots" style="display:flex; gap:8px; margin:0 0 24px;"></div>
+    <div id="wel-fork" hidden style="width:100%; max-width:320px; display:flex; flex-direction:column; gap:10px; margin:0 0 6px;">
+      <button class="btn primary" id="wel-forkyes" style="justify-content:center; padding:14px; font-size:16px;"></button>
+      <button class="btn" id="wel-forkno" style="justify-content:center; padding:14px; font-size:16px;"></button>
+    </div>
+    <button class="btn" id="wel-sound" hidden style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px; margin:0 0 14px;"></button>
     <button class="btn primary" id="wel-next" style="width:100%; max-width:320px; justify-content:center; padding:14px; font-size:16px;"></button>
     <button id="wel-skip" style="background:none; border:none; color:var(--muted); font-size:14px; padding:14px; cursor:pointer; margin-top:4px;"></button>
   </div>
@@ -854,6 +859,13 @@ it:{
  guidePts:[{ic:'palette',t:"Ogni suono ha sempre il suo <b>colore</b>"},{ic:'ear',t:"Impari a <b>sentire</b> la musica, non a memorizzarla"},{ic:'player-play',t:"Si impara <b>giocando</b>, come a Simon Says"}],
  welBody:"",
  welStart:"Iniziamo", welNext:"Avanti", welTryTut:"Prova il tutorial", welSkip:"Suoni già? Salta l'intro →", prHear:"Riascolta",
+ welCosa:"Huermony è un gioco.\n\nAlleni orecchio e memoria con le note: si ascolta e si tocca. Non serve saper leggere la musica.",
+ welForkQ:"Una domanda per partire bene.\n\nSai già suonare o fare un po' di musica?",
+ welForkYes:"Sì, un po'", welForkNo:"No, parto da zero",
+ welMus:"Allora ti serve davvero.\n\nNON è un quiz: giocando riconosci a orecchio quello che suoni e inizi a tirare giù melodie con le tue mani.",
+ welBeg:"È pensato anche per te.\n\nNiente teoria: ascolti una nota e la rifai toccando il suo colore. Un gioco di memoria coi suoni.",
+ welSound:"Prima cosa: il suono.\n\nQui è tutto basato sull'ascolto. Premi qui sotto: devi sentire una nota. Niente? Controlla il volume o il tasto silenzioso del telefono.",
+ welSoundBtn:"Senti la nota", welProva:"Proviamo!",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Si"},
  welPre:[
   "Premi e ascolta. Senti? Una coppia suona <b>aperta</b>, l'altra <b>tesa</b>.\nLe note non sono solo note: hanno un carattere.",
@@ -1043,6 +1055,13 @@ en:{
  guidePts:[{ic:'palette',t:"Every sound always has its own <b>color</b>"},{ic:'ear',t:"You learn to <b>feel</b> music, not memorize it"},{ic:'player-play',t:"You learn by <b>playing</b>, like Simon Says"}],
  welBody:"",
  welStart:"Let's start", welNext:"Next", welTryTut:"Try the tutorial", welSkip:"Already play? Skip the intro →", prHear:"Replay",
+ welCosa:"Huermony is a game.\n\nYou train your ear and memory with notes: you listen and you tap. No need to read music.",
+ welForkQ:"One question to start right.\n\nDo you already play or make a bit of music?",
+ welForkYes:"Yes, a little", welForkNo:"No, from scratch",
+ welMus:"Then this is really for you.\n\nIt's NOT a quiz: by playing you recognize by ear what you play and start pulling melodies out by hand.",
+ welBeg:"It's made for you too.\n\nNo theory: you hear a note and play it back by tapping its color. A memory game with sounds.",
+ welSound:"First, the sound.\n\nEverything here is about listening. Press below: you should hear a note. Nothing? Check the volume or your phone's silent switch.",
+ welSoundBtn:"Hear the note", welProva:"Let's try!",
  welPairsLabels:{do:"Do", sol:"Sol", si:"Ti"},
  welPre:[
   "Tap and listen. Hear it? One pair sounds <b>open</b>, the other <b>tense</b>.\nNotes aren't just notes: they have a character.",
@@ -1876,9 +1895,11 @@ function openFreeIntro(){
  $('fi-close').textContent=S9.fiClose;
  $('freeintro').hidden=false;
 }
-let welStep=0, welMode='pre';
-function welList(){return welMode==='post'?S9.welPost:S9.welPre;}
-function showWelcome(){ welMode='pre'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
+let welStep=0, welMode='pre', welBranch=null;
+function welPreFlow(){ return [{k:'cosa'},{k:'fork'},{k:'branch'},{k:'sound'}]; } // intro: cos'è -> bivio musicista/principiante -> ramo -> controllo suono
+function welList(){return welMode==='post'?S9.welPost:welPreFlow();}
+function welPick(b){ welBranch=b; welStep=2; renderWelStep(); } // scelto il ramo, vai alla schermata di ramo
+function showWelcome(){ welMode='pre'; welStep=0; welBranch=null; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
 function showWelcomePost(){ welMode='post'; welStep=0; $('welcome').hidden=false; $('welcome').scrollTop=0; renderWelStep(); }
 function buildWelPairs(colored){
  const box=$('wel-pairs'); box.hidden=false; box.innerHTML='';
@@ -1903,29 +1924,33 @@ const WEL_IC_PRE=[null,null,'player-play'];
 const WEL_IC_POST=['stairs-up','confetti'];
 const WEL_COL_PRE=[null,null,'#22c55e'];
 const WEL_COL_POST=['#f59e0b','#eab308'];
+function welSetText(txt){ const parts=(txt||'').split('\n\n'); const title=parts[0]||''; const body=parts.slice(1).join('<br><br>').replace(/\n/g,'<br>'); $('wel-step').innerHTML='<span class="wel-title">'+title+'</span>'+(body?'<span class="wel-body">'+paraBr(body)+'</span>':''); }
 function renderWelStep(){
- const list=welList(), last=welStep===list.length-1;
- const isPairs=(welMode==='pre'&&welStep<=1);
- if(isPairs) buildWelPairs(welStep===1); else $('wel-pairs').hidden=true;
- const ill=$('wel-ill');
- if(isPairs){ ill.hidden=true; $('wel-step').innerHTML=(list[welStep]||'').replace(/\n/g,'<br>'); }
- else {
-  const ic=(welMode==='post'?WEL_IC_POST:WEL_IC_PRE)[welStep];
-  const col=(welMode==='post'?WEL_COL_POST:WEL_COL_PRE)[welStep]||'var(--gold)';
-  if(ic){ ill.hidden=false; ill.innerHTML='<i class="ti ti-'+ic+'"></i>'; ill.style.background=col; ill.style.boxShadow='0 8px 26px '+(col[0]==='#'?col+'44':'rgba(234,179,8,.27)'); } else ill.hidden=true;
-  // gerarchia: prima frase = titolo, resto = corpo
-  const parts=(list[welStep]||'').split('\n\n');
-  const title=parts[0]||''; const body=parts.slice(1).join('<br><br>').replace(/\n/g,'<br>');
-  $('wel-step').innerHTML='<span class="wel-title">'+title+'</span>'+(body?'<span class="wel-body">'+paraBr(body)+'</span>':'');
- }
+ if(welMode==='pre') return renderWelPre();
+ // POST-gioco: schermate solo-testo con illustrazione (invariato)
+ const list=S9.welPost, last=welStep===list.length-1;
+ $('wel-pairs').hidden=true; $('wel-fork').hidden=true; $('wel-sound').hidden=true; $('wel-next').style.display='';
+ const ill=$('wel-ill'); const ic=WEL_IC_POST[welStep]; const col=WEL_COL_POST[welStep]||'var(--gold)';
+ if(ic){ ill.hidden=false; ill.innerHTML='<i class="ti ti-'+ic+'"></i>'; ill.style.background=col; ill.style.boxShadow='0 8px 26px '+(col[0]==='#'?col+'44':'rgba(234,179,8,.27)'); } else ill.hidden=true;
+ welSetText(list[welStep]||'');
  let dots=''; list.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
  $('wel-dots').innerHTML=dots;
- $('wel-next').textContent=last?(welMode==='pre'?S9.welTryTut:S9.welStart):S9.welNext;
- $('wel-skip').style.display=welMode==='pre'?'block':'none';
- $('welcome').scrollTop=0;
- // animazioni d'ingresso (staggered): illustrazione pop, testo/coppie slide-in
- if(!isPairs){ anim(ill,'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',0); anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',90); }
- else { anim($('wel-pairs'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',0); anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',90); }
+ $('wel-next').textContent=last?S9.welStart:S9.welNext; $('wel-skip').style.display='none'; $('welcome').scrollTop=0;
+ anim(ill,'welPop .5s cubic-bezier(.2,.9,.3,1.2) both',0); anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',90);
+}
+function renderWelPre(){
+ const flow=welPreFlow(), step=flow[welStep], last=welStep===flow.length-1;
+ const isFork=step.k==='fork', isSound=step.k==='sound';
+ $('wel-pairs').hidden=true; $('wel-ill').hidden=true;
+ $('wel-fork').hidden=!isFork; $('wel-sound').hidden=!isSound; $('wel-next').style.display=isFork?'none':'';
+ let txt = step.k==='cosa'?S9.welCosa : step.k==='fork'?S9.welForkQ : step.k==='branch'?(welBranch==='mus'?S9.welMus:S9.welBeg) : S9.welSound;
+ welSetText(txt);
+ if(isFork){ $('wel-forkyes').textContent=S9.welForkYes; $('wel-forkno').textContent=S9.welForkNo; }
+ if(isSound){ $('wel-sound').innerHTML='<i class="ti ti-volume"></i><span>'+S9.welSoundBtn+'</span>'; }
+ let dots=''; flow.forEach((_,i)=>{dots+='<span style="width:8px;height:8px;border-radius:50%;background:'+(i===welStep?'var(--text)':'var(--line)')+'"></span>';});
+ $('wel-dots').innerHTML=dots;
+ $('wel-next').textContent=last?S9.welProva:S9.welNext; $('wel-skip').style.display='block'; $('welcome').scrollTop=0;
+ anim($('wel-step'),'welIn .45s cubic-bezier(.2,.7,.3,1) both',60);
 }
 // retrigger affidabile di una CSS animation
 function anim(el,a,delayMs){ if(!el)return; el.style.animation='none'; void el.offsetWidth; el.style.animation=a; el.style.animationDelay=(delayMs||0)+'ms'; }
@@ -3613,6 +3638,9 @@ $('wel-next').addEventListener('click',()=>{
  else { localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; startLevel('pent',0,0,true); }
 });
 $('wel-skip').addEventListener('click',()=>{localStorage.setItem('hm_welcome_seen','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_intro_done','1'); $('welcome').hidden=true; showLevels();});
+$('wel-forkyes').addEventListener('click',()=>welPick('mus'));
+$('wel-forkno').addEventListener('click',()=>welPick('beg'));
+$('wel-sound').addEventListener('click',function(){this.blur(); ensureCtx(); tone(60,0.8);}); // controllo suono: una nota chiara
 $('rehear').addEventListener('click',function(){this.blur(); if(game.kind==='shapeex'){shapeExReplay(); return;} if(game.kind==='chord'){chordReplay(); return;} if(game.kind==='bossgrow'){bossMelodyReplay(); return;} if(game.kind==='boss'){bossReplay(); return;} if(seq.length&&(state==='input'||state==='over')){usedRehear=true; updateGoal(); ensureCtx(); playSeq();}});
 $('bscale').addEventListener('click',function(){this.blur(); bossScaleReplay();});
 $('scsel').addEventListener('change',e=>{scale=e.target.value; clearTimers(); seq=[]; state='idle'; $('round').textContent='–'; setStatus(''); $('reveal').innerHTML=''; render(); renderSig(); renderChords(); loadBest();});
@@ -3657,7 +3685,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.30'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.31'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
