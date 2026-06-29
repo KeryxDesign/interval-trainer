@@ -918,7 +918,7 @@ it:{
  tut1:"Questo cerchio rosso in alto è \"casa\": il punto di partenza. Toccalo e ascolta.",
  tut2:"Bene! Questo è il suono di casa. Ora tocca il cerchio azzurro e senti com'è diverso.",
  tut3:"Due colori, due suoni. Ora ne suono due di fila: ascoltali e ripetili toccandoli nello stesso ordine.",
- tutGo:"tocca a te: ripeti le due note", startCourse:"Inizia il corso", tutFree:"Prova le note liberamente, poi inizia il corso quando vuoi.",
+ tutGo:"tocca a te: ripeti le due note", startCourse:"Inizia a giocare", tutFree:"Prova le note liberamente, poi inizia a giocare quando vuoi.",
  musColors:"Ecco le tue 5 note: ognuna ha un <b>colore</b> e un <b>simbolo</b>.\n\nToccale e ascolta. Con queste non puoi sbagliare: suona quello che vuoi.", musColorsBtn:"Vai, fammi suonare",
  tutRetry:"No, la prima era casa (la rossa). Riprova.",
  tutDone:"Esatto, hai orecchio! È tutto qui: ascolta e ripeti. A ogni giro la melodia cresce di una nota. Si parte!",
@@ -1115,7 +1115,7 @@ en:{
  tut1:"This red circle at the top is \"home\": the starting point. Tap it and listen.",
  tut2:"Good! That's the sound of home. Now tap the blue circle and hear how different it is.",
  tut3:"Two colors, two sounds. Now I'll play two in a row: listen and repeat them by tapping in the same order.",
- tutGo:"your turn: repeat the two notes", startCourse:"Start the course", tutFree:"Play the notes freely, then start the course whenever you like.",
+ tutGo:"your turn: repeat the two notes", startCourse:"Start playing", tutFree:"Play the notes freely, then start playing whenever you like.",
  musColors:"Here are your 5 notes: each has a <b>color</b> and a <b>symbol</b>.\n\nTap them and listen. With these you can't go wrong: play whatever you like.", musColorsBtn:"Let me play",
  tutRetry:"No, the first one was home (the red one). Try again.",
  tutDone:"Exactly, you've got an ear! That's all there is to it: listen and repeat. Each round the melody grows by one note. Here we go!",
@@ -2094,7 +2094,19 @@ function startMusFast(){
  timers.push(setTimeout(musPentArp,300));
  lessonShow({ text:S9.musColors,
   secondary:{label:S9.casaListen, fn:musPentArp},
-  primary:{label:S9.musColorsBtn, fn:()=>{ localStorage.setItem('hm_casa_done','1'); if(!localStorage.getItem('hm_casa_xp')){localStorage.setItem('hm_casa_xp','1'); addXP(50);} tutToFree(); }} });
+  primary:{label:S9.musColorsBtn, fn:startMusPlay} });
+}
+// musicista: dopo l'intro colori va DRITTO al gioco-melodia (senti -> rifai a orecchio) sulle 5 note pentatoniche
+function startMusPlay(){
+ localStorage.setItem('hm_casa_done','1'); localStorage.setItem('hm_tut_done','1'); localStorage.setItem('hm_taste_pent_0','1');
+ if(!localStorage.getItem('hm_casa_xp')){ localStorage.setItem('hm_casa_xp','1'); addXP(50); }
+ clearTimers(); tutAllow([]); $('tutbox').hidden=true; $('status').hidden=false;
+ scale='pmaj'; root=0; state='idle'; seq=[]; game={kind:'free', c:'pent', notes:SCALES.pmaj.slice(), allNotes:SCALES.pmaj.slice()}; resetSpeed();
+ const sc=$('startcoursebtn'); if(sc) sc.hidden=true;
+ $('rowsetup').hidden=true; $('goalbar').hidden=true; $('bossbar').hidden=true; $('modechip').hidden=true; $('chordbar').hidden=true; $('chordseqrow').hidden=true; $('bscale').hidden=true; $('rehear').style.opacity='1';
+ const ss=$('scsel'); if(ss) ss.value='pmaj'; const rs=$('rootsel'); if(rs) rs.value='0';
+ render(); loadBest(); showDroneToggle(true);
+ beginGame(); // parte subito una melodia da rifare a orecchio
 }
 let casaPhrase=0;
 const CASA_PHRASES=[[0,4,7,4,0],[0,2,4,2,0],[0,7,9,7,0],[0,9,7,4,0]]; // piccole melodie pentatoniche che TORNANO a casa
@@ -3709,7 +3721,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.34'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.35'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
