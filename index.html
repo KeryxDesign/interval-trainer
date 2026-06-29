@@ -925,7 +925,7 @@ it:{
  casa1:"Questa è la tua <b>casa</b>. È la nota di partenza. Toccala e ascolta com'è.",
  casa2:"La musica parte da casa, si allontana e poi torna a casa. Senti? Tornare a casa fa stare bene. Casa è il tuo <b>posto sicuro</b>.",
  casa3:"Ogni nota ha un <b>colore</b> e un <b>disegno</b>. Li scegliamo noi. Servono a ricordare i suoni.",
- casa4:"Ora <b>tocca a te</b>! Fai una melodia: parti da casa e torna a casa. Senti com'è bello finire a casa. Quando vuoi, vai avanti.",
+ casa4:"Ora prova tu: <b>tocca i cerchi</b> e ascolta. Non si può sbagliare, stai già facendo musica.<br><br>Quando vuoi, premi <b>Finito</b>.",
  casaNext:"Continua", casaListen:"Ascolta un'altra", casaStart:"Finito", casaReplay:"Rivedi",
  casaWinTitle:"Livello 0 fatto!", casaWinSub:"Prima stella · casa sbloccata nel Libero",
  casaLoadTitle:"Livello 0 · La casa",
@@ -1121,7 +1121,7 @@ en:{
  casa1:"This is your <b>home</b>. It's the starting note. Tap it and hear it.",
  casa2:"Music starts at home, goes away, then comes back home. Feel it? Coming home feels good. Home is your <b>safe place</b>.",
  casa3:"Every note has a <b>color</b> and a <b>shape</b>. We pick them. They help you remember the sounds.",
- casa4:"Now <b>your turn</b>! Make a tune: start at home and come back home. Feel how nice it is to end at home. Go on when you want.",
+ casa4:"Now you try: <b>tap the circles</b> and listen. You can't get it wrong, you're already making music.<br><br>When you want, press <b>Done</b>.",
  casaNext:"Continue", casaListen:"Hear another", casaStart:"Finish", casaReplay:"Replay",
  casaWinTitle:"Level 0 done!", casaWinSub:"First star · home unlocked in Free play",
  casaLoadTitle:"Level 0 · Home",
@@ -3691,7 +3691,7 @@ migrateCoins(); // chi ha gia' progressi riceve le monete pari all'XP gia' guada
 rebalanceCoins(); // + bonus retroattivo per il ribilanciamento delle ricompense (~2,5x)
 showLevels(); // all'avvio sempre sul Corso
 if(!localStorage.getItem('hm_welcome_seen')) showWelcome();
-const APP_VER='2.32'; $('ver').textContent='v'+APP_VER+' alpha';
+const APP_VER='2.33'; $('ver').textContent='v'+APP_VER+' alpha';
 // l'audio iOS si sospende quando l'app va in background/blocco schermo: lo riattivo al ritorno
 ['visibilitychange','focus','pageshow'].forEach(ev=>window.addEventListener(ev,()=>{ if(document.visibilityState!=='hidden' && ctx && ctx.state==='suspended') ctx.resume().catch(()=>{}); }));
 if('serviceWorker' in navigator){
